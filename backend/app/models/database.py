@@ -169,6 +169,7 @@ CREATE TABLE IF NOT EXISTS portal_documents (case_id TEXT NOT NULL, document_id 
                                              PRIMARY KEY (case_id, document_id));
 CREATE TABLE IF NOT EXISTS portal_demo (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS attack_lab_runs (run_id TEXT PRIMARY KEY, created_at TEXT NOT NULL, payload TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS policy_drafts (policy_id TEXT PRIMARY KEY, created_at TEXT NOT NULL, status TEXT NOT NULL, payload TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS watch_observations (obs_id TEXT PRIMARY KEY, dedupe_key TEXT NOT NULL, signal TEXT NOT NULL,
     agent_id TEXT, case_id TEXT, first_seen TEXT NOT NULL, last_seen TEXT NOT NULL, count INTEGER NOT NULL, payload TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS watch_observations_key ON watch_observations(dedupe_key, last_seen);

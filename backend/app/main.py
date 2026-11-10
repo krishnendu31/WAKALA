@@ -17,7 +17,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app import __version__
-from app.api import attack_lab, dev, documents, evidence, gateway, officer, portal, shadow, workflow
+from app.api import attack_lab, dev, documents, evidence, gateway, officer, policy, portal, shadow, workflow
 from app.api.routes import api, router
 from app.core.config import Settings
 from app.services.bootstrap import WakalaEnvironment, bootstrap
@@ -92,6 +92,7 @@ def create_app(settings: Settings | None = None, *, env_factory: Callable[[Setti
     app.include_router(portal.router)
     app.include_router(attack_lab.router)
     app.include_router(shadow.router)
+    app.include_router(policy.router)
     return app
 
 

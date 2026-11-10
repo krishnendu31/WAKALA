@@ -132,7 +132,9 @@ def test_no_key_generation_or_signing_endpoints(client):
                            ("/api/portal/cases/{case_id}/documents/{doc_id}/injection-test", "POST"),
                            # Phase 6 Attack Lab (dev-only, isolated environments)
                            ("/api/attack-lab/run", "POST"), ("/api/attack-lab/reset", "POST"),
-                           ("/api/shadow/demo", "POST")}  # Phase 6 Shadow Mode: dev-only, watch-only
+                           ("/api/shadow/demo", "POST"),  # Phase 6 Shadow Mode: dev-only, watch-only
+                           # Phase 6 policy drafting: drafting dev-only; decisions need an authenticated owner officer
+                           ("/api/policies/drafts", "POST"), ("/api/policies/{policy_id}/decision", "POST")}
 
 
 # --- developer endpoints ---------------------------------------------------------
