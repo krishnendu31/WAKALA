@@ -17,7 +17,7 @@ enforces authority outside the agent, at the boundary of every protected tool.
 | | |
 |---|---|
 | Competition | UAE Hackathon 2026 — Challenge #27, *Secure Agentic AI for Government Services* (UAE Cyber Security Council) |
-| Status | **Phase 4: continuous assurance, human intervention and safe recovery** on top of Phase 3's signed mandate chains, Phase 2's protected services and Phase 1's security engine. **Development prototype — not production-ready or certified. Agents are simulated; keys are development keys; single process.** |
+| Status | **Phase 5: adversarial security benchmark and evidence** on top of Phase 4's continuous assurance, human intervention and safe recovery, and Phase 3's signed mandate chains, Phase 2's protected services and Phase 1's security engine. **Development prototype — not production-ready or certified. Agents are simulated; keys are development keys; single process.** |
 | Data | **100% synthetic.** No real people, entities, accounts or government systems. |
 
 The "digital power of attorney" framing is a conceptual analogy. WAKALA mandates are technical authorization artefacts and
@@ -25,7 +25,7 @@ are **not** legally recognised powers of attorney.
 
 ---
 
-## Current capabilities (Phase 4)
+## Current capabilities (Phase 5)
 
 `GET /api/system/capabilities` is the source of truth for this list, and the console renders it directly.
 
@@ -59,8 +59,10 @@ are **not** legally recognised powers of attorney.
 | **Authenticated officer console** (Security Operations): dev-only backend login, roles + entity scope enforced server-side, every decision audited | ✅ Phase 4 (dev auth) |
 | **Safe recovery**: selective suspension, officer reassignment to a standby agent, service completes through the gateway | ✅ Phase 4 |
 | **Oversight comparison** vs a clearly *hypothetical* manual-review baseline, from real isolated runs | ✅ Phase 4 |
-| LLM tool-use adapters, agent-driven attacks, citizen receipts | ⏳ Phase 5 |
-| Benchmarks | ⏳ Phase 5 (not started) |
+| **Adversarial security benchmark**: fixed-seed labeled dataset (≥ 1,000 requests, 20 categories), weak role-only baseline vs case-bound vs full WAKALA, each in isolated state | ✅ Phase 5 |
+| **Measured latency, stress and recovery** (micro + in-memory + persisted SQLite; cases, agents, audit size, history, concurrency, depth; 9-step recovery) | ✅ Phase 5 |
+| **Security Evidence dashboard** fed only by generated result files; assumption-only business calculator | ✅ Phase 5 |
+| LLM tool-use adapters, agent-driven prompt-injection runs, citizen receipts | ⏳ later |
 
 The console shows only real backend state:
 - registry counts, with key and mandate verification computed live
@@ -86,13 +88,36 @@ The delegation and receipt views remain labelled as illustrative.
   responses applied), approvals, recovery, the oversight comparison and the officer audit trail. Statuses shown:
   AUTHORIZED, DENIED, UNDER REVIEW, SUSPENDED, RECOVERED — all derived from backend state.
 
+### Phase 5: evidence
+
+`python -m app.evaluation.run` generates `evidence/phase5/`:
+- `dataset.json` (inputs and ground-truth labels)
+- `outcomes.json` (raw per-request results for A, B and C)
+- `summary.json` (aggregates with numerator and denominator for every rate)
+- `latency_samples.json`, `recovery_runs.json`, `environment.json`, `config.json` (seed and reproduction command)
+- `manifest.json` (SHA-256 of every file)
+- `REPORT.md` (the readable report, including limitations and threats to validity)
+
+The **Security Evidence** page reads these through `/api/evidence/*` and shows the manifest check. Read the numbers in
+[evidence/phase5/REPORT.md](evidence/phase5/REPORT.md). It is a *synthetic prototype benchmark, not production
+government statistics*.
+
+The benchmark found and fixed three real issues:
+- monitoring latency grew with an agent's history;
+- concurrent incident updates were lost;
+- refused officer actions were not audited.
+
+It also found two weaknesses, which are reported but not changed:
+- in the `direct` authority model, entity-scoped officers cannot act on mandates, because those mandates carry no signed
+  `case_id`;
+- the REQUEST_RATE rule, at machine speed and under `contain`, causes legitimate cases to be held for approval.
+
 ### What Phase 4 does not do
 
-- **Officer authentication is development-only.** Passwords are generated locally, scrypt-hashed in SQLite and
-  printed by the CLI; production would use the government identity provider (SSO/MFA) instead.
+- **Officer authentication is development-only.** A CLI command issues a password, shows it once and stores only its
+  scrypt hash (since Phase 5). Production would use the government identity provider (SSO/MFA) instead.
 - **Rules are static thresholds.** There is no learning, no baselining per agent, and no cross-process correlation.
 - **Single process.** Detection, gateway, officer API and services share one process and one SQLite file.
-- No benchmarking phase has been started.
 
 ### What Phase 3 does not do
 
@@ -224,11 +249,20 @@ npm run dev
 Then open **Government Workflow** and run scenarios A–D, or open **Simulation Lab → Developer demonstration** for the
 Phase 1 gateway scenarios. Results appear in **Security Events** and on the **Command Center**.
 
-For Phase 4 open **Security Operations** and sign in as an officer. Print the development credentials with:
+For Phase 4 open **Security Operations** and sign in as an officer. Issue a development password with:
 
 ```bash
 cd backend
-.venv\Scripts\python -m app.devtools.cli officers credentials
+.venv\Scripts\python -m app.devtools.cli officers set-password OFF-0101
+```
+
+The password is shown once and only its scrypt hash is stored (use `all` for every officer; this ends existing sessions).
+
+For Phase 5 regenerate the evidence (about 10–20 minutes on a laptop), then open **Security Evidence**:
+
+```bash
+cd backend
+.venv\Scripts\python -m app.evaluation.run --seed 20260 --size 1200 --out ../evidence/phase5
 ```
 
 Then follow scenario H in [docs/DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md).
@@ -292,7 +326,7 @@ The other commands are:
 - `cases list|resume|revoke-authority`
 - `delegations list`
 - `audit verify|tail|reconcile`
-- `officers credentials` (dev only)
+- `officers list|set-password <ID|all>` (dev only; the password is shown once, only its hash is stored)
 - `bench delegation`
 
 ## Configuration
@@ -319,10 +353,8 @@ exists only to demonstrate WAKALA.
 1. ~~Phase 2 — protected services and case-bound authority~~ ✅
 2. ~~Phase 3 — signed, non-expanding mandate chains; selective revocation; transactional audit~~ ✅
 3. ~~Phase 4 — continuous assurance, officer console, safe recovery~~ ✅
-4. **Phase 5 — adversarial runs and measurement:**
-   - LLM tool-use adapters through the same signing interface
-   - agent-driven prompt-injection runs
-   - citizen receipts generated from audit data
-   - decision latency and scenario outcomes measured from real runs only (benchmarking not started)
+4. ~~Phase 5 — adversarial benchmark, performance and business evidence~~ ✅ (see `evidence/phase5/REPORT.md`)
+5. **Later:** LLM tool-use adapters through the same signing interface; agent-driven prompt-injection runs; citizen
+   receipts from audit data. (Pitch polish has not started.)
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md).

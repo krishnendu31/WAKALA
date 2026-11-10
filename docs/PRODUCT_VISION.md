@@ -63,7 +63,8 @@ if the agent is fooled, the gateway refuses, the refusal is audited, and Mariam'
 | 2 | Protected synthetic government services, case-specific authority, simulated agent adapters *(complete — development prototype)* |
 | 3 | Signed, non-expanding mandate chains; selective revocation; transactional outcome audit *(complete — development prototype)* |
 | 4 | Deterministic assurance rules, graduated response, authenticated officer console, human approval, safe recovery *(complete — development prototype)* |
-| 5 | LLM adapters, adversarial runs, citizen receipts, measured benchmarks from real runs *(not started)* |
+| 5 | Fixed-seed adversarial benchmark (A/B/C), measured latency/stress/recovery, evidence dashboard, assumption-only efficiency model *(complete — synthetic prototype evidence)* |
+| 6 | LLM adapters, agent-driven prompt-injection runs, citizen receipts *(not started)* |
 
 ## Principles
 

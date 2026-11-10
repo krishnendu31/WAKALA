@@ -1,0 +1,15 @@
+{
+ "schema": "wakala-phase5-evidence-v1",
+ "label": "Synthetic prototype benchmark \u2014 not production government statistics.",
+ "generated_at": "2026-11-10T09:29:47.983316+00:00",
+ "files": {
+  "config.json": "7919b2d6b70daca2390985cd9c050e128141f3c1bc19eedc44de2059677b5e7a",
+  "dataset.json": "f46ec94f8f6d8cf865ea551269f96781ac61ef3a7a6ac3d683675a7a4bbee7c7",
+  "environment.json": "330caaf4839db8bbd06f41cd757fa320407cb896f36ba99ab17309fd7589f0bb",
+  "latency_samples.json": "2e23335a7316d46cab9da5e7536b58e152d9e6d41e03f6d0e33c019185e5a54d",
+  "outcomes.json": "590e1801ef6ab47fffe9a4886df656958f3afde941194b0da585cbf4292606d8",
+  "recovery_runs.json": "affdc907354321800853bb8d0ef9d1c1ef502c0e5d885c00bb51c01ad089c731",
+  "REPORT.md": "43ace3c1e057ca1339cc146381a678fb2a2272aa0ba7c82281a2896219afc24c",
+  "summary.json": "f645cf84dde79789bdeb5084e52b3b678e9190ee2c8659ec768d106ee2299bef"
+ }
+}

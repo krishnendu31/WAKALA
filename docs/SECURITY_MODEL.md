@@ -118,8 +118,12 @@ and agent-wide action are officer decisions.
    approvals never execute. Approval cannot override revoked, expired or suspended authority.
 
 **Officer authentication (development only).**
-- Passwords are generated per installation, scrypt-hashed in SQLite, and stored in clear only in the git-ignored
-  `backend/.dev_keys/officer_credentials.json` so the CLI can print them.
+- Only a salted scrypt hash is stored (SQLite). `cli officers set-password <ID|all>` generates a random password,
+  shows it once on the terminal and ends that officer's sessions. *Phase 5 change:* Phase 4 kept the plaintext dev
+  passwords in `backend/.dev_keys/officer_credentials.json`. At startup that file is now migrated to hashes, for any
+  officer without one, then overwritten and deleted.
+- Refused actions by an authenticated officer (`officer.action_refused`, with the code) and rejected session tokens
+  (`officer.session_rejected`) are audited. Before Phase 5 only successful actions were.
 - Session tokens are random, returned once and stored as SHA-256. Sessions expire after 15 min idle or 60 min absolute.
   Five failures lock the account temporarily.
 - Identity comes **only** from the session token. Request bodies are strict, so an `officer_id` field is rejected (422).
@@ -133,6 +137,30 @@ and agent-wide action are officer decisions.
 cannot reach the gateway reports failure and does not queue. Revocation during execution is refused by the service
 inside the transaction (`AUTHORITY_WITHDRAWN`). An expired session is rejected. On restart, approvals past their TTL
 are expired, and nothing re-runs automatically.
+
+## 2d. Phase 5: evaluation and what it changed
+
+The benchmark (`backend/app/evaluation`, evidence in `evidence/phase5`) runs the real gateway and officer code in
+isolated environments:
+- temporary keys;
+- in-memory or temporary-file SQLite;
+- random officer passwords that exist only in memory.
+
+It never opens the server database or `backend/.dev_keys`. Authorization logic was **not** changed to improve scores.
+The changes it prompted are in monitoring and audit:
+1. **Bounded observer lookback.** Rules read at most 120 recent decisions plus 120 recent denials, through composite
+   `(subject, seq)` indexes. Rule firing is exact while a subject has at most 120 denials in the 30-minute window.
+   Beyond that, counts saturate at the cap, which is still twice the largest threshold.
+2. **Incident updates serialised in-process with bounded retry.** Concurrent decisions previously lost monitoring
+   updates.
+3. **Refused officer actions audited** (above).
+
+Measured weaknesses that were deliberately *not* tuned away (see `REPORT.md`):
+- **REQUEST_RATE pins to whichever case was last.** It is an agent-wide volume rule, but it attaches its incident to
+  the agent's latest case. Under the `contain` policy, the approval gate then holds that case's sensitive steps, so
+  machine-speed traffic stalls legitimate cases.
+- **Direct-model mandates block entity-scoped officers.** They carry no signed `case_id`, so only a supervisor with
+  all-entity scope can act on them.
 
 ## 3. Identity authentication
 

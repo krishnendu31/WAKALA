@@ -1,13 +1,29 @@
 # WAKALA Demo Scenarios
 
+## Phase 5: Security evidence (console → **Security Evidence**)
+
+1. Generate the evidence:
+   `cd backend` then `.venv\Scripts\python -m app.evaluation.run --seed 20260 --size 1200 --out ../evidence/phase5`.
+   The page shows "No benchmark evidence has been generated yet" until the files exist.
+2. Open **Security Evidence**. The page shows:
+   - the headline tiles;
+   - **Failures and unexpected results**, listed from the files;
+   - the A/B/C comparison, prevention by attack type, and prevention vs monitoring detection;
+   - latency, stress and recovery under both conditions;
+   - the dataset breakdown, run metadata with the manifest hash check, and `REPORT.md`.
+3. **Business calculator.** Every input is labelled as an assumption. Change one and the backend recomputes; the values
+   observed in the benchmark are shown separately, as reference only.
+
 ## Phase 4: Safe recovery (console → **Security Operations**)
 
-Start the backend with `run_dev.py` and print the officer credentials:
+Start the backend with `run_dev.py` and issue a development password (shown once):
 
 ```bash
 cd backend
-.venv\Scripts\python -m app.devtools.cli officers credentials
+.venv\Scripts\python -m app.devtools.cli officers set-password OFF-0101
 ```
+
+The password is shown once and only its scrypt hash is stored (use `all` for every officer; this ends existing sessions).
 
 **Scenario H: safe recovery after a cross-citizen access attempt**
 

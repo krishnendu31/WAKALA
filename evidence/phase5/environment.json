@@ -1,0 +1,13 @@
+{
+ "platform": "Windows-11-10.0.26300-SP0",
+ "os": "Windows",
+ "machine": "AMD64",
+ "cpu": "AMD Ryzen 7 5700U with Radeon Graphics",
+ "logical_cpus": 16,
+ "memory_total_gb": 21.8,
+ "python": "3.13.14",
+ "python_implementation": "CPython",
+ "sqlite": "3.50.4",
+ "process_model": "single Python process; SQLite access serialized by one lock",
+ "execution_environment": "local developer machine (not a server, not a cloud benchmark host)"
+}

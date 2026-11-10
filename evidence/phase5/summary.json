@@ -1,0 +1,3195 @@
+{
+ "schema": "wakala-phase5-evidence-v1",
+ "label": "Synthetic prototype benchmark \u2014 not production government statistics.",
+ "dataset": {
+  "total_requests": 1200,
+  "legitimate": 480,
+  "unauthorized": 720,
+  "agent_requests": 1107,
+  "officer_actions": 93,
+  "by_category": [
+   {
+    "category": "normal_renewal_completion",
+    "label": "legitimate",
+    "family": "agent_request",
+    "count": 94,
+    "delegation_only": false,
+    "description": "Residency Agent completes a renewal whose prerequisites are all satisfied."
+   },
+   {
+    "category": "valid_delegated_task",
+    "label": "legitimate",
+    "family": "agent_request",
+    "count": 94,
+    "delegation_only": false,
+    "description": "Insurance check for the case's own citizen (under a child mandate where delegation is used)."
+   },
+   {
+    "category": "valid_task_commission",
+    "label": "legitimate",
+    "family": "agent_request",
+    "count": 63,
+    "delegation_only": true,
+    "description": "Residency Agent commissions the catalogued insurance check."
+   },
+   {
+    "category": "legitimate_fee_payment",
+    "label": "legitimate",
+    "family": "agent_request",
+    "count": 94,
+    "delegation_only": false,
+    "description": "AED 500 renewal fee to the official synthetic treasury."
+   },
+   {
+    "category": "legitimate_eligibility_check",
+    "label": "legitimate",
+    "family": "agent_request",
+    "count": 94,
+    "delegation_only": false,
+    "description": "Residency eligibility check for the case applicant."
+   },
+   {
+    "category": "legitimate_officer_action",
+    "label": "legitimate",
+    "family": "officer_action",
+    "count": 41,
+    "delegation_only": false,
+    "description": "Authenticated case officer of the owning entity suspends a mandate of that entity's case."
+   },
+   {
+    "category": "wrong_citizen_access",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 58,
+    "delegation_only": false,
+    "description": "Insurance check targeting a citizen other than the case applicant."
+   },
+   {
+    "category": "wrong_case_mandate",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 52,
+    "delegation_only": false,
+    "description": "Mandate issued for case X presented on case Y."
+   },
+   {
+    "category": "unauthorized_tool",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 58,
+    "delegation_only": false,
+    "description": "Agent invokes a tool outside its mandate."
+   },
+   {
+    "category": "excessive_payment",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 53,
+    "delegation_only": false,
+    "description": "Fee above the signed amount limit."
+   },
+   {
+    "category": "unauthorized_payment_recipient",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 52,
+    "delegation_only": false,
+    "description": "Fee sent to a recipient outside the allowlist."
+   },
+   {
+    "category": "tampered_signature",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 52,
+    "delegation_only": false,
+    "description": "Legitimate request altered after the agent signed it."
+   },
+   {
+    "category": "forged_agent_identity",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 53,
+    "delegation_only": false,
+    "description": "Request signed with a key the claimed agent does not own."
+   },
+   {
+    "category": "expired_mandate",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 46,
+    "delegation_only": false,
+    "description": "Otherwise-valid request after the mandate's validity window."
+   },
+   {
+    "category": "revoked_mandate",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 46,
+    "delegation_only": false,
+    "description": "Otherwise-valid request after its mandate was revoked."
+   },
+   {
+    "category": "replayed_request",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 53,
+    "delegation_only": false,
+    "description": "Exact resubmission of a request that was already authorized and executed."
+   },
+   {
+    "category": "delegation_privilege_escalation",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 53,
+    "delegation_only": true,
+    "description": "Delegation that would grant more than the parent or catalogue allows."
+   },
+   {
+    "category": "forged_child_mandate",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 46,
+    "delegation_only": true,
+    "description": "Child mandate altered or signed by a non-trusted key."
+   },
+   {
+    "category": "revoked_ancestor_mandate",
+    "label": "unauthorized",
+    "family": "agent_request",
+    "count": 46,
+    "delegation_only": true,
+    "description": "Child mandate used after its parent (root) was revoked."
+   },
+   {
+    "category": "unauthorized_officer_action",
+    "label": "unauthorized",
+    "family": "officer_action",
+    "count": 52,
+    "delegation_only": false,
+    "description": "Officer action without the required role, entity or valid session."
+   }
+  ]
+ },
+ "dataset_sha256": "3fdb6a2824238a3c79abd8a0ac572f26e70e387e931cac7833266ea2214d3e8b",
+ "configurations": {
+  "A": {
+   "config": "A",
+   "requests_in_dataset": 1200,
+   "requests_evaluated": 1200,
+   "not_applicable": 0,
+   "harness_errors": [],
+   "legitimate_total": 480,
+   "unauthorized_total": 720,
+   "unauthorized_operations_executed": {
+    "numerator": 624,
+    "denominator": 720,
+    "rate": 0.866667
+   },
+   "unauthorized_operations_prevented": {
+    "numerator": 96,
+    "denominator": 720,
+    "rate": 0.133333
+   },
+   "unauthorized_incorrectly_permitted": {
+    "numerator": 624,
+    "denominator": 720,
+    "rate": 0.866667
+   },
+   "legitimate_operations_allowed": {
+    "numerator": 480,
+    "denominator": 480,
+    "rate": 1.0
+   },
+   "legitimate_incorrectly_denied": {
+    "numerator": 0,
+    "denominator": 480,
+    "rate": 0.0
+   },
+   "legitimate_held_for_approval": {
+    "numerator": 0,
+    "denominator": 480,
+    "rate": 0.0
+   },
+   "false_denial_reasons": {},
+   "delegation_escalation_prevention": {
+    "numerator": 27,
+    "denominator": 99,
+    "rate": 0.272727
+   },
+   "revocation_effectiveness": {
+    "numerator": 0,
+    "denominator": 92,
+    "rate": 0.0
+   },
+   "unauthorized_state_mutations": {
+    "numerator": 624,
+    "denominator": 720,
+    "rate": 0.866667
+   },
+   "protective_case_pauses": 0,
+   "monitoring": {
+    "unauthorized_detected_specific_rule": {
+     "numerator": 0,
+     "denominator": 720,
+     "rate": 0.0
+    },
+    "unauthorized_detected_any_rule": {
+     "numerator": 0,
+     "denominator": 720,
+     "rate": 0.0
+    },
+    "unauthorized_escalated_to_officer_queue": {
+     "numerator": 0,
+     "denominator": 720,
+     "rate": 0.0
+    },
+    "legitimate_with_specific_rule_alert": {
+     "numerator": 0,
+     "denominator": 480,
+     "rate": 0.0
+    },
+    "legitimate_with_any_rule_alert": {
+     "numerator": 0,
+     "denominator": 480,
+     "rate": 0.0
+    },
+    "rule_hits": {},
+    "note": "Detection counts a deterministic monitoring rule firing on the audited decision; it is separate from prevention. REQUEST_RATE fires on machine-speed benchmark traffic, so 'specific' excludes it."
+   },
+   "audit_evidence_complete": {
+    "numerator": 0,
+    "denominator": 1200,
+    "rate": 0.0
+   },
+   "by_category": [
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "normal_renewal_completion",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "valid_delegated_task",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 63,
+      "denominator": 63,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "valid_task_commission",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 63,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 63,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 63,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 63
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_fee_payment",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_eligibility_check",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 41,
+      "denominator": 41,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_officer_action",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 41
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 58,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "wrong_citizen_access",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 58,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 58,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 58,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 58
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "wrong_case_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_tool",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 58,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 58,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 58,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_DENIES": 58
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "excessive_payment",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_payment_recipient",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "tampered_signature",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "forged_agent_identity",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "expired_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "revoked_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "replayed_request",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 27,
+      "denominator": 53,
+      "rate": 0.509434
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "delegation_privilege_escalation",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 53,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_DENIES": 27,
+      "BASELINE_ROLE_ALLOWS": 26
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "forged_child_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "revoked_ancestor_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 46,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 11,
+      "denominator": 52,
+      "rate": 0.211538
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_officer_action",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "BASELINE_ROLE_ALLOWS": 41,
+      "BASELINE_ROLE_DENIES": 11
+     }
+    }
+   ],
+   "run": {
+    "setup_requests": 0,
+    "cases_created": 0,
+    "baseline_state": {
+     "payments_recorded": 502,
+     "records_read": 390,
+     "renewals_completed": 94,
+     "officer_writes": 82,
+     "delegations_recorded": 89
+    },
+    "wall_seconds": 0.01,
+    "description": "Intentionally weak role-only baseline: trusts the claimed identity; checks only that the role includes the operation. Own in-memory state; never touches WAKALA. Not representative of all real IAM systems."
+   }
+  },
+  "B": {
+   "config": "B",
+   "requests_in_dataset": 1200,
+   "requests_evaluated": 992,
+   "not_applicable": 208,
+   "harness_errors": [],
+   "legitimate_total": 417,
+   "unauthorized_total": 575,
+   "unauthorized_operations_executed": {
+    "numerator": 0,
+    "denominator": 575,
+    "rate": 0.0
+   },
+   "unauthorized_operations_prevented": {
+    "numerator": 575,
+    "denominator": 575,
+    "rate": 1.0
+   },
+   "unauthorized_incorrectly_permitted": {
+    "numerator": 0,
+    "denominator": 575,
+    "rate": 0.0
+   },
+   "legitimate_operations_allowed": {
+    "numerator": 376,
+    "denominator": 417,
+    "rate": 0.901679
+   },
+   "legitimate_incorrectly_denied": {
+    "numerator": 41,
+    "denominator": 417,
+    "rate": 0.098321
+   },
+   "legitimate_held_for_approval": {
+    "numerator": 0,
+    "denominator": 417,
+    "rate": 0.0
+   },
+   "false_denial_reasons": {
+    "legitimate_officer_action: OUT_OF_ENTITY_SCOPE": 41
+   },
+   "delegation_escalation_prevention": {
+    "numerator": 0,
+    "denominator": 0,
+    "rate": null
+   },
+   "revocation_effectiveness": {
+    "numerator": 46,
+    "denominator": 46,
+    "rate": 1.0
+   },
+   "unauthorized_state_mutations": {
+    "numerator": 0,
+    "denominator": 575,
+    "rate": 0.0
+   },
+   "protective_case_pauses": 0,
+   "monitoring": {
+    "unauthorized_detected_specific_rule": {
+     "numerator": 508,
+     "denominator": 575,
+     "rate": 0.883478
+    },
+    "unauthorized_detected_any_rule": {
+     "numerator": 512,
+     "denominator": 575,
+     "rate": 0.890435
+    },
+    "unauthorized_escalated_to_officer_queue": {
+     "numerator": 508,
+     "denominator": 575,
+     "rate": 0.883478
+    },
+    "legitimate_with_specific_rule_alert": {
+     "numerator": 0,
+     "denominator": 417,
+     "rate": 0.0
+    },
+    "legitimate_with_any_rule_alert": {
+     "numerator": 372,
+     "denominator": 417,
+     "rate": 0.892086
+    },
+    "rule_hits": {
+     "CROSS_CITIZEN_ACCESS": 58,
+     "REPEATED_DENIALS": 507,
+     "CREDENTIAL_FAILURES": 154,
+     "ACTION_AFTER_REVOCATION": 46,
+     "REQUEST_RATE": 825
+    },
+    "note": "Detection counts a deterministic monitoring rule firing on the audited decision; it is separate from prevention. REQUEST_RATE fires on machine-speed benchmark traffic, so 'specific' excludes it."
+   },
+   "audit_evidence_complete": {
+    "numerator": 992,
+    "denominator": 992,
+    "rate": 1.0
+   },
+   "by_category": [
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "normal_renewal_completion",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "valid_delegated_task",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 93,
+      "denominator": 94,
+      "rate": 0.989362
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "valid_task_commission",
+     "label": "legitimate",
+     "not_applicable": 63,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "reason_codes": {}
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_fee_payment",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 91,
+      "denominator": 94,
+      "rate": 0.968085
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_eligibility_check",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_officer_action",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "OUT_OF_ENTITY_SCOPE": 41
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "wrong_citizen_access",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_SCOPE_VIOLATION": 58,
+      "DENY_CASE_SCOPE_VIOLATION": 58
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "wrong_case_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 50,
+      "denominator": 52,
+      "rate": 0.961538
+     },
+     "detection_any_rule": {
+      "numerator": 50,
+      "denominator": 52,
+      "rate": 0.961538
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 50,
+      "denominator": 52,
+      "rate": 0.961538
+     },
+     "reason_codes": {
+      "DENY_SCOPE_VIOLATION": 52,
+      "DENY_CASE_SCOPE_VIOLATION": 52,
+      "DENY_CASE_AGENT_NOT_ASSIGNED": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_tool",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 53,
+      "denominator": 58,
+      "rate": 0.913793
+     },
+     "detection_any_rule": {
+      "numerator": 57,
+      "denominator": 58,
+      "rate": 0.982759
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 53,
+      "denominator": 58,
+      "rate": 0.913793
+     },
+     "reason_codes": {
+      "DENY_TOOL_EXPLICITLY_DENIED": 58,
+      "DENY_SCOPE_VIOLATION": 58,
+      "DENY_CONSTRAINT_MISSING": 39
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "excessive_payment",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 52,
+      "denominator": 53,
+      "rate": 0.981132
+     },
+     "detection_any_rule": {
+      "numerator": 52,
+      "denominator": 53,
+      "rate": 0.981132
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 52,
+      "denominator": 53,
+      "rate": 0.981132
+     },
+     "reason_codes": {
+      "DENY_AMOUNT_EXCEEDS_LIMIT": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_payment_recipient",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "detection_any_rule": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "reason_codes": {
+      "DENY_RECIPIENT_NOT_ALLOWLISTED": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "tampered_signature",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_REQUEST_SIGNATURE_INVALID": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "forged_agent_identity",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 51,
+      "denominator": 53,
+      "rate": 0.962264
+     },
+     "detection_any_rule": {
+      "numerator": 51,
+      "denominator": 53,
+      "rate": 0.962264
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 51,
+      "denominator": 53,
+      "rate": 0.962264
+     },
+     "reason_codes": {
+      "DENY_REQUEST_SIGNATURE_INVALID": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "expired_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 42,
+      "denominator": 46,
+      "rate": 0.913043
+     },
+     "detection_any_rule": {
+      "numerator": 42,
+      "denominator": 46,
+      "rate": 0.913043
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 42,
+      "denominator": 46,
+      "rate": 0.913043
+     },
+     "reason_codes": {
+      "DENY_MANDATE_EXPIRED": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "revoked_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_MANDATE_REVOKED": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "replayed_request",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_REPLAYED_REQUEST": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "delegation_privilege_escalation",
+     "label": "unauthorized",
+     "not_applicable": 53,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "reason_codes": {}
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "forged_child_mandate",
+     "label": "unauthorized",
+     "not_applicable": 46,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "reason_codes": {}
+    },
+    {
+     "outcome": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "revoked_ancestor_mandate",
+     "label": "unauthorized",
+     "not_applicable": 46,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 0,
+      "rate": null
+     },
+     "reason_codes": {}
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_officer_action",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "PERMISSION_DENIED": 22,
+      "OUT_OF_ENTITY_SCOPE": 10,
+      "SESSION_INVALID": 10,
+      "SESSION_EXPIRED": 10
+     }
+    }
+   ],
+   "run": {
+    "setup_requests": 2787,
+    "cases_created": 1044,
+    "audit_events": 25063,
+    "audit_chain_valid": true,
+    "incidents_opened": 3091,
+    "wall_seconds": 255.47,
+    "description": "WAKALA case-bound authorization with direct case mandates (no delegated operations). Real gateway, isolated in-memory state. Delegation-only categories are not applicable."
+   }
+  },
+  "C": {
+   "config": "C",
+   "requests_in_dataset": 1200,
+   "requests_evaluated": 1200,
+   "not_applicable": 0,
+   "harness_errors": [],
+   "legitimate_total": 480,
+   "unauthorized_total": 720,
+   "unauthorized_operations_executed": {
+    "numerator": 0,
+    "denominator": 720,
+    "rate": 0.0
+   },
+   "unauthorized_operations_prevented": {
+    "numerator": 720,
+    "denominator": 720,
+    "rate": 1.0
+   },
+   "unauthorized_incorrectly_permitted": {
+    "numerator": 0,
+    "denominator": 720,
+    "rate": 0.0
+   },
+   "legitimate_operations_allowed": {
+    "numerator": 480,
+    "denominator": 480,
+    "rate": 1.0
+   },
+   "legitimate_incorrectly_denied": {
+    "numerator": 0,
+    "denominator": 480,
+    "rate": 0.0
+   },
+   "legitimate_held_for_approval": {
+    "numerator": 0,
+    "denominator": 480,
+    "rate": 0.0
+   },
+   "false_denial_reasons": {},
+   "delegation_escalation_prevention": {
+    "numerator": 99,
+    "denominator": 99,
+    "rate": 1.0
+   },
+   "revocation_effectiveness": {
+    "numerator": 92,
+    "denominator": 92,
+    "rate": 1.0
+   },
+   "unauthorized_state_mutations": {
+    "numerator": 0,
+    "denominator": 720,
+    "rate": 0.0
+   },
+   "protective_case_pauses": 0,
+   "monitoring": {
+    "unauthorized_detected_specific_rule": {
+     "numerator": 657,
+     "denominator": 720,
+     "rate": 0.9125
+    },
+    "unauthorized_detected_any_rule": {
+     "numerator": 659,
+     "denominator": 720,
+     "rate": 0.915278
+    },
+    "unauthorized_escalated_to_officer_queue": {
+     "numerator": 657,
+     "denominator": 720,
+     "rate": 0.9125
+    },
+    "legitimate_with_specific_rule_alert": {
+     "numerator": 0,
+     "denominator": 480,
+     "rate": 0.0
+    },
+    "legitimate_with_any_rule_alert": {
+     "numerator": 434,
+     "denominator": 480,
+     "rate": 0.904167
+    },
+    "rule_hits": {
+     "CROSS_CITIZEN_ACCESS": 58,
+     "ACTION_AFTER_REVOCATION": 92,
+     "UNAUTHORIZED_DELEGATION": 79,
+     "REPEATED_DENIALS": 652,
+     "CREDENTIAL_FAILURES": 154,
+     "REQUEST_RATE": 1029
+    },
+    "note": "Detection counts a deterministic monitoring rule firing on the audited decision; it is separate from prevention. REQUEST_RATE fires on machine-speed benchmark traffic, so 'specific' excludes it."
+   },
+   "audit_evidence_complete": {
+    "numerator": 1200,
+    "denominator": 1200,
+    "rate": 1.0
+   },
+   "by_category": [
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "normal_renewal_completion",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "valid_delegated_task",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 93,
+      "denominator": 94,
+      "rate": 0.989362
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 63,
+      "denominator": 63,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "valid_task_commission",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 63,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 62,
+      "denominator": 63,
+      "rate": 0.984127
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 63,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 63
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_fee_payment",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 91,
+      "denominator": 94,
+      "rate": 0.968085
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_eligibility_check",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 94,
+      "denominator": 94,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 94,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "ALLOW_WITHIN_MANDATE": 94
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 41,
+      "denominator": 41,
+      "rate": 1.0
+     },
+     "outcome_name": "legitimate operations completed",
+     "category": "legitimate_officer_action",
+     "label": "legitimate",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 41,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "OK": 41
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "wrong_citizen_access",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_SCOPE_VIOLATION": 58,
+      "DENY_CASE_SCOPE_VIOLATION": 58
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "wrong_case_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "detection_any_rule": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "reason_codes": {
+      "DENY_SCOPE_VIOLATION": 52,
+      "DENY_CASE_SCOPE_VIOLATION": 52,
+      "DENY_CASE_AGENT_NOT_ASSIGNED": 52,
+      "DENY_DELEGATION_CASE_MISMATCH": 26
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_tool",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 56,
+      "denominator": 58,
+      "rate": 0.965517
+     },
+     "detection_any_rule": {
+      "numerator": 58,
+      "denominator": 58,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 56,
+      "denominator": 58,
+      "rate": 0.965517
+     },
+     "reason_codes": {
+      "DENY_TOOL_EXPLICITLY_DENIED": 58,
+      "DENY_SCOPE_VIOLATION": 58,
+      "DENY_CONSTRAINT_MISSING": 39
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "excessive_payment",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 52,
+      "denominator": 53,
+      "rate": 0.981132
+     },
+     "detection_any_rule": {
+      "numerator": 52,
+      "denominator": 53,
+      "rate": 0.981132
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 52,
+      "denominator": 53,
+      "rate": 0.981132
+     },
+     "reason_codes": {
+      "DENY_AMOUNT_EXCEEDS_LIMIT": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_payment_recipient",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "detection_any_rule": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 51,
+      "denominator": 52,
+      "rate": 0.980769
+     },
+     "reason_codes": {
+      "DENY_RECIPIENT_NOT_ALLOWLISTED": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "tampered_signature",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_REQUEST_SIGNATURE_INVALID": 52
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "forged_agent_identity",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 51,
+      "denominator": 53,
+      "rate": 0.962264
+     },
+     "detection_any_rule": {
+      "numerator": 51,
+      "denominator": 53,
+      "rate": 0.962264
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 51,
+      "denominator": 53,
+      "rate": 0.962264
+     },
+     "reason_codes": {
+      "DENY_REQUEST_SIGNATURE_INVALID": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "expired_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 42,
+      "denominator": 46,
+      "rate": 0.913043
+     },
+     "detection_any_rule": {
+      "numerator": 42,
+      "denominator": 46,
+      "rate": 0.913043
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 42,
+      "denominator": 46,
+      "rate": 0.913043
+     },
+     "reason_codes": {
+      "DENY_MANDATE_EXPIRED": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "revoked_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_MANDATE_REVOKED": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "replayed_request",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_REPLAYED_REQUEST": 53
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "delegation_privilege_escalation",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 53,
+      "denominator": 53,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_DELEGATION_NOT_PERMITTED": 40,
+      "DENY_SCOPE_VIOLATION": 27,
+      "DENY_DELEGATION_EXPANDS_AUTHORITY": 27,
+      "DENY_DELEGATION_DEPTH_EXCEEDED": 27
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "forged_child_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_SIGNATURE_INVALID": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "revoked_ancestor_mandate",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "detection_any_rule": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 46,
+      "denominator": 46,
+      "rate": 1.0
+     },
+     "reason_codes": {
+      "DENY_PARENT_MANDATE_REVOKED": 46
+     }
+    },
+    {
+     "outcome": {
+      "numerator": 52,
+      "denominator": 52,
+      "rate": 1.0
+     },
+     "outcome_name": "unauthorized operations prevented",
+     "category": "unauthorized_officer_action",
+     "label": "unauthorized",
+     "not_applicable": 0,
+     "detection_specific": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "detection_any_rule": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "escalated_to_officer_queue": {
+      "numerator": 0,
+      "denominator": 52,
+      "rate": 0.0
+     },
+     "reason_codes": {
+      "PERMISSION_DENIED": 22,
+      "OUT_OF_ENTITY_SCOPE": 10,
+      "SESSION_INVALID": 10,
+      "SESSION_EXPIRED": 10
+     }
+    }
+   ],
+   "run": {
+    "setup_requests": 4205,
+    "cases_created": 1252,
+    "audit_events": 31822,
+    "audit_chain_valid": true,
+    "incidents_opened": 3692,
+    "wall_seconds": 459.31,
+    "description": "Full WAKALA: delegated authority via WAKALA-signed child mandates, verified chains, revocation/suspension, replay protection, assurance monitoring (policy 'monitor'). Real gateway, isolated in-memory state."
+   }
+  }
+ },
+ "latency": {
+  "method": "time.perf_counter wall-clock on this machine, single thread; percentiles are nearest-rank",
+  "microbenchmarks_in_memory": {
+   "authentication_and_signature_verification": {
+    "n": 500,
+    "mean_ms": 0.6633,
+    "median_ms": 0.6951,
+    "p95_ms": 0.8568,
+    "p99_ms": 0.9492,
+    "min_ms": 0.3889,
+    "max_ms": 1.2447,
+    "scope": "request canonicalisation + digest + Ed25519 verify (key cached in memory)"
+   },
+   "delegation_chain_verification": {
+    "n": 500,
+    "mean_ms": 0.7993,
+    "median_ms": 0.8133,
+    "p95_ms": 1.0228,
+    "p99_ms": 1.1246,
+    "min_ms": 0.4615,
+    "max_ms": 1.5609,
+    "scope": "child + root: 2 Ed25519 mandate signatures + narrowing checks"
+   }
+  },
+  "integration_in_memory_sqlite": {
+   "storage": "SQLite :memory:",
+   "concurrency": 1,
+   "direct_mandate_authorization": {
+    "gateway_wall": {
+     "n": 500,
+     "mean_ms": 18.8969,
+     "median_ms": 18.6752,
+     "p95_ms": 26.9952,
+     "p99_ms": 29.5452,
+     "min_ms": 4.612,
+     "max_ms": 36.7537
+    },
+    "decision_only": {
+     "n": 500,
+     "mean_ms": 3.5655,
+     "median_ms": 3.4205,
+     "p95_ms": 4.842,
+     "p99_ms": 5.304,
+     "min_ms": 2.394,
+     "max_ms": 9.631
+    }
+   },
+   "delegated_mandate_authorization": {
+    "gateway_wall": {
+     "n": 500,
+     "mean_ms": 19.7419,
+     "median_ms": 19.1565,
+     "p95_ms": 27.5009,
+     "p99_ms": 30.999,
+     "min_ms": 5.1037,
+     "max_ms": 207.1098
+    },
+    "decision_only": {
+     "n": 500,
+     "mean_ms": 4.3012,
+     "median_ms": 4.0085,
+     "p95_ms": 5.85,
+     "p99_ms": 6.46,
+     "min_ms": 3.079,
+     "max_ms": 7.218
+    }
+   },
+   "protected_tool_execution": {
+    "gateway_execute_wall": {
+     "n": 40,
+     "mean_ms": 36.9878,
+     "median_ms": 35.8594,
+     "p95_ms": 46.4627,
+     "p99_ms": 52.3931,
+     "min_ms": 26.8467,
+     "max_ms": 52.3931
+    },
+    "operation": "insurance.verify_case_eligibility under a child mandate"
+   },
+   "end_to_end_case": {
+    "wall": {
+     "n": 40,
+     "mean_ms": 206.9858,
+     "median_ms": 202.6677,
+     "p95_ms": 258.2027,
+     "p99_ms": 292.3519,
+     "min_ms": 147.9582,
+     "max_ms": 292.3519
+    },
+    "cases_started": 40,
+    "cases_completed": 40,
+    "steps": "intake + 6 signed requests (register, eligibility, commission, insurance, fee, complete)"
+   }
+  },
+  "integration_persisted_sqlite_file": {
+   "storage": "SQLite temporary file (persisted, on local disk)",
+   "concurrency": 1,
+   "direct_mandate_authorization": {
+    "gateway_wall": {
+     "n": 500,
+     "mean_ms": 56.2911,
+     "median_ms": 54.8025,
+     "p95_ms": 73.2853,
+     "p99_ms": 91.4985,
+     "min_ms": 27.9805,
+     "max_ms": 144.4024
+    },
+    "decision_only": {
+     "n": 500,
+     "mean_ms": 18.1058,
+     "median_ms": 17.443,
+     "p95_ms": 23.02,
+     "p99_ms": 26.147,
+     "min_ms": 14.36,
+     "max_ms": 54.709
+    }
+   },
+   "delegated_mandate_authorization": {
+    "gateway_wall": {
+     "n": 500,
+     "mean_ms": 57.1098,
+     "median_ms": 55.7665,
+     "p95_ms": 74.3047,
+     "p99_ms": 89.9514,
+     "min_ms": 29.4138,
+     "max_ms": 112.3216
+    },
+    "decision_only": {
+     "n": 500,
+     "mean_ms": 19.2031,
+     "median_ms": 18.5025,
+     "p95_ms": 24.719,
+     "p99_ms": 28.339,
+     "min_ms": 15.231,
+     "max_ms": 42.871
+    }
+   },
+   "protected_tool_execution": {
+    "gateway_execute_wall": {
+     "n": 40,
+     "mean_ms": 184.4635,
+     "median_ms": 182.8286,
+     "p95_ms": 208.8061,
+     "p99_ms": 215.7636,
+     "min_ms": 151.2778,
+     "max_ms": 215.7636
+    },
+    "operation": "insurance.verify_case_eligibility under a child mandate"
+   },
+   "end_to_end_case": {
+    "wall": {
+     "n": 40,
+     "mean_ms": 889.2895,
+     "median_ms": 890.5584,
+     "p95_ms": 1044.4224,
+     "p99_ms": 1455.3821,
+     "min_ms": 671.9362,
+     "max_ms": 1455.3821
+    },
+    "cases_started": 40,
+    "cases_completed": 40,
+    "steps": "intake + 6 signed requests (register, eligibility, commission, insurance, fee, complete)"
+   }
+  },
+  "definitions": {
+   "decision_only": "Gateway-measured time for authentication + policy + approval gate (excludes audit write and monitoring).",
+   "gateway_wall": "Full Gateway.authorize call: decision + hash-chained audit write + monitoring observer.",
+   "gateway_execute_wall": "Gateway.execute: authorization + protected service dispatch + transactional outcome audit.",
+   "end_to_end_case": "Machine time from intake to COMPLETED with simulated agents; no human time, no network."
+  }
+ },
+ "stress": {
+  "probe": "direct-mandate residency.check_eligibility via Gateway.authorize (decision + audit + monitoring), file SQLite",
+  "active_cases": [
+   {
+    "active_cases": 1,
+    "intake_seconds_for_increment": 0.0,
+    "latency": {
+     "n": 100,
+     "mean_ms": 46.5919,
+     "median_ms": 45.3164,
+     "p95_ms": 63.0842,
+     "p99_ms": 96.8705,
+     "min_ms": 31.3708,
+     "max_ms": 112.7205
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "active_cases": 501,
+    "intake_seconds_for_increment": 20.86,
+    "latency": {
+     "n": 100,
+     "mean_ms": 57.9914,
+     "median_ms": 56.2897,
+     "p95_ms": 67.3932,
+     "p99_ms": 72.3652,
+     "min_ms": 49.7679,
+     "max_ms": 94.1563
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "active_cases": 2001,
+    "intake_seconds_for_increment": 69.13,
+    "latency": {
+     "n": 100,
+     "mean_ms": 99.9665,
+     "median_ms": 97.8494,
+     "p95_ms": 129.6034,
+     "p99_ms": 157.0353,
+     "min_ms": 77.4676,
+     "max_ms": 198.1847
+    },
+    "errors_or_unexpected_denials": 0
+   }
+  ],
+  "registered_agents": [
+   {
+    "registered_agents": 3,
+    "latency": {
+     "n": 100,
+     "mean_ms": 42.0619,
+     "median_ms": 41.2099,
+     "p95_ms": 50.3151,
+     "p99_ms": 91.8976,
+     "min_ms": 28.3868,
+     "max_ms": 97.371
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "registered_agents": 1003,
+    "latency": {
+     "n": 100,
+     "mean_ms": 56.7625,
+     "median_ms": 49.689,
+     "p95_ms": 60.0351,
+     "p99_ms": 65.0957,
+     "min_ms": 44.1646,
+     "max_ms": 659.1493
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "registered_agents": 5003,
+    "latency": {
+     "n": 100,
+     "mean_ms": 54.1554,
+     "median_ms": 52.874,
+     "p95_ms": 66.0993,
+     "p99_ms": 87.5421,
+     "min_ms": 37.9313,
+     "max_ms": 113.6182
+    },
+    "errors_or_unexpected_denials": 0
+   }
+  ],
+  "audit_records": [
+   {
+    "audit_records": 0,
+    "full_chain_verification_ms": 0.2,
+    "chain_valid": true,
+    "latency": {
+     "n": 100,
+     "mean_ms": 48.1115,
+     "median_ms": 46.0371,
+     "p95_ms": 69.3172,
+     "p99_ms": 91.3173,
+     "min_ms": 26.5177,
+     "max_ms": 136.9866
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "audit_records": 10000,
+    "full_chain_verification_ms": 873.1,
+    "chain_valid": true,
+    "latency": {
+     "n": 100,
+     "mean_ms": 48.9774,
+     "median_ms": 48.6004,
+     "p95_ms": 58.202,
+     "p99_ms": 82.3524,
+     "min_ms": 36.062,
+     "max_ms": 114.322
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "audit_records": 40000,
+    "full_chain_verification_ms": 3354.5,
+    "chain_valid": true,
+    "latency": {
+     "n": 100,
+     "mean_ms": 52.0545,
+     "median_ms": 51.1055,
+     "p95_ms": 62.169,
+     "p99_ms": 87.4837,
+     "min_ms": 39.2396,
+     "max_ms": 115.0013
+    },
+    "errors_or_unexpected_denials": 0
+   }
+  ],
+  "agent_history": [
+   {
+    "prior_decisions_by_same_agent": 1,
+    "latency": {
+     "n": 100,
+     "mean_ms": 41.4458,
+     "median_ms": 42.5122,
+     "p95_ms": 49.9623,
+     "p99_ms": 65.8946,
+     "min_ms": 27.4456,
+     "max_ms": 98.4584
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "prior_decisions_by_same_agent": 500,
+    "latency": {
+     "n": 100,
+     "mean_ms": 59.3214,
+     "median_ms": 57.5273,
+     "p95_ms": 71.6872,
+     "p99_ms": 82.8651,
+     "min_ms": 48.2049,
+     "max_ms": 89.3453
+    },
+    "errors_or_unexpected_denials": 0
+   },
+   {
+    "prior_decisions_by_same_agent": 2000,
+    "latency": {
+     "n": 100,
+     "mean_ms": 118.3623,
+     "median_ms": 111.3217,
+     "p95_ms": 173.19,
+     "p99_ms": 229.5378,
+     "min_ms": 88.6131,
+     "max_ms": 341.243
+    },
+    "errors_or_unexpected_denials": 0
+   }
+  ],
+  "concurrency": [
+   {
+    "threads": 1,
+    "requests": 60,
+    "wall_seconds": 3.03,
+    "throughput_rps": 19.8,
+    "latency": {
+     "n": 60,
+     "mean_ms": 49.7147,
+     "median_ms": 49.4389,
+     "p95_ms": 77.4029,
+     "p99_ms": 119.8392,
+     "min_ms": 32.943,
+     "max_ms": 119.8392
+    },
+    "errors": 0,
+    "error_types": [],
+    "audit_chain_valid_after": true,
+    "monitoring_observer_failures": 0,
+    "incidents_after": 1
+   },
+   {
+    "threads": 2,
+    "requests": 120,
+    "wall_seconds": 7.385,
+    "throughput_rps": 16.2,
+    "latency": {
+     "n": 120,
+     "mean_ms": 121.8759,
+     "median_ms": 123.3327,
+     "p95_ms": 152.7454,
+     "p99_ms": 200.7797,
+     "min_ms": 74.7219,
+     "max_ms": 262.8111
+    },
+    "errors": 0,
+    "error_types": [],
+    "audit_chain_valid_after": true,
+    "monitoring_observer_failures": 0,
+    "incidents_after": 2
+   },
+   {
+    "threads": 4,
+    "requests": 240,
+    "wall_seconds": 16.221,
+    "throughput_rps": 14.8,
+    "latency": {
+     "n": 240,
+     "mean_ms": 268.5589,
+     "median_ms": 262.5314,
+     "p95_ms": 316.7362,
+     "p99_ms": 710.0133,
+     "min_ms": 186.8122,
+     "max_ms": 710.5648
+    },
+    "errors": 0,
+    "error_types": [],
+    "audit_chain_valid_after": true,
+    "monitoring_observer_failures": 0,
+    "incidents_after": 4
+   },
+   {
+    "threads": 8,
+    "requests": 480,
+    "wall_seconds": 34.82,
+    "throughput_rps": 13.8,
+    "latency": {
+     "n": 480,
+     "mean_ms": 577.5328,
+     "median_ms": 570.6342,
+     "p95_ms": 657.5659,
+     "p99_ms": 972.0759,
+     "min_ms": 370.5695,
+     "max_ms": 1093.1723
+    },
+    "errors": 0,
+    "error_types": [],
+    "audit_chain_valid_after": true,
+    "monitoring_observer_failures": 0,
+    "incidents_after": 8
+   }
+  ],
+  "delegation_depth": {
+   "global_max_depth": 3,
+   "depth_permitted_by_current_grant": 1,
+   "depth_1_delegated_authorization": {
+    "n": 100,
+    "mean_ms": 48.4983,
+    "median_ms": 49.308,
+    "p95_ms": 58.8431,
+    "p99_ms": 102.5079,
+    "min_ms": 30.0858,
+    "max_ms": 116.35
+   },
+   "depth_2_attempt": {
+    "allowed": false,
+    "reason_codes": [
+     "DENY_DELEGATION_NOT_PERMITTED",
+     "DENY_SCOPE_VIOLATION",
+     "DENY_DELEGATION_DEPTH_EXCEEDED"
+    ]
+   },
+   "note": "Depths 2-3 are not permitted by the current synthetic grant (max_delegation_depth=1), so they cannot be measured as authorized chains; the attempt above is measured as a denial."
+  },
+  "dimensions_held_constant": "Each series varies one dimension in a fresh isolated environment; same probe request."
+ },
+ "recovery": {
+  "independent_incidents": {
+   "eligible_incidents": 20,
+   "recovery_success": {
+    "numerator": 20,
+    "denominator": 20,
+    "rate": 1.0
+   },
+   "per_step_success": {
+    "1_valid_case_initiated": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "2_unauthorized_action_denied": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "3_action_not_executed": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "4_incident_and_containment": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "5_officer_intervention_applied": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "6_resumed_with_valid_authority": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "7_prerequisites_complete": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "8_case_completed": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "9_unrelated_case_unaffected": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    }
+   },
+   "failures": [],
+   "containment_actions": {
+    "suspended": 20,
+    "revoked": 0,
+    "none": 0
+   },
+   "containment_latency": {
+    "n": 20,
+    "mean_ms": 11.8116,
+    "median_ms": 12.1345,
+    "p95_ms": 13.865,
+    "p99_ms": 14.328,
+    "min_ms": 9.811,
+    "max_ms": 14.328
+   },
+   "denial_to_completion": {
+    "n": 20,
+    "mean_ms": 92.6904,
+    "median_ms": 93.9985,
+    "p95_ms": 104.394,
+    "p99_ms": 107.177,
+    "min_ms": 75.901,
+    "max_ms": 107.177
+   },
+   "officer_actions_per_recovery": [
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5
+   ],
+   "request_rate_incidents_during_run": 0,
+   "audit_chain_valid": true,
+   "wall_seconds": 30.48,
+   "condition": "Each incident in its own fresh isolated environment (no cross-incident history)."
+  },
+  "back_to_back_shared": {
+   "eligible_incidents": 20,
+   "recovery_success": {
+    "numerator": 2,
+    "denominator": 20,
+    "rate": 0.1
+   },
+   "per_step_success": {
+    "1_valid_case_initiated": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "2_unauthorized_action_denied": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "3_action_not_executed": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "4_incident_and_containment": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "5_officer_intervention_applied": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "6_resumed_with_valid_authority": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "7_prerequisites_complete": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "8_case_completed": {
+     "numerator": 3,
+     "denominator": 20,
+     "rate": 0.15
+    },
+    "9_unrelated_case_unaffected": {
+     "numerator": 2,
+     "denominator": 20,
+     "rate": 0.1
+    }
+   },
+   "failures": [
+    {
+     "incident": 3,
+     "failed_at": "9_unrelated_case_unaffected",
+     "cause": null
+    },
+    {
+     "incident": 4,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "legitimate setup request held for approval: REQUEST_RATE"
+    },
+    {
+     "incident": 5,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "legitimate setup request held for approval: REQUEST_RATE"
+    },
+    {
+     "incident": 6,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "legitimate setup request held for approval: REQUEST_RATE"
+    },
+    {
+     "incident": 7,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "legitimate setup request held for approval: REQUEST_RATE"
+    },
+    {
+     "incident": 8,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "legitimate setup request held for approval: REQUEST_RATE"
+    },
+    {
+     "incident": 9,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "legitimate setup request held for approval: REQUEST_RATE"
+    },
+    {
+     "incident": 10,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 11,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 12,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 13,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 14,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 15,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 16,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 17,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 18,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 19,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    },
+    {
+     "incident": 20,
+     "failed_at": "1_valid_case_initiated",
+     "cause": "setup request denied"
+    }
+   ],
+   "containment_actions": {
+    "suspended": 2,
+    "revoked": 1,
+    "none": 0
+   },
+   "containment_latency": {
+    "n": 3,
+    "mean_ms": 13.6197,
+    "median_ms": 12.588,
+    "p95_ms": 16.521,
+    "p99_ms": 16.521,
+    "min_ms": 11.75,
+    "max_ms": 16.521
+   },
+   "denial_to_completion": {
+    "n": 3,
+    "mean_ms": 102.682,
+    "median_ms": 100.722,
+    "p95_ms": 121.127,
+    "p99_ms": 121.127,
+    "min_ms": 86.197,
+    "max_ms": 121.127
+   },
+   "officer_actions_per_recovery": [
+    5,
+    5,
+    5
+   ],
+   "request_rate_incidents_during_run": 35,
+   "audit_chain_valid": true,
+   "wall_seconds": 4.1,
+   "condition": "All incidents back-to-back at machine speed in ONE environment: same agents, rules see the accumulated history (stress condition)."
+  },
+  "note": "Times are machine time with automated officer calls; real recoveries are dominated by human review time."
+ },
+ "environment": {
+  "platform": "Windows-11-10.0.26300-SP0",
+  "os": "Windows",
+  "machine": "AMD64",
+  "cpu": "AMD Ryzen 7 5700U with Radeon Graphics",
+  "logical_cpus": 16,
+  "memory_total_gb": 21.8,
+  "python": "3.13.14",
+  "python_implementation": "CPython",
+  "sqlite": "3.50.4",
+  "process_model": "single Python process; SQLite access serialized by one lock",
+  "execution_environment": "local developer machine (not a server, not a cloud benchmark host)"
+ },
+ "business_model_defaults": {
+  "label": "HYPOTHETICAL MODEL \u2014 every input is an assumption, not an observed government statistic.",
+  "assumptions": {
+   "annual_agent_operations": 100000,
+   "manual_review_pct": 20.0,
+   "manual_review_minutes": 6.0,
+   "staff_cost_per_fte_year": 300000.0,
+   "productive_hours_per_fte_year": 1700.0,
+   "wakala_exception_review_pct": 2.0,
+   "exception_review_minutes": 6.0,
+   "legally_required_review_pct": 0.0,
+   "annual_platform_and_integration_cost": 250000.0,
+   "currency": "AED"
+  },
+  "assumption_notes": {
+   "annual_agent_operations": "ASSUMPTION \u2014 protected AI-agent operations per year for one entity.",
+   "manual_review_pct": "ASSUMPTION \u2014 share of operations a manual-review-heavy process routes to an officer.",
+   "manual_review_minutes": "ASSUMPTION \u2014 average officer time per routine manual review.",
+   "staff_cost_per_fte_year": "ASSUMPTION \u2014 fully loaded annual cost of one reviewer (salary, benefits, overhead).",
+   "productive_hours_per_fte_year": "ASSUMPTION \u2014 productive review hours per FTE per year.",
+   "wakala_exception_review_pct": "ASSUMPTION \u2014 share of operations escalated to officers with WAKALA (incidents + holds).",
+   "exception_review_minutes": "ASSUMPTION \u2014 average officer time per WAKALA exception review.",
+   "legally_required_review_pct": "ASSUMPTION \u2014 share of operations that must be human-reviewed by law/policy in BOTH scenarios.",
+   "annual_platform_and_integration_cost": "ASSUMPTION \u2014 annual WAKALA platform, integration and operations cost."
+  },
+  "manual_review_scenario": {
+   "review_pct_applied": 20.0,
+   "reviews": 20000.0,
+   "review_hours": 2000.0,
+   "review_fte": 1.18,
+   "review_cost": 352941.18,
+   "platform_cost": 0.0,
+   "total_cost": 352941.18
+  },
+  "wakala_exception_scenario": {
+   "review_pct_applied": 2.0,
+   "reviews": 2000.0,
+   "review_hours": 200.0,
+   "review_fte": 0.12,
+   "review_cost": 35294.12,
+   "platform_cost": 250000.0,
+   "total_cost": 285294.12
+  },
+  "routine_manual_reviews_avoided": 18000.0,
+  "review_hours_avoided": 1800.0,
+  "operational_workload_reduction": {
+   "numerator_hours": 1800.0,
+   "denominator_hours": 2000.0,
+   "rate": 0.9
+  },
+  "hypothetical_annual_cost_difference": 67647.06,
+  "break_even": {
+   "annual_operations": 78704.0,
+   "manual_review_pct": 16.167,
+   "note": "Operations per year (or manual-review share) at which review savings equal the platform cost."
+  },
+  "sensitivity": [
+   {
+    "manual_review_pct": 5.0,
+    "wakala_exception_review_pct": 0.5,
+    "annual_cost_difference": -170588.24
+   },
+   {
+    "manual_review_pct": 5.0,
+    "wakala_exception_review_pct": 2.0,
+    "annual_cost_difference": -197058.83
+   },
+   {
+    "manual_review_pct": 5.0,
+    "wakala_exception_review_pct": 5.0,
+    "annual_cost_difference": -250000.0
+   },
+   {
+    "manual_review_pct": 5.0,
+    "wakala_exception_review_pct": 10.0,
+    "annual_cost_difference": -338235.3
+   },
+   {
+    "manual_review_pct": 10.0,
+    "wakala_exception_review_pct": 0.5,
+    "annual_cost_difference": -82352.94
+   },
+   {
+    "manual_review_pct": 10.0,
+    "wakala_exception_review_pct": 2.0,
+    "annual_cost_difference": -108823.53
+   },
+   {
+    "manual_review_pct": 10.0,
+    "wakala_exception_review_pct": 5.0,
+    "annual_cost_difference": -161764.7
+   },
+   {
+    "manual_review_pct": 10.0,
+    "wakala_exception_review_pct": 10.0,
+    "annual_cost_difference": -250000.0
+   },
+   {
+    "manual_review_pct": 20.0,
+    "wakala_exception_review_pct": 0.5,
+    "annual_cost_difference": 94117.65
+   },
+   {
+    "manual_review_pct": 20.0,
+    "wakala_exception_review_pct": 2.0,
+    "annual_cost_difference": 67647.06
+   },
+   {
+    "manual_review_pct": 20.0,
+    "wakala_exception_review_pct": 5.0,
+    "annual_cost_difference": 14705.89
+   },
+   {
+    "manual_review_pct": 20.0,
+    "wakala_exception_review_pct": 10.0,
+    "annual_cost_difference": -73529.41
+   },
+   {
+    "manual_review_pct": 40.0,
+    "wakala_exception_review_pct": 0.5,
+    "annual_cost_difference": 447058.82
+   },
+   {
+    "manual_review_pct": 40.0,
+    "wakala_exception_review_pct": 2.0,
+    "annual_cost_difference": 420588.23
+   },
+   {
+    "manual_review_pct": 40.0,
+    "wakala_exception_review_pct": 5.0,
+    "annual_cost_difference": 367647.06
+   },
+   {
+    "manual_review_pct": 40.0,
+    "wakala_exception_review_pct": 10.0,
+    "annual_cost_difference": 279411.76
+   }
+  ],
+  "observed_in_synthetic_benchmark": {
+   "source": "configuration C of this synthetic run (attack-heavy mix; NOT a forecast of real traffic)",
+   "unauthorized_escalated_to_officer_queue": {
+    "numerator": 657,
+    "denominator": 720,
+    "rate": 0.9125
+   },
+   "legitimate_with_specific_rule_alert": {
+    "numerator": 0,
+    "denominator": 480,
+    "rate": 0.0
+   },
+   "legitimate_held_for_approval": {
+    "numerator": 0,
+    "denominator": 480,
+    "rate": 0.0
+   }
+  },
+  "limits": [
+   "WAKALA does not decide visa eligibility and does not change approval rates.",
+   "Human review required by law or policy is kept in both scenarios (legally_required_review_pct).",
+   "Exception rates observed in the synthetic benchmark depend on its attack mix and are not a forecast."
+  ]
+ },
+ "run": {
+  "schema": "wakala-phase5-evidence-v1",
+  "label": "Synthetic prototype benchmark \u2014 not production government statistics.",
+  "dataset": {
+   "seed": 20260,
+   "size": 1200,
+   "version": "wakala-phase5-dataset-v1"
+  },
+  "dataset_sha256": "3fdb6a2824238a3c79abd8a0ac572f26e70e387e931cac7833266ea2214d3e8b",
+  "quick_mode": false,
+  "git": {
+   "commit": "f96d7aac3b139eaee02b1fbe9f5b550023c668b5",
+   "branch": "phase-5-security-benchmark",
+   "working_tree_dirty": false
+  },
+  "started_at": "2026-11-10T09:00:01.257526+00:00",
+  "finished_at": "2026-11-10T09:29:47.983316+00:00",
+  "phase_timings": {
+   "security_seconds": 714.9,
+   "latency_seconds": 125.7,
+   "stress_seconds": 911.0,
+   "recovery_seconds": 34.6
+  },
+  "reproduce": [
+   "cd backend",
+   ".venv\\Scripts\\python -m app.evaluation.run --seed 20260 --size 1200 --out ../evidence/phase5"
+  ],
+  "isolation": "Every configuration runs in its own temporary environment (fresh dev keys in a temp dir, in-memory or temp-file SQLite, random in-memory officer passwords). The server database and backend/.dev_keys are never used."
+ }
+}

@@ -243,6 +243,19 @@ the primary roster and are not default receivers; they act only after officer re
 **Restart.** Incidents, suspensions, approvals, officer sessions and assignments are in SQLite. On startup pending
 approvals past their TTL are expired; an approval never executes because the process came back.
 
+## Phase 5: evaluation harness
+
+| Module | Role |
+|---|---|
+| `evaluation/dataset.py` | Fixed-seed labeled requests: 20 categories, variant-specific stages, SHA-256 digest |
+| `evaluation/baseline.py` | Config A: role-only check on the claimed identity; own in-memory state only |
+| `evaluation/harness.py` | Configs B (direct mandates) and C (delegated); per-request fresh case, setup through the gateway, snapshot-based mutation check, observer capture for detection |
+| `evaluation/metrics.py` | Label × outcome metrics; every rate is `{numerator, denominator, rate}`; prevention and detection separate |
+| `evaluation/latency.py`, `stress.py`, `recovery_bench.py` | Timing distributions, one-dimension stress series, 9-step recovery under two declared conditions |
+| `evaluation/business.py` | Assumption-only calculator (legal-review floor in both scenarios) |
+| `evaluation/run.py`, `report.py` | Writes `evidence/phase5/*.json`, `REPORT.md`, `manifest.json` |
+| `api/evidence.py` | Serves the files verbatim plus a manifest check; `POST /business-model` computes from user assumptions |
+
 ## Why protected services must not trust agent instructions
 
 An agent's output is shaped by everything it reads, including attacker-controlled documents (fixture
