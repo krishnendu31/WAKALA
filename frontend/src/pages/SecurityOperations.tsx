@@ -185,7 +185,11 @@ function InvestigationPanel({ id, officer, onChanged }: { id: string; officer: O
   const [busy, setBusy] = useState(false);
   const can = (perm: string) => officer.permissions.includes(perm);
   const load = useCallback(async () => setInv(await officerRequest<Investigation>(`/api/officer/incidents/${id}`)), [id]);
-  useEffect(() => { load().catch((e) => setMsg({ ok: false, text: (e as Error).message })); }, [load]);
+  useEffect(() => {
+    load().catch((e) => setMsg({ ok: false, text: (e as Error).message }));
+    const id = setInterval(() => { load().catch(() => undefined); }, 4000);
+    return () => clearInterval(id);
+  }, [load]);
 
   async function act(label: string, path: string, body: unknown) {
     setBusy(true);
@@ -247,6 +251,7 @@ function InvestigationPanel({ id, officer, onChanged }: { id: string; officer: O
           <p className="mb-2 font-mono text-[11.5px] text-deny">{inv.violated_rules.join(" · ")}</p>
           <ul className="space-y-1.5">{inv.evidence.map((e) => (
             <li key={e.event_id} className="rounded-md border border-line bg-ink-900/60 px-2.5 py-1.5 font-mono text-[11px]">
+              {(e as any).plain_english && <span className="mb-1 block font-sans text-[12.5px] text-fg">{(e as any).plain_english}</span>}
               <span className={e.decision === "denied" ? "text-deny" : "text-fg-subtle"}>#{e.sequence} {e.decision}</span> <span className="text-fg">{e.action}</span>
               <span className="block text-fg-subtle">{e.actor} · target {String(e.evidence_metadata.target_resource ?? "—")} · {e.related_mandate} · {time(e.timestamp)}</span>
             </li>
@@ -344,7 +349,12 @@ export function SecurityOperations() {
     if (!hasOfficerToken()) return;
     officerRequest<Officer>("/api/officer/me").then(setOfficer).catch(() => setOfficer(null)).finally(() => setChecking(false));
   }, []);
-  useEffect(() => { if (officer) refresh(); }, [officer, refresh]);
+  useEffect(() => {  // live: the portal and this console read the same backend state
+    if (!officer) return;
+    refresh();
+    const id = setInterval(() => refresh(), 3000);
+    return () => clearInterval(id);
+  }, [officer, refresh]);
 
   async function signOut() {
     try { await officerRequest("/api/officer/session", "DELETE"); } catch { /* already expired */ }
@@ -433,7 +443,7 @@ export function SecurityOperations() {
             <Card>
               <CardHeader icon={ClipboardCheck} title="Human approval queue" subtitle="Held requests never execute while pending. Approval re-runs all current authorization checks." />
               {approvals.length === 0 ? <EmptyState icon={ClipboardCheck} title="No approvals" /> : (
-                <ul className="divide-y divide-line">{approvals.map((a) => (
+                <ul className="divide-y divide-line">{[...approvals].sort((x, y) => Number(y.status === "pending") - Number(x.status === "pending")).map((a) => (
                   <li key={a.approval_id} className="flex flex-wrap items-center gap-3 px-5 py-3">
                     <Badge tone={a.status === "pending" ? "warn" : a.status === "approved_executed" ? "trust" : a.status === "approved_denied" ? "deny" : "neutral"}>{a.status.replace(/_/g, " ")}</Badge>
                     <div className="min-w-0">

@@ -7,6 +7,7 @@ import { GovernmentWorkflow } from "@/pages/GovernmentWorkflow";
 import { SecurityOperations } from "@/pages/SecurityOperations";
 import { SecurityEvidence } from "@/pages/SecurityEvidence";
 import { DocumentShield } from "@/pages/DocumentShield";
+import { GovernmentPortal } from "@/pages/GovernmentPortal";
 import { DigitalMandates } from "@/pages/DigitalMandates";
 import { SecurityEvents } from "@/pages/SecurityEvents";
 import { CitizenTransparency } from "@/pages/CitizenTransparency";
@@ -21,6 +22,7 @@ export function App() {
       <Routes>
         <Route element={<AppLayout />}>
           <Route index element={<CommandCenter />} />
+          <Route path="portal" element={<GovernmentPortal />} />
           <Route path="soc" element={<SecurityOperations />} />
           <Route path="evidence" element={<SecurityEvidence />} />
           <Route path="documents" element={<DocumentShield />} />

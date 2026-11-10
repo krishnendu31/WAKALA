@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { FlaskConical, ShieldCheck } from "lucide-react";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useApi } from "@/hooks/useApi";
 import { API_BASE_URL } from "@/lib/api";
@@ -78,8 +78,10 @@ export function AppLayout() {
         </div>
 
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3" aria-label="Main">
-          <p className="eyebrow px-3 pb-2">Operations</p>
-          {NAV_ITEMS.map(({ path, label, labelAr, icon: Icon }) => (
+          {NAV_ITEMS.map(({ path, label, labelAr, icon: Icon, section }, i) => (<Fragment key={path}>
+            {(i === 0 || NAV_ITEMS[i - 1]!.section !== section) && (
+              <p className={clsx("eyebrow px-3 pb-2", i > 0 && "pt-5")}>{section === "demo" ? "Live demonstration" : "Platform"}</p>
+            )}
             <NavLink
               key={path}
               to={path}
@@ -106,7 +108,7 @@ export function AppLayout() {
                 </>
               )}
             </NavLink>
-          ))}
+          </Fragment>))}
         </nav>
 
         <div className="m-3 rounded-xl border border-warn/20 bg-warn-soft p-3.5">
