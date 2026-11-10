@@ -202,10 +202,21 @@ def test_unauthorized_model_requests_are_denied_without_state_change(api):
 def test_model_failures_are_reported_honestly(api):
     _, env = api
     r = P.start_request(env, "C-1001", "renew", client=FakeModel([TimeoutError("simulated timeout")]))
-    assert r["run"]["status"] == "model_error" and r["run"]["gateway_steps"] == []
-    assert env.cases.get(r["case_id"]).state.value == "CREATED"  # nothing advanced, nothing pretended
+    # Phase 7: a model that fails before any gateway step falls back to the LABELLED deterministic planner;
+    # the failed model run is kept as its own record, never hidden.
+    runs = [json.loads(x["payload"]) for x in env.db.query("SELECT payload FROM portal_runs WHERE case_id = ? ORDER BY created_at",
+                                                            (r["case_id"],))]
+    failed = next(x for x in runs if x["run_id"] == r["run"]["fallback_from"])
+    assert failed["status"] == "model_error" and failed["gateway_steps"] == []
+    assert r["run"]["mode"] == "deterministic-offline (fallback: model unavailable)" and r["run"]["status"] == "completed"
+    assert all(s["allowed"] for s in r["run"]["gateway_steps"])  # the fallback still goes through the gateway
     r = P.start_request(env, "C-1001", "renew", client=FakeModel([("refusal", [])]))
-    assert r["run"]["status"] == "model_refused"
+    assert r["run"]["status"] == "model_refused" and "fallback_from" not in r["run"]  # a refusal is respected, not overridden
+    assert env.cases.get(r["case_id"]).state.value == "CREATED"
+    # a model error AFTER a gateway step never triggers the fallback
+    r = P.start_request(env, "C-1001", "renew", client=FakeModel([("tool", [tool_use("register_renewal_case", {}, 1)]),
+                                                                  TimeoutError("later")]))
+    assert r["run"]["status"] == "model_error" and len(r["run"]["gateway_steps"]) == 1 and "fallback_from" not in r["run"]
     loop = FakeModel([("tool", [tool_use("get_case_status", {}, i)]) for i in range(50)])
     r = P.start_request(env, "C-1001", "renew", client=loop)
     assert r["run"]["status"] in ("stopped_turn_limit", "stopped_tool_budget") and len(loop.calls) <= A.MAX_MODEL_TURNS

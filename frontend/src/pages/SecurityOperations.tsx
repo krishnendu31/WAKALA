@@ -323,6 +323,7 @@ export function SecurityOperations() {
   const [officer, setOfficer] = useState<Officer | null>(null);
   const [checking, setChecking] = useState(hasOfficerToken());
   const [tab, setTab] = useState<Tab>("overview");
+  const [sessionEnded, setSessionEnded] = useState(false);
   const [ov, setOv] = useState<Overview | null>(null);
   const [cases, setCases] = useState<CaseRow[]>([]);
   const [incidents, setIncidents] = useState<Incident[]>([]);
@@ -343,7 +344,7 @@ export function SecurityOperations() {
       setOv(o); setCases(c); setIncidents(i); setApprovals(a); setAudit(au);
       invalidate("/api/audit", "/api/mandates", "/api/workflow");
     } catch (e) {
-      if (e instanceof ApiError && e.status === 401) setOfficer(null);
+      if (e instanceof ApiError && e.status === 401) { setOfficer(null); setSessionEnded(true); }
       else setError((e as Error).message);
     }
   }, []);
@@ -384,11 +385,16 @@ export function SecurityOperations() {
         actions={<SyntheticBadge />} />
       {checking && !officer ? <p className="text-[13px] text-fg-subtle">Checking session…</p> : !officer ? (
         <>
+          {sessionEnded && (
+            <p role="alert" className="rounded-xl border border-warn/40 bg-warn-soft px-4 py-2.5 text-[13px] text-warn">
+              Your officer session expired or was revoked, so the console stopped showing incident data. Sign in again to continue — no action was taken on your behalf.
+            </p>
+          )}
           <Notice tone="plan" icon={KeyRound} title="Officer console requires sign-in">
             Incident evidence and every intervention are served only to an authenticated officer session. The browser never
             holds administrative credentials; permissions and entity scope are enforced by the backend.
           </Notice>
-          <SignIn onSignedIn={setOfficer} />
+          <SignIn onSignedIn={(o) => { setSessionEnded(false); setOfficer(o); }} />
         </>
       ) : (
         <>

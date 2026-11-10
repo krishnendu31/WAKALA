@@ -94,8 +94,21 @@ def _run_agent(env: WakalaEnvironment, case_id: str, message: str, purpose: str,
     use_model = prefer_model and (cfg["configured"] or client is not None)
     run = AgentRun(case_id, f"model:anthropic:{cfg['model']}" if use_model else "deterministic-offline", purpose)
     orch = Orchestrator(env, case_id, run, document_reader=_policy_reader(env, case_id), origin="portal")
-    (run_model_agent(orch, message, client=client) if use_model else run_deterministic_agent(orch, message))
-    return _save_run(env, run)
+    if not use_model:
+        run_deterministic_agent(orch, message)
+        return _save_run(env, run)
+    run_model_agent(orch, message, client=client)
+    saved = _save_run(env, run)
+    # Demo resilience: if the model was unreachable/failed BEFORE any gateway step, fall back to the clearly labelled
+    # deterministic planner (same validation, signing and gateway). Never after a gateway step, so nothing is re-run
+    # or hidden; both runs are recorded.
+    if run.status in ("model_unavailable", "model_error") and not run.gateway_steps:
+        fb = AgentRun(case_id, "deterministic-offline (fallback: model unavailable)", purpose)
+        run_deterministic_agent(Orchestrator(env, case_id, fb, document_reader=_policy_reader(env, case_id), origin="portal"), message)
+        out = _save_run(env, fb)
+        out["fallback_from"] = saved["run_id"]
+        return out
+    return saved
 
 
 def start_request(env: WakalaEnvironment, citizen_ref: str = "C-1001", message: str = DEFAULT_REQUEST, *, prefer_model: bool = True,

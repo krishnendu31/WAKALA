@@ -124,6 +124,38 @@ function BusinessCalculator({ defaults }: { defaults: Summary }) {
 }
 
 // --- page -----------------------------------------------------------------------------------------------
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function RecoveryRegression() {
+  const st = useApi<any>("/api/evidence/recovery-regression");
+  if (st.status !== "success") return null;
+  const d = st.data;
+  const row = (pol: string, label: string) => {
+    const v = d.policies[pol]?.back_to_back_shared;
+    if (!v) return null;
+    return (
+      <tr className="border-b border-line/60">
+        <td className="px-4 py-2 text-fg">{label}</td>
+        <td className={clsx("px-4 py-2 font-semibold", v.recovery_success.rate < 1 ? "text-warn" : "text-trust")}>{v.recovery_success.numerator}/{v.recovery_success.denominator}</td>
+        <td className="px-4 py-2">{v.legitimate_requests_denied}</td><td className="px-4 py-2">{v.legitimate_requests_held_unexpectedly}</td>
+      </tr>
+    );
+  };
+  return (
+    <Card>
+      <CardHeader icon={LifeBuoy} title="Back-to-back recovery: diagnosed and fixed (Phase 6)" subtitle={`Identical traffic, only the monitoring policy changed · ${d.source} · commit ${d.commit}`} />
+      <div className="overflow-x-auto"><table className="w-full text-left text-[13px]">
+        <thead><tr className="border-b border-line text-[11px] uppercase tracking-wider text-fg-subtle"><th className="px-4 py-2">Monitoring policy</th><th className="px-4 py-2">Shared back-to-back recovered</th><th className="px-4 py-2">Legitimate denied</th><th className="px-4 py-2">Legitimate held unexpectedly</th></tr></thead>
+        <tbody>{row("phase5-original", "Phase 5 original (historical result above)")}{row("watch-2.0", "Behaviour Watch 2.0 (current)")}</tbody>
+      </table></div>
+      <p className="px-4 py-3 text-[12px] text-fg-subtle">
+        Cause: agent-wide REQUEST_RATE and REPEATED_DENIALS incidents were attached to whichever case the agent touched last, holding unrelated legitimate cases.
+        {d.repeatability && <> Repeatability ({d.repeatability.source}): shared runs {d.repeatability.shared_20_runs.join(", ")} of 20 · long run {d.repeatability.long_shared_50.numerator}/{d.repeatability.long_shared_50.denominator} · original policy re-run {d.repeatability.original_policy_shared_20.numerator}/20.</>}
+        {" "}Machine-speed synthetic benchmark; not proof of production reliability.
+      </p>
+    </Card>
+  );
+}
+
 export function SecurityEvidence() {
   const state = useApi<Summary>("/api/evidence/summary", { live: true });
   return (
@@ -184,10 +216,12 @@ function Evidence({ s }: { s: Summary }) {
         <Tile icon={ShieldCheck} label="Unauthorized executed · C" value={pct(C.unauthorized_operations_executed)} note={frac(C.unauthorized_operations_executed)} tone={C.unauthorized_operations_executed.numerator ? "deny" : "trust"} />
         <Tile icon={CheckCircle2} label="Legitimate allowed · C" value={pct(C.legitimate_operations_allowed)} note={frac(C.legitimate_operations_allowed)} tone={C.legitimate_incorrectly_denied.numerator ? "warn" : "trust"} />
         <Tile icon={AlertTriangle} label="False denial rate · C" value={pct(C.legitimate_incorrectly_denied)} note={`B: ${pct(cfg.B.legitimate_incorrectly_denied)} (${frac(cfg.B.legitimate_incorrectly_denied)})`} tone={C.legitimate_incorrectly_denied.numerator ? "warn" : "trust"} />
-        <Tile icon={LifeBuoy} label="Recovery success" value={pct(rec.independent_incidents.recovery_success)}
+        <Tile icon={LifeBuoy} label="Recovery success (Phase 5 run)" value={pct(rec.independent_incidents.recovery_success)}
           note={`independent ${frac(rec.independent_incidents.recovery_success)} · back-to-back ${pct(rec.back_to_back_shared.recovery_success)} (${frac(rec.back_to_back_shared.recovery_success)})`}
           tone={rec.back_to_back_shared.recovery_success.rate < 1 ? "warn" : "trust"} />
       </div>
+
+      <RecoveryRegression />
 
       <Card>
         <CardHeader icon={AlertTriangle} title="Failures and unexpected results" subtitle="Listed from the result files — never hidden" right={<Badge tone={problems.length ? "warn" : "trust"}>{problems.length} item(s)</Badge>} />

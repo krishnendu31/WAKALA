@@ -53,6 +53,32 @@ def summary(request: Request) -> dict[str, Any]:
     return {**data, "integrity": _integrity(request)}
 
 
+@router.get("/recovery-regression")
+def recovery_regression(request: Request) -> dict[str, Any]:
+    """Phase 6 before/after recovery evidence (identical traffic) and, if generated, Phase 7 repeatability.
+    Read from the committed evidence files; the Phase 5 figures above stay the historical record."""
+    root = _dir(request).parent
+    reg = root / "phase6" / "recovery_regression.json"
+    if not reg.is_file():
+        raise HTTPException(status_code=404, detail={"code": "EVIDENCE_NOT_GENERATED",
+                                                     "message": "Run: python -m app.evaluation.watch_regression"})
+    d = json.loads(reg.read_text(encoding="utf-8"))
+    out: dict[str, Any] = {"generated_at": d["generated_at"], "commit": d["git"]["commit"][:10], "dirty": d["git"]["dirty"],
+                           "source": "evidence/phase6/recovery_regression.json", "policies": {}}
+    for pol, conds in d["policies"].items():
+        out["policies"][pol] = {c: {"recovery_success": v["recovery_success"],
+                                    "legitimate_requests_denied": v["legitimate_impact"]["legitimate_requests_denied"],
+                                    "legitimate_requests_held_unexpectedly": v["legitimate_impact"]["legitimate_requests_held_unexpectedly"]}
+                                for c, v in conds.items()}
+    rep = root / "phase7" / "recovery_repeatability.json"
+    if rep.is_file():
+        r = json.loads(rep.read_text(encoding="utf-8"))
+        out["repeatability"] = {"source": "evidence/phase7/recovery_repeatability.json", "generated_at": r["generated_at"],
+                                "shared_20_runs": [x["shared_20"]["recovered"]["numerator"] for x in r["repeats"]],
+                                "long_shared_50": r["long_shared_50"]["recovered"], "original_policy_shared_20": r["original_policy_shared_20"]["recovered"]}
+    return out
+
+
 @router.get("/report", response_class=PlainTextResponse)
 def report(request: Request) -> str:
     return _read(request, "REPORT.md").decode("utf-8")
