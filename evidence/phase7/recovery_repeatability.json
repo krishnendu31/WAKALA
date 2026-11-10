@@ -1,0 +1,441 @@
+{
+ "generated_at": "2026-11-10T15:53:55.424801+00:00",
+ "git": {
+  "commit": "aa701f268b3e55aff57c22f5a22a706bd48e321d",
+  "branch": "phase-7-final-validation",
+  "dirty": false
+ },
+ "repeats": [
+  {
+   "repeat": 1,
+   "shared_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 2,
+     "revoked": 18,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 8.0
+   },
+   "independent_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 20,
+     "revoked": 0,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 25.93
+   }
+  },
+  {
+   "repeat": 2,
+   "shared_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 2,
+     "revoked": 18,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 7.83
+   },
+   "independent_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 20,
+     "revoked": 0,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 25.87
+   }
+  },
+  {
+   "repeat": 3,
+   "shared_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 2,
+     "revoked": 18,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 7.33
+   },
+   "independent_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 20,
+     "revoked": 0,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 24.97
+   }
+  },
+  {
+   "repeat": 4,
+   "shared_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 2,
+     "revoked": 18,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 7.3
+   },
+   "independent_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 20,
+     "revoked": 0,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 25.77
+   }
+  },
+  {
+   "repeat": 5,
+   "shared_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 2,
+     "revoked": 18,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 7.46
+   },
+   "independent_20": {
+    "recovered": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 20,
+     "revoked": 0,
+     "none": 0
+    },
+    "unrelated_case_completed": 20,
+    "attack_denied": 20,
+    "attack_not_executed": 20,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 24.71
+   }
+  }
+ ],
+ "long_shared_50": {
+  "recovered": {
+   "numerator": 50,
+   "denominator": 50,
+   "rate": 1.0
+  },
+  "legitimate_impact": {
+   "attack_requests_sent": 50,
+   "attack_requests_denied": 50,
+   "designed_holds_expected": 50,
+   "holds_recorded": 50,
+   "legitimate_requests_held_unexpectedly": 0,
+   "legitimate_requests_denied": 0,
+   "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+  },
+  "containment_actions": {
+   "suspended": 2,
+   "revoked": 48,
+   "none": 0
+  },
+  "unrelated_case_completed": 50,
+  "attack_denied": 50,
+  "attack_not_executed": 50,
+  "failures": [],
+  "audit_chain_valid": true,
+  "wall_seconds": 21.96
+ },
+ "original_policy_shared_20": {
+  "recovered": {
+   "numerator": 2,
+   "denominator": 20,
+   "rate": 0.1
+  },
+  "legitimate_impact": {
+   "attack_requests_sent": 3,
+   "attack_requests_denied": 3,
+   "designed_holds_expected": 3,
+   "holds_recorded": 13,
+   "legitimate_requests_held_unexpectedly": 10,
+   "legitimate_requests_denied": 24,
+   "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+  },
+  "containment_actions": {
+   "suspended": 2,
+   "revoked": 1,
+   "none": 0
+  },
+  "unrelated_case_completed": 2,
+  "attack_denied": 3,
+  "attack_not_executed": 3,
+  "failures": [
+   {
+    "incident": 3,
+    "failed_at": "9_unrelated_case_unaffected",
+    "cause": null
+   },
+   {
+    "incident": 4,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "legitimate setup request held for approval: REQUEST_RATE"
+   },
+   {
+    "incident": 5,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "legitimate setup request held for approval: REQUEST_RATE"
+   },
+   {
+    "incident": 6,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "legitimate setup request held for approval: REQUEST_RATE"
+   },
+   {
+    "incident": 7,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "legitimate setup request held for approval: REQUEST_RATE"
+   },
+   {
+    "incident": 8,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "legitimate setup request held for approval: REQUEST_RATE"
+   },
+   {
+    "incident": 9,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "legitimate setup request held for approval: REQUEST_RATE"
+   },
+   {
+    "incident": 10,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 11,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 12,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 13,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 14,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 15,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 16,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 17,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 18,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 19,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   },
+   {
+    "incident": 20,
+    "failed_at": "1_valid_case_initiated",
+    "cause": "setup request denied"
+   }
+  ],
+  "audit_chain_valid": true,
+  "wall_seconds": 3.31
+ },
+ "note": "Machine-speed, single-process, synthetic. Repeated identical runs show reproducibility of this benchmark, not production reliability."
+}
