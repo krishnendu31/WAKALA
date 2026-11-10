@@ -134,14 +134,81 @@ def reinstate_mandate(env: WakalaEnvironment, p: OfficerPrincipal, mandate_id: s
     return changed
 
 
-def revoke_mandate_as_officer(env: WakalaEnvironment, p: OfficerPrincipal, mandate_id: str, reason: str) -> list[str]:
+def revoke_mandate_as_officer(env: WakalaEnvironment, p: OfficerPrincipal, mandate_id: str, reason: str,
+                              cascade: bool = True) -> list[str]:
+    """cascade=True: the mandate AND its dependent (child) delegations; False: this single mandate only
+    (its children still fail verification on use, because chain checks require every ancestor to be valid)."""
     _require(p, "mandates.revoke")
     m = _mandate_scope(env, p, mandate_id)
     from app.services.revocation import revoke_mandate
-    revoked = revoke_mandate(env, mandate_id, reason, actor=p.officer_id)
+    revoked = revoke_mandate(env, mandate_id, reason, actor=p.officer_id, cascade=cascade)
     _audit(env, p, "mandate_revoke", {"mandate_id": mandate_id, "revoked_count": len(revoked), "case_id": m.case_id,
-                                      "reason": reason[:200]}, mandate_id)
+                                      "cascade": cascade, "reason": reason[:200]}, mandate_id)
     return revoked
+
+
+def revoke_case_authority_as_officer(env: WakalaEnvironment, p: OfficerPrincipal, case_id: str, reason: str) -> list[str]:
+    """Every mandate bound to ONE citizen case (roots and their delegations). Other cases are untouched."""
+    _require(p, "cases.revoke_authority")
+    _case_scope(env, p, case_id)
+    from app.services.revocation import revoke_case_authority
+    revoked = revoke_case_authority(env, case_id, reason, actor=p.officer_id)
+    _audit(env, p, "case_revoke_authority", {"case_id": case_id, "revoked_count": len(revoked), "reason": reason[:200]})
+    return revoked
+
+
+def suspend_agent_as_officer(env: WakalaEnvironment, p: OfficerPrincipal, agent_id: str, reason: str) -> str:
+    """Agent identity scope (every case): reversible suspension of the registered identity. Agent-wide action is
+    always an explicit officer decision, never automatic."""
+    _require(p, "agents.suspend")
+    if env.repo.get_agent(agent_id) is None:
+        raise InterventionError("AGENT_NOT_FOUND", 404)
+    env.repo.set_agent_status(agent_id, "suspended", reason[:200])
+    _audit(env, p, "agent_suspend", {"agent_id": agent_id, "reason": reason[:200]})
+    return "suspended"
+
+
+def revocation_preview(env: WakalaEnvironment, p: OfficerPrincipal, scope: str, target: str, cascade: bool = True) -> dict[str, Any]:
+    """Blast radius computed from stored records BEFORE any change. Read-only."""
+    _require(p, "cases.read")
+    mandates: list[str] = []
+    if scope == "mandate":
+        if env.mandates.get(target) is None:
+            raise InterventionError("MANDATE_NOT_FOUND", 404)
+        mandates = [target, *(env.mandates.descendants(target) if cascade else [])]
+    elif scope == "case":
+        case = env.cases.get(target)
+        if case is None:
+            raise InterventionError("CASE_NOT_FOUND", 404)
+        for root in case.mandate_refs.values():
+            mandates += [root, *env.mandates.descendants(root)]
+    elif scope == "agent":
+        if env.repo.get_agent(target) is None:
+            raise InterventionError("AGENT_NOT_FOUND", 404)
+    else:
+        raise InterventionError("UNKNOWN_SCOPE", 422)
+    affected_cases: dict[str, str] = {}
+    for mid in mandates:
+        m = env.mandates.get(mid)
+        if m is not None and m.case_id:
+            c = env.cases.get(m.case_id)
+            affected_cases[m.case_id] = c.citizen_ref if c else "?"
+    if scope == "agent":
+        for c in env.cases.list(500):
+            if target in c.mandate_refs or target in c.task_assignments.values():
+                affected_cases[c.case_id] = c.citizen_ref
+    active = [c for c in env.cases.list(500) if c.state.value not in ("COMPLETED", "FAILED")]
+    unaffected = [c.case_id for c in active if c.case_id not in affected_cases]
+    already = set(env.mandates.revoked_ids())
+    return {"scope": scope, "target": target, "cascade": cascade if scope == "mandate" else None,
+            "mandates": [{"mandate_id": m, "already_revoked": m in already,
+                          "agent_id": (env.mandates.get(m).agent_id if env.mandates.get(m) else None),
+                          "delegated": bool(env.mandates.get(m) and env.mandates.get(m).parent_mandate_id)} for m in mandates],
+            "affected_cases": [{"case_id": k, "citizen_ref": v} for k, v in affected_cases.items()],
+            "unaffected_active_cases": len(unaffected),
+            "reversible": scope == "agent",
+            "version_scope": "not available: agent passports carry no deployment version cryptographically bound to the "
+                             "identity key, so revoking by version would trust an agent-supplied string"}
 
 
 # --- cases ---------------------------------------------------------------------------------

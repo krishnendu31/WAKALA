@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { BehaviourWatch } from "@/components/BehaviourWatch";
+import { PreciseRevocation } from "@/components/PreciseRevocation";
 import { Badge, Card, CardHeader, EmptyState, Notice, PageHeader, SyntheticBadge } from "@/components/ui";
 import { invalidate, useApi } from "@/hooks/useApi";
 import { ApiError, apiPost, hasOfficerToken, officerRequest, setOfficerToken } from "@/lib/api";
@@ -314,7 +315,7 @@ function InvestigationPanel({ id, officer, onChanged }: { id: string; officer: O
 }
 
 // --- main page ------------------------------------------------------------------------------------------
-type Tab = "overview" | "watch" | "incidents" | "approvals" | "recovery" | "oversight" | "audit";
+type Tab = "overview" | "watch" | "incidents" | "approvals" | "revocation" | "recovery" | "oversight" | "audit";
 
 export function SecurityOperations() {
   const caps = useApi<SystemCapabilities>("/api/system/capabilities", { live: true });
@@ -372,7 +373,7 @@ export function SecurityOperations() {
   const decide = (id: string, approve: boolean) => step(id, async () => { await officerRequest(`/api/officer/approvals/${id}/${approve ? "approve" : "reject"}`, "POST", { note: approve ? "approved after review" : "rejected" }); });
   const compare = () => step("compare", async () => { setComparison(await apiPost<Record<string, any>>("/api/workflow/oversight-comparison", { clean_cases: 4, violating_cases: 1, minutes_per_review: 2 })); }); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-  const TABS: [Tab, string, LucideIcon][] = [["overview", "Overview", Activity], ["watch", "Behaviour Watch", Radar], ["incidents", "Incidents", ShieldAlert], ["approvals", "Approvals", ClipboardCheck],
+  const TABS: [Tab, string, LucideIcon][] = [["overview", "Overview", Activity], ["watch", "Behaviour Watch", Radar], ["incidents", "Incidents", ShieldAlert], ["approvals", "Approvals", ClipboardCheck], ["revocation", "Revocation", Ban],
     ["recovery", "Recovery", RefreshCw], ["oversight", "Oversight comparison", Scale], ["audit", "Officer audit", History]];
   const recoveryCases = run ? [run.case, ...run.related_cases] : [];
 
@@ -416,6 +417,7 @@ export function SecurityOperations() {
 
           {tab === "overview" && <OverviewPanel ov={ov} cases={cases} />}
           {tab === "watch" && <BehaviourWatch />}
+          {tab === "revocation" && <PreciseRevocation />}
 
           {tab === "incidents" && (
             <div className="grid gap-6 2xl:grid-cols-[380px_1fr]">

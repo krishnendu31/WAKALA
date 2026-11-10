@@ -241,9 +241,30 @@ def reinstate(mandate_id: MandatePath, body: ReasonBody, env: Env, p: Officer) -
     return {"reinstated": _run(iv.reinstate_mandate, env, p, mandate_id, body.reason)}
 
 
+class RevokeBody(ReasonBody):
+    cascade: bool = True
+
+
 @router.post("/mandates/{mandate_id}/revoke")
-def revoke(mandate_id: MandatePath, body: ReasonBody, env: Env, p: Officer) -> dict[str, Any]:
-    return {"revoked": _run(iv.revoke_mandate_as_officer, env, p, mandate_id, body.reason)}
+def revoke(mandate_id: MandatePath, body: RevokeBody, env: Env, p: Officer) -> dict[str, Any]:
+    return {"revoked": _run(iv.revoke_mandate_as_officer, env, p, mandate_id, body.reason, body.cascade)}
+
+
+@router.post("/cases/{case_id}/revoke-authority")
+def revoke_case(case_id: CasePath, body: ReasonBody, env: Env, p: Officer) -> dict[str, Any]:
+    return {"revoked": _run(iv.revoke_case_authority_as_officer, env, p, case_id, body.reason)}
+
+
+@router.post("/agents/{agent_id}/suspend")
+def suspend_agent(agent_id: Annotated[str, Path(pattern=r"^AGT-[A-Z]{3}-\d{3}$")], body: ReasonBody, env: Env, p: Officer) -> dict[str, Any]:
+    return {"status": _run(iv.suspend_agent_as_officer, env, p, agent_id, body.reason)}
+
+
+@router.get("/revocation/preview")
+def revocation_preview(scope: str, target: str, env: Env, p: Officer, cascade: bool = True) -> dict[str, Any]:
+    if scope not in ("mandate", "case", "agent") or len(target) > 40:
+        raise HTTPException(status_code=422, detail={"code": "INVALID_SCOPE", "message": "scope must be mandate, case or agent."})
+    return _run(iv.revocation_preview, env, p, scope, target, cascade)
 
 
 # --- cases ------------------------------------------------------------------------------------------------
