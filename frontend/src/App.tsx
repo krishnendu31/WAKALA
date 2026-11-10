@@ -15,6 +15,8 @@ import { DigitalMandates } from "@/pages/DigitalMandates";
 import { SecurityEvents } from "@/pages/SecurityEvents";
 import { CitizenTransparency } from "@/pages/CitizenTransparency";
 import { SimulationLab } from "@/pages/SimulationLab";
+import { Welcome } from "@/pages/Welcome";
+import { GuidedDemo } from "@/pages/GuidedDemo";
 
 // React Flow is only needed on one page; load it on demand.
 const DelegationNetwork = lazy(() => import("@/pages/DelegationNetwork"));
@@ -23,8 +25,11 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* First-time visitors: welcome page and a focused guided demo, without console navigation. */}
+        <Route index element={<Welcome />} />
+        <Route path="demo" element={<GuidedDemo />} />
         <Route element={<AppLayout />}>
-          <Route index element={<CommandCenter />} />
+          <Route path="command-center" element={<CommandCenter />} />
           <Route path="portal" element={<GovernmentPortal />} />
           <Route path="attack-lab" element={<AttackLab />} />
           <Route path="shadow" element={<ShadowMode />} />

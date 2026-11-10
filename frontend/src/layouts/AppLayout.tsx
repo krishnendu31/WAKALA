@@ -7,7 +7,7 @@ import { API_BASE_URL } from "@/lib/api";
 import { NAV_ITEMS } from "@/lib/navigation";
 import type { Health, SystemCapabilities } from "@/types/api";
 
-function BrandMark() {
+export function BrandMark() {
   return (
     <svg viewBox="0 0 32 32" className="size-9 shrink-0" aria-hidden>
       <rect width="32" height="32" rx="9" fill="#0e4d48" />
