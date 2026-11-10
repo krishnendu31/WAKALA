@@ -1,0 +1,216 @@
+{
+ "total": 60.0,
+ "shots": [
+  {
+   "id": "s1_title",
+   "scene": "s1",
+   "start": 0.0,
+   "visible": 2.2
+  },
+  {
+   "id": "s1_welcome",
+   "scene": "s1",
+   "start": 2.2,
+   "visible": 2.8
+  },
+  {
+   "id": "s2_normal",
+   "scene": "s2",
+   "start": 5.0,
+   "visible": 4.4
+  },
+  {
+   "id": "s2_deleg",
+   "scene": "s2",
+   "start": 9.4,
+   "visible": 4.6
+  },
+  {
+   "id": "s3_block",
+   "scene": "s3",
+   "start": 14.0,
+   "visible": 6.0
+  },
+  {
+   "id": "s3_facts",
+   "scene": "s3",
+   "start": 20.0,
+   "visible": 5.0
+  },
+  {
+   "id": "s4_watch",
+   "scene": "s4",
+   "start": 25.0,
+   "visible": 3.2
+  },
+  {
+   "id": "s4_invest",
+   "scene": "s4",
+   "start": 28.2,
+   "visible": 3.4
+  },
+  {
+   "id": "s4_officer",
+   "scene": "s4",
+   "start": 31.6,
+   "visible": 3.4
+  },
+  {
+   "id": "s5_recovered",
+   "scene": "s5",
+   "start": 35.0,
+   "visible": 3.2
+  },
+  {
+   "id": "s5_portal",
+   "scene": "s5",
+   "start": 38.2,
+   "visible": 2.9
+  },
+  {
+   "id": "s5_receipt",
+   "scene": "s5",
+   "start": 41.1,
+   "visible": 2.9
+  },
+  {
+   "id": "s6_lab",
+   "scene": "s6",
+   "start": 44.0,
+   "visible": 3.6
+  },
+  {
+   "id": "s6_doc",
+   "scene": "s6",
+   "start": 47.6,
+   "visible": 3.4
+  },
+  {
+   "id": "s7_shadow",
+   "scene": "s7",
+   "start": 51.0,
+   "visible": 3.0
+  },
+  {
+   "id": "s7_evidence",
+   "scene": "s7",
+   "start": 54.0,
+   "visible": 3.0
+  },
+  {
+   "id": "s8_close",
+   "scene": "s8",
+   "start": 57.0,
+   "visible": 3.0
+  }
+ ],
+ "narration": [
+  {
+   "file": "s1_1.wav",
+   "start": 0.536,
+   "length": 3.628
+  },
+  {
+   "file": "s2_1.wav",
+   "start": 5.921,
+   "length": 6.858
+  },
+  {
+   "file": "s3_1.wav",
+   "start": 14.752,
+   "length": 5.744
+  },
+  {
+   "file": "s3_2.wav",
+   "start": 20.746,
+   "length": 3.202
+  },
+  {
+   "file": "s4_1.wav",
+   "start": 25.8,
+   "length": 8.1
+  },
+  {
+   "file": "s5_1.wav",
+   "start": 35.89,
+   "length": 6.921
+  },
+  {
+   "file": "s6_1.wav",
+   "start": 44.35,
+   "length": 6.258
+  },
+  {
+   "file": "s7_1.wav",
+   "start": 51.35,
+   "length": 5.355
+  }
+ ],
+ "subtitles": [
+  {
+   "start": 0.536,
+   "end": 4.164,
+   "text": "When government AI can act, who verifies its authority?"
+  },
+  {
+   "start": 5.921,
+   "end": 8.38,
+   "text": "WAKALA verifies each agent's identity,"
+  },
+  {
+   "start": 8.38,
+   "end": 12.779,
+   "text": "and limits every delegated action to the citizen's specific request."
+  },
+  {
+   "start": 14.752,
+   "end": 17.298,
+   "text": "In a separate, deliberately triggered test,"
+  },
+  {
+   "start": 17.298,
+   "end": 20.496,
+   "text": "the Insurance Agent asks for another citizen's record."
+  },
+  {
+   "start": 20.746,
+   "end": 23.948,
+   "text": "WAKALA blocks it before any protected data is returned."
+  },
+  {
+   "start": 25.8,
+   "end": 30.779,
+   "text": "Behaviour Watch raises an incident. A verified officer contains it,"
+  },
+  {
+   "start": 30.779,
+   "end": 33.9,
+   "text": "and reassigns the task to a standby agent."
+  },
+  {
+   "start": 35.89,
+   "end": 40.247,
+   "text": "The legitimate service continues, unrelated citizens are unaffected,"
+  },
+  {
+   "start": 40.247,
+   "end": 42.81,
+   "text": "and every completed action is traceable."
+  },
+  {
+   "start": 44.35,
+   "end": 46.892,
+   "text": "Attack Lab runs eight attack scenarios."
+  },
+  {
+   "start": 46.892,
+   "end": 50.608,
+   "text": "Document Shield quarantines hidden document instructions."
+  },
+  {
+   "start": 51.35,
+   "end": 56.705,
+   "text": "Synthetic benchmarks measure enforcement. Shadow Mode tests policies safely."
+  }
+ ]
+}

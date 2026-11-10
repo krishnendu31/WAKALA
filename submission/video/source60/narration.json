@@ -1,0 +1,80 @@
+{
+ "voice_note": "Local Windows text-to-speech (Microsoft Zira). No online voice service. A human recording is recommended.",
+ "scenes": [
+  {
+   "id": "s1",
+   "start": 0,
+   "end": 5,
+   "title": "Who authorizes autonomous AI?",
+   "lines": [
+    "When government AI can act, who verifies its authority?"
+   ],
+   "rate": -1
+  },
+  {
+   "id": "s2",
+   "start": 5,
+   "end": 14,
+   "title": "Verified agent collaboration",
+   "lines": [
+    "WAKALA verifies each agent's identity, and limits every delegated action to the citizen's specific request."
+   ],
+   "rate": -1
+  },
+  {
+   "id": "s3",
+   "start": 14,
+   "end": 25,
+   "title": "Attack blocked at the gateway",
+   "lines": [
+    "In a separate, deliberately triggered test, the Insurance Agent asks for another citizen's record.",
+    "WAKALA blocks it before any protected data is returned."
+   ]
+  },
+  {
+   "id": "s4",
+   "start": 25,
+   "end": 35,
+   "title": "Behaviour Watch and human intervention",
+   "lines": [
+    "Behaviour Watch raises an incident. A verified officer contains it, and reassigns the task to a standby agent."
+   ],
+   "rate": -1
+  },
+  {
+   "id": "s5",
+   "start": 35,
+   "end": 44,
+   "title": "Safe recovery and accountability",
+   "lines": [
+    "The legitimate service continues, unrelated citizens are unaffected, and every completed action is traceable."
+   ],
+   "rate": -1
+  },
+  {
+   "id": "s6",
+   "start": 44,
+   "end": 51,
+   "title": "Attack Lab and Document Shield",
+   "lines": [
+    "Attack Lab runs eight attack scenarios. Document Shield quarantines hidden document instructions."
+   ]
+  },
+  {
+   "id": "s7",
+   "start": 51,
+   "end": 57,
+   "title": "Shadow Mode and evidence",
+   "lines": [
+    "Synthetic benchmarks measure enforcement. Shadow Mode tests policies safely."
+   ]
+  },
+  {
+   "id": "s8",
+   "start": 57,
+   "end": 60,
+   "title": "WAKALA",
+   "lines": []
+  }
+ ]
+}

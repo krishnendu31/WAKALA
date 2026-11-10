@@ -1,0 +1,58 @@
+﻿[
+    {
+        "clip":  "s1_1",
+        "expected_words":  9,
+        "matched":  7,
+        "ratio":  0.78,
+        "heard":  "When governments day I can act who verifies its authority"
+    },
+    {
+        "clip":  "s2_1",
+        "expected_words":  15,
+        "matched":  12,
+        "ratio":  0.8,
+        "heard":  "Block all of the revise each agent\u0027s identity and limits every delegated action to the citizens specific request"
+    },
+    {
+        "clip":  "s3_1",
+        "expected_words":  14,
+        "matched":  13,
+        "ratio":  0.93,
+        "heard":  "In a separate deliberately triggered test the insurance agent asks for another citizens record"
+    },
+    {
+        "clip":  "s3_2",
+        "expected_words":  9,
+        "matched":  6,
+        "ratio":  0.67,
+        "heard":  "Block all a block said before any protected data is returned"
+    },
+    {
+        "clip":  "s4_1",
+        "expected_words":  18,
+        "matched":  17,
+        "ratio":  0.94,
+        "heard":  "Behavior watch raises an incident B verified officer contains it and reassigns the task to a standby agent"
+    },
+    {
+        "clip":  "s5_1",
+        "expected_words":  14,
+        "matched":  14,
+        "ratio":  1,
+        "heard":  "The legitimate service continues unrelated citizens are unaffected and every completed action is traceable"
+    },
+    {
+        "clip":  "s6_1",
+        "expected_words":  12,
+        "matched":  12,
+        "ratio":  1,
+        "heard":  "But act lab runs eight attack scenarios document shield quarantines hidden document instructions"
+    },
+    {
+        "clip":  "s7_1",
+        "expected_words":  9,
+        "matched":  8,
+        "ratio":  0.89,
+        "heard":  "Synthetic benchmarks measure enforcement shadow mode tests policy safely"
+    }
+]

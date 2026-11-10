@@ -1,0 +1,51 @@
+1
+00:00:00,536 --> 00:00:04,164
+When government AI can act, who verifies its authority?
+
+2
+00:00:05,921 --> 00:00:08,380
+WAKALA verifies each agent's identity,
+
+3
+00:00:08,380 --> 00:00:12,779
+and limits every delegated action to the citizen's specific request.
+
+4
+00:00:14,752 --> 00:00:17,298
+In a separate, deliberately triggered test,
+
+5
+00:00:17,298 --> 00:00:20,496
+the Insurance Agent asks for another citizen's record.
+
+6
+00:00:20,746 --> 00:00:23,948
+WAKALA blocks it before any protected data is returned.
+
+7
+00:00:25,800 --> 00:00:30,779
+Behaviour Watch raises an incident. A verified officer contains it,
+
+8
+00:00:30,779 --> 00:00:33,900
+and reassigns the task to a standby agent.
+
+9
+00:00:35,890 --> 00:00:40,247
+The legitimate service continues, unrelated citizens are unaffected,
+
+10
+00:00:40,247 --> 00:00:42,810
+and every completed action is traceable.
+
+11
+00:00:44,350 --> 00:00:46,892
+Attack Lab runs eight attack scenarios.
+
+12
+00:00:46,892 --> 00:00:50,608
+Document Shield quarantines hidden document instructions.
+
+13
+00:00:51,350 --> 00:00:56,705
+Synthetic benchmarks measure enforcement. Shadow Mode tests policies safely.

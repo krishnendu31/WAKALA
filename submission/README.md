@@ -21,6 +21,7 @@ WAKALA is an independent authorization gateway for government AI agents. It prov
 | 6 | `05_Demo_Runbook.md` · `pdf/05_Demo_Runbook.pdf` | Live demo steps with real routes and buttons, plus fallbacks |
 | 7 | `06_Judge_QA.md` · `pdf/06_Judge_QA.pdf` | 20 prepared answers |
 | 8 | `video/WAKALA_Final_Demo_1080p.mp4` · `video/WAKALA_Final_Demo_Silent.mp4` | 1:38 demo video of one real run (narrated with a local synthetic voice + subtitles; silent version for live narration). Script, storyboard, SRT and validation in `video/` |
+| 9 | `video/WAKALA_60s_Final.mp4` · `video/WAKALA_60s_Silent.mp4` | Exactly 60 s film of ten real features (one demo session; synthetic voice + subtitles; silent version). Narration, storyboard, SRT and verification in `video/` |
 | — | `screenshots/` | 10 genuine captures of the running prototype (`CAPTURE_LOG.json` records the run) |
 | — | `source/` | Deck and document build scripts and the shared print stylesheet |
 

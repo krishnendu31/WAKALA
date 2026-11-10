@@ -1,0 +1,530 @@
+{
+ "shots": [
+  {
+   "id": "s1_title",
+   "stage": {
+    "kind": "title",
+    "big": "WHO AUTHORIZES AUTONOMOUS AI?"
+   },
+   "scene": "s1",
+   "start": 0.0,
+   "v": 2.2,
+   "d": 2.6
+  },
+  {
+   "id": "s1_welcome",
+   "stage": {
+    "kind": "app",
+    "img": "capture/w01_welcome.png",
+    "css": {
+     "w": 1440,
+     "h": 942
+    },
+    "crop": {
+     "x": 100,
+     "y": 60,
+     "w": 1240
+    },
+    "focus": [],
+    "chip": "Real prototype",
+    "head": "WHO AUTHORIZES AUTONOMOUS AI?",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s1",
+   "start": 2.2,
+   "v": 2.8,
+   "d": 3.1999999999999997
+  },
+  {
+   "id": "s2_normal",
+   "stage": {
+    "kind": "app",
+    "img": "capture/g02_normal_done.png",
+    "css": {
+     "w": 1440,
+     "h": 1073
+    },
+    "crop": {
+     "x": 70,
+     "y": 200,
+     "w": 1300
+    },
+    "focus": [
+     {
+      "x": 730,
+      "y": 254,
+      "w": 590,
+      "h": 684.25,
+      "tone": "",
+      "pad": 10
+     }
+    ],
+    "chip": "Verified agent identity",
+    "head": "Case-bound authority \u2014 6 signed agent actions checked and allowed",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s2",
+   "start": 5.0,
+   "v": 4.4,
+   "d": 4.800000000000001
+  },
+  {
+   "id": "s2_deleg",
+   "stage": {
+    "kind": "app",
+    "img": "capture/d04_delegation.png",
+    "css": {
+     "w": 1440,
+     "h": 1500
+    },
+    "crop": {
+     "x": 650,
+     "y": 470,
+     "w": 780
+    },
+    "focus": [
+     {
+      "x": 688,
+      "y": 800,
+      "w": 700,
+      "h": 82,
+      "tone": "",
+      "pad": 6
+     }
+    ],
+    "chip": "Secure delegation",
+    "head": "Residency Agent \u2192 Insurance Agent, for Mariam's case only",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s2",
+   "start": 9.4,
+   "v": 4.6,
+   "d": 5.0
+  },
+  {
+   "id": "s3_block",
+   "stage": {
+    "kind": "app",
+    "img": "capture/g05_blocked.png",
+    "css": {
+     "w": 1440,
+     "h": 945
+    },
+    "crop": {
+     "x": 100,
+     "y": 170,
+     "w": 1240
+    },
+    "focus": [
+     {
+      "x": 120,
+      "y": 254,
+      "w": 1200,
+      "h": 515,
+      "tone": "deny",
+      "pad": 6
+     }
+    ],
+    "chip": "Separate test case",
+    "head": "UNAUTHORIZED ACCESS BLOCKED",
+    "tone": "deny",
+    "headTone": "deny"
+   },
+   "scene": "s3",
+   "start": 14.0,
+   "v": 6.0,
+   "d": 6.4
+  },
+  {
+   "id": "s3_facts",
+   "stage": {
+    "kind": "app",
+    "img": "capture/g05_blocked.png",
+    "css": {
+     "w": 1440,
+     "h": 945
+    },
+    "crop": {
+     "x": 120,
+     "y": 260,
+     "w": 1200
+    },
+    "focus": [
+     {
+      "x": 146,
+      "y": 438,
+      "w": 1148,
+      "h": 143.5,
+      "tone": "navy",
+      "pad": 10
+     }
+    ],
+    "chip": "Gateway decision",
+    "head": "Valid agent. Invalid action. No protected data returned.",
+    "tone": "deny",
+    "headTone": ""
+   },
+   "scene": "s3",
+   "start": 20.0,
+   "v": 5.0,
+   "d": 5.4
+  },
+  {
+   "id": "s4_watch",
+   "stage": {
+    "kind": "app",
+    "img": "capture/soc07_watch.png",
+    "css": {
+     "w": 1440,
+     "h": 2020
+    },
+    "crop": {
+     "x": 290,
+     "y": 380,
+     "w": 1110
+    },
+    "focus": [],
+    "chip": "Detect \u00b7 Behaviour Watch",
+    "head": "Cross-citizen access flagged as an incident",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s4",
+   "start": 25.0,
+   "v": 3.2,
+   "d": 3.6
+  },
+  {
+   "id": "s4_invest",
+   "stage": {
+    "kind": "app",
+    "img": "capture/soc08_investigation.png",
+    "css": {
+     "w": 1440,
+     "h": 3052
+    },
+    "crop": {
+     "x": 290,
+     "y": 1880,
+     "w": 1150
+    },
+    "focus": [
+     {
+      "x": 862,
+      "y": 2245.375,
+      "w": 517,
+      "h": 327.25,
+      "tone": "navy",
+      "pad": 6
+     }
+    ],
+    "chip": "Contain",
+    "head": "Gateway evidence and the affected delegated mandate",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s4",
+   "start": 28.2,
+   "v": 3.4,
+   "d": 3.8
+  },
+  {
+   "id": "s4_officer",
+   "stage": {
+    "kind": "app",
+    "img": "capture/g09_intervention.png",
+    "css": {
+     "w": 1440,
+     "h": 1145
+    },
+    "crop": {
+     "x": 600,
+     "y": 520,
+     "w": 800
+    },
+    "focus": [
+     {
+      "x": 652.65625,
+      "y": 602.25,
+      "w": 646.34375,
+      "h": 127.75,
+      "tone": "",
+      "pad": 10
+     }
+    ],
+    "chip": "Authorized human review",
+    "head": "Signed-in officer reassigns the task to the standby agent",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s4",
+   "start": 31.599999999999998,
+   "v": 3.4,
+   "d": 3.8
+  },
+  {
+   "id": "s5_recovered",
+   "stage": {
+    "kind": "app",
+    "img": "capture/g10_recovered.png",
+    "css": {
+     "w": 1440,
+     "h": 1250
+    },
+    "crop": {
+     "x": 0,
+     "y": 300,
+     "w": 1440
+    },
+    "focus": [
+     {
+      "x": 120,
+      "y": 254,
+      "w": 491.65625,
+      "h": 703.5,
+      "tone": "",
+      "pad": 10
+     },
+     {
+      "x": 121,
+      "y": 979,
+      "w": 490,
+      "h": 137,
+      "tone": "navy",
+      "pad": 10
+     }
+    ],
+    "chip": "Legitimate service recovered",
+    "head": "Unrelated case unaffected \u2014 both completed",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s5",
+   "start": 35.0,
+   "v": 3.2,
+   "d": 3.6
+  },
+  {
+   "id": "s5_portal",
+   "stage": {
+    "kind": "app",
+    "img": "capture/p17_portal_recovered.png",
+    "css": {
+     "w": 1440,
+     "h": 810
+    },
+    "crop": {
+     "x": 180,
+     "y": 60,
+     "w": 1260
+    },
+    "focus": [
+     {
+      "x": 1025,
+      "y": 275,
+      "w": 375,
+      "h": 450,
+      "tone": "",
+      "pad": 8
+     }
+    ],
+    "chip": "Traceable",
+    "head": "Every decision recorded \u2014 including the blocked one",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s5",
+   "start": 38.2,
+   "v": 2.9,
+   "d": 3.3
+  },
+  {
+   "id": "s5_receipt",
+   "stage": {
+    "kind": "app",
+    "img": "capture/g12_receipt.png",
+    "css": {
+     "w": 1440,
+     "h": 994
+    },
+    "crop": {
+     "x": 300,
+     "y": 40,
+     "w": 840
+    },
+    "focus": [],
+    "chip": "Citizen AI Activity",
+    "head": "Privacy-filtered receipt built from the audit trail",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s5",
+   "start": 41.1,
+   "v": 2.9,
+   "d": 3.3
+  },
+  {
+   "id": "s6_lab",
+   "stage": {
+    "kind": "app",
+    "img": "capture/a13_attack_lab.png",
+    "css": {
+     "w": 1440,
+     "h": 4700
+    },
+    "crop": {
+     "x": 300,
+     "y": 300,
+     "w": 1100
+    },
+    "focus": [
+     {
+      "x": 652,
+      "y": 363.0625,
+      "w": 748,
+      "h": 114.5,
+      "tone": "navy",
+      "pad": 6
+     }
+    ],
+    "chip": "8 security scenarios",
+    "head": "Weak baseline executed 7 \u00b7 WAKALA 0 \u00b7 1 denied by both",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s6",
+   "start": 44.0,
+   "v": 3.6,
+   "d": 4.0
+  },
+  {
+   "id": "s6_doc",
+   "stage": {
+    "kind": "app",
+    "img": "capture/ds14_document.png",
+    "css": {
+     "w": 1440,
+     "h": 4717
+    },
+    "crop": {
+     "x": 290,
+     "y": 1676,
+     "w": 1130
+    },
+    "focus": [
+     {
+      "x": 308,
+      "y": 1690,
+      "w": 1092,
+      "h": 288,
+      "tone": "deny",
+      "pad": 4
+     }
+    ],
+    "chip": "Document injection detection",
+    "head": "Hidden white-text instruction found \u2014 PDF quarantined",
+    "tone": "deny",
+    "headTone": ""
+   },
+   "scene": "s6",
+   "start": 47.6,
+   "v": 3.4,
+   "d": 3.8
+  },
+  {
+   "id": "s7_shadow",
+   "stage": {
+    "kind": "app",
+    "img": "capture/sh15_shadow.png",
+    "css": {
+     "w": 1440,
+     "h": 2096
+    },
+    "crop": {
+     "x": 290,
+     "y": 240,
+     "w": 1130
+    },
+    "focus": [
+     {
+      "x": 308,
+      "y": 423.6875,
+      "w": 1092,
+      "h": 110,
+      "tone": "navy",
+      "pad": 6
+     }
+    ],
+    "chip": "Shadow Mode for safer pilots",
+    "head": "Observes copies only \u2014 nothing executed; flags policies to tune",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s7",
+   "start": 51.0,
+   "v": 3.0,
+   "d": 3.4
+  },
+  {
+   "id": "s7_evidence",
+   "stage": {
+    "kind": "app",
+    "img": "capture/ev16_evidence.png",
+    "css": {
+     "w": 1729,
+     "h": 6357
+    },
+    "crop": {
+     "x": 290,
+     "y": 330,
+     "w": 1130
+    },
+    "focus": [
+     {
+      "x": 308,
+      "y": 387.4375,
+      "w": 1092,
+      "h": 160.9375,
+      "tone": "navy",
+      "pad": 6
+     },
+     {
+      "x": 308,
+      "y": 572.375,
+      "w": 1092,
+      "h": 263.5,
+      "tone": "",
+      "pad": 6
+     }
+    ],
+    "chip": "Tested with 1,200 synthetic requests",
+    "head": "0/720 unauthorized executed \u00b7 0/480 wrongly denied \u00b7 50/50 recovery",
+    "tone": "gold",
+    "headTone": ""
+   },
+   "scene": "s7",
+   "start": 54.0,
+   "v": 3.0,
+   "d": 3.4
+  },
+  {
+   "id": "s8_close",
+   "stage": {
+    "kind": "closing",
+    "lines": [
+     "VERIFY AUTHORITY.",
+     "BLOCK THE UNAUTHORIZED.",
+     "KEEP SERVICES MOVING."
+    ],
+    "fine": "Fictional prototype \u00b7 Synthetic data \u00b7 Deterministic offline workflow"
+   },
+   "scene": "s8",
+   "start": 57.0,
+   "v": 3.0,
+   "d": 3.0
+  }
+ ]
+}

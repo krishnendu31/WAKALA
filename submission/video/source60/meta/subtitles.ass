@@ -1,0 +1,25 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Sub,Segoe UI,36,&H00FFFFFF,&H00FFFFFF,&H00603E19,&H10603E19,0,0,0,0,100,100,0,0,3,12,0,2,260,260,30,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.54,0:00:04.16,Sub,,0,0,0,,When government AI can act, who verifies its authority?
+Dialogue: 0,0:00:05.92,0:00:08.38,Sub,,0,0,0,,WAKALA verifies each agent's identity,
+Dialogue: 0,0:00:08.38,0:00:12.78,Sub,,0,0,0,,and limits every delegated action to the citizen's specific request.
+Dialogue: 0,0:00:14.75,0:00:17.30,Sub,,0,0,0,,In a separate, deliberately triggered test,
+Dialogue: 0,0:00:17.30,0:00:20.50,Sub,,0,0,0,,the Insurance Agent asks for another citizen's record.
+Dialogue: 0,0:00:20.75,0:00:23.95,Sub,,0,0,0,,WAKALA blocks it before any protected data is returned.
+Dialogue: 0,0:00:25.80,0:00:30.78,Sub,,0,0,0,,Behaviour Watch raises an incident. A verified officer contains it,
+Dialogue: 0,0:00:30.78,0:00:33.90,Sub,,0,0,0,,and reassigns the task to a standby agent.
+Dialogue: 0,0:00:35.89,0:00:40.25,Sub,,0,0,0,,The legitimate service continues, unrelated citizens are unaffected,
+Dialogue: 0,0:00:40.25,0:00:42.81,Sub,,0,0,0,,and every completed action is traceable.
+Dialogue: 0,0:00:44.35,0:00:46.89,Sub,,0,0,0,,Attack Lab runs eight attack scenarios.
+Dialogue: 0,0:00:46.89,0:00:50.61,Sub,,0,0,0,,Document Shield quarantines hidden document instructions.
+Dialogue: 0,0:00:51.35,0:00:56.71,Sub,,0,0,0,,Synthetic benchmarks measure enforcement. Shadow Mode tests policies safely.

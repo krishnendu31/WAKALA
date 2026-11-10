@@ -1,0 +1,5 @@
+# Regenerable intermediates (rebuild with tts.ps1 + build60.py)
+build/
+tts/
+tts_trim/
+__pycache__/

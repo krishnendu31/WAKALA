@@ -1,0 +1,44 @@
+{
+ "run_id": "LAB-75C9885B",
+ "summary": {
+  "scenarios": 8,
+  "baseline_executed": 7,
+  "wakala_executed": 0,
+  "denied_in_both": 1
+ },
+ "started_at": null,
+ "verdicts": [
+  [
+   "cross_citizen",
+   "Baseline executed it; WAKALA blocked it."
+  ],
+  [
+   "delegation_escalation",
+   "Denied in both environments."
+  ],
+  [
+   "replay",
+   "Baseline executed it; WAKALA blocked it."
+  ],
+  [
+   "expired",
+   "Baseline executed it; WAKALA blocked it."
+  ],
+  [
+   "tampered_signature",
+   "Baseline executed it; WAKALA blocked it."
+  ],
+  [
+   "large_transfer",
+   "Baseline executed it; WAKALA blocked it."
+  ],
+  [
+   "pdf_injection",
+   "Baseline executed it; WAKALA blocked it."
+  ],
+  [
+   "revoked_parent",
+   "Baseline executed it; WAKALA blocked it."
+  ]
+ ]
+}
