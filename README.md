@@ -25,6 +25,22 @@ are **not** legally recognised powers of attorney.
 
 ---
 
+## Phase 6 additions
+
+Navigation, in presentation order:
+1. **Government AI Portal** — includes *My AI Activity*.
+2. **Attack Lab** — eight real attacks, weak baseline vs WAKALA.
+3. **Security Operations** — *Behaviour Watch* and *Revocation* tabs.
+4. **Delegation Network** — *Case View*.
+5. **Document Shield**.
+6. **Security Evidence**.
+7. **Shadow Mode**.
+8. **Policy Drafting** — draft-only.
+
+Behaviour Watch 2.0 fixes the Phase 5 shared-environment recovery regression: shared back-to-back recovery goes from
+2/20 to 20/20, with 0 legitimate denials and 0 unexpected holds, measured on identical traffic (see
+`evidence/phase6/RECOVERY_REGRESSION.md`). Details and limitations are in [docs/PHASE6.md](docs/PHASE6.md).
+
 ## Live demonstration (3 minutes)
 
 One story: a citizen asks a government AI assistant to renew a residency permit, and AI agents collaborate to process
