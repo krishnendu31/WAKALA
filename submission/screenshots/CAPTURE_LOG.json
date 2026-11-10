@@ -1,0 +1,65 @@
+{
+ "note": "Genuine screenshots of the locally running WAKALA prototype with synthetic data. Produced by real backend calls in shots.js; not edited.",
+ "case_id": "CASE-F87AF2FC",
+ "unrelated_case_id": "CASE-42821F2A",
+ "first_case_id": "CASE-BFF43119",
+ "approval_executed": true,
+ "final_state": "COMPLETED",
+ "recovery_status": "recovered",
+ "continue_status": "completed",
+ "unrelated_status": "completed",
+ "audit_chain_valid": true,
+ "audit_events": 386,
+ "shots": [
+  {
+   "name": "01_portal_blocked",
+   "url": "/portal",
+   "captured_at": "2026-11-10T16:19:31.335Z"
+  },
+  {
+   "name": "02_soc_incident",
+   "url": "/soc",
+   "captured_at": "2026-11-10T16:19:39.750Z"
+  },
+  {
+   "name": "03_portal_recovered",
+   "url": "/portal",
+   "captured_at": "2026-11-10T16:19:46.019Z"
+  },
+  {
+   "name": "04_receipt",
+   "url": "(same page)",
+   "captured_at": "2026-11-10T16:19:51.710Z"
+  },
+  {
+   "name": "05_case_view",
+   "url": "/delegation?case=CASE-F87AF2FC",
+   "captured_at": "2026-11-10T16:19:56.977Z"
+  },
+  {
+   "name": "06_attack_lab",
+   "url": "/attack-lab",
+   "captured_at": "2026-11-10T16:20:15.716Z"
+  },
+  {
+   "name": "07_document_shield",
+   "url": "/documents",
+   "captured_at": "2026-11-10T16:20:26.211Z"
+  },
+  {
+   "name": "08_evidence",
+   "url": "/evidence",
+   "captured_at": "2026-11-10T16:20:33.059Z"
+  },
+  {
+   "name": "09_shadow",
+   "url": "/shadow",
+   "captured_at": "2026-11-10T16:20:45.601Z"
+  },
+  {
+   "name": "10_soc_watch",
+   "url": "/soc",
+   "captured_at": "2026-11-10T16:20:52.465Z"
+  }
+ ]
+}

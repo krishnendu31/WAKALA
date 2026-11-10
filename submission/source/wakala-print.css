@@ -1,0 +1,47 @@
+/* WAKALA submission documents — shared print stylesheet (edit freely; rebuild with build_docs.py) */
+@page { size: A4; margin: 16mm 15mm 16mm 15mm; }
+@page landscape { size: A4 landscape; margin: 12mm 12mm; }
+:root {
+  --navy: #0b1630; --navy2: #12234a; --ink: #0f172a; --muted: #475569; --line: #d5dde8;
+  --teal: #0d9488; --teal-soft: #e6f6f4; --cyan: #0891b2; --warn: #b45309; --warn-soft: #fff7e6;
+  --deny: #b91c1c; --deny-soft: #fdecec; --ok: #047857; --ok-soft: #e7f6ef;
+}
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: "Segoe UI", Calibri, Arial, sans-serif; color: var(--ink); font-size: 10.2pt; line-height: 1.42; margin: 0; }
+.cover { background: var(--navy); color: #fff; border-radius: 10px; padding: 18px 22px; margin-bottom: 14px; }
+.cover .eyebrow { color: #5eead4; letter-spacing: .14em; text-transform: uppercase; font-size: 8pt; font-weight: 600; }
+.cover h1 { margin: 4px 0 4px; font-size: 21pt; line-height: 1.15; }
+.cover p { margin: 0; color: #cbd5e1; font-size: 9.5pt; }
+.cover .ar { font-size: 15pt; color: #99f6e4; margin-left: 8px; }
+.badge { display: inline-block; border: 1px solid #f59e0b; color: #fcd34d; border-radius: 999px; padding: 1px 9px; font-size: 7.5pt;
+  letter-spacing: .08em; text-transform: uppercase; margin-top: 8px; }
+h2 { font-size: 13pt; color: var(--navy2); margin: 16px 0 6px; padding-bottom: 3px; border-bottom: 1.5px solid var(--teal); }
+h3 { font-size: 10.8pt; color: var(--navy2); margin: 11px 0 4px; }
+p { margin: 4px 0 7px; }
+ul, ol { margin: 3px 0 8px 18px; padding: 0; }
+li { margin: 1.5px 0; }
+table { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 9pt; page-break-inside: auto; }
+th { background: var(--navy2); color: #fff; text-align: left; font-weight: 600; padding: 5px 6px; vertical-align: top; }
+td { border-bottom: 1px solid var(--line); padding: 5px 6px; vertical-align: top; }
+tr { page-break-inside: avoid; }
+tbody tr:nth-child(even) td { background: #f6f8fb; }
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.note { background: var(--warn-soft); border: 1px solid #f3d19c; border-radius: 6px; padding: 7px 10px; font-size: 8.8pt; margin: 8px 0; }
+.ok { background: var(--ok-soft); border: 1px solid #a7dcc4; border-radius: 6px; padding: 7px 10px; margin: 8px 0; }
+.box { border: 1px solid var(--line); border-radius: 8px; padding: 8px 11px; margin: 8px 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.kpi { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.kpi b { display: block; font-size: 17pt; color: var(--navy2); line-height: 1.1; }
+.kpi span { font-size: 8.3pt; color: var(--muted); }
+.tag { display: inline-block; border-radius: 4px; padding: 0 6px; font-size: 7.8pt; font-weight: 700; letter-spacing: .03em; }
+.t-strong { background: var(--ok-soft); color: var(--ok); }
+.t-mod { background: var(--warn-soft); color: var(--warn); }
+.t-weak { background: var(--deny-soft); color: var(--deny); }
+.muted { color: var(--muted); }
+.small { font-size: 8.4pt; }
+code, .mono { font-family: Consolas, "Courier New", monospace; font-size: 8.6pt; }
+.pb { page-break-before: always; }
+.footer { margin-top: 14px; padding-top: 6px; border-top: 1px solid var(--line); font-size: 7.8pt; color: var(--muted); }
+blockquote { margin: 6px 0; padding: 4px 10px; border-left: 3px solid var(--teal); background: #f3faf9; }
