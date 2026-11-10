@@ -91,6 +91,16 @@ def authority_graph(case_id: CaseIdPath, env: Env) -> dict[str, Any]:
     return graph
 
 
+@router.get("/cases/{case_id}/case-view", response_model=dict[str, Any])
+def case_view(case_id: CaseIdPath, env: Env) -> dict[str, Any]:
+    """Compact Case View: citizen request → Residency Agent → delegated agent → protected services."""
+    from app.workflow.case_view import build_case_view
+    v = build_case_view(env, case_id)
+    if v is None:
+        raise HTTPException(status_code=404, detail={"code": "CASE_NOT_FOUND", "message": "No such case."})
+    return v
+
+
 @router.get("/delegations", response_model=list[dict[str, Any]])
 def list_delegations(env: Env) -> list[dict[str, Any]]:
     return [{k: str(v) for k, v in d.items()} for d in env.mandates.delegations()]

@@ -7,6 +7,7 @@ import {
 import { useMemo, useState } from "react";
 import { Background, Handle, MarkerType, Position, ReactFlow, type Edge, type Node, type NodeProps } from "@xyflow/react";
 import { ApiView, Badge, Card, CardHeader, EmptyState, Notice, PageHeader, SyntheticBadge } from "@/components/ui";
+import { CaseView } from "@/components/CaseView";
 import { invalidate, useApi } from "@/hooks/useApi";
 import { apiPost } from "@/lib/api";
 import { humanize, type Tone } from "@/lib/format";
@@ -269,7 +270,8 @@ export default function DelegationNetwork() {
   const caps = useApi<SystemCapabilities>("/api/system/capabilities", { live: true });
   const scenarios = useApi<WorkflowScenarioInfo[]>("/api/workflow/scenarios");
   const cases = useApi<CaseSummary[]>("/api/workflow/cases", { live: true });
-  const [caseId, setCaseId] = useState<string | null>(null);
+  const [caseId, setCaseId] = useState<string | null>(new URLSearchParams(window.location.search).get("case"));
+  const [mode, setMode] = useState<"case" | "graph">("case");
   const [run, setRun] = useState<WorkflowRun | null>(null);
   const [running, setRunning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -365,7 +367,17 @@ export default function DelegationNetwork() {
               ))}
             </div>
           )}
-          {caseId ? <GraphPanel caseId={caseId} /> : (
+          {caseId && (
+            <div className="flex gap-2" role="tablist">
+              {(["case", "graph"] as const).map((m) => (
+                <button key={m} role="tab" aria-selected={mode === m} onClick={() => setMode(m)}
+                  className={clsx("rounded-lg border px-3 py-1.5 text-[12.5px]", mode === m ? "border-trust/50 bg-ink-750 text-fg" : "border-line text-fg-subtle")}>
+                  {m === "case" ? "Case View (presentation)" : "Full authority graph"}
+                </button>
+              ))}
+            </div>
+          )}
+          {caseId ? (mode === "case" ? <CaseView caseId={caseId} /> : <GraphPanel caseId={caseId} />) : (
             <Card><EmptyState icon={GitBranch} title="Run a delegation scenario or pick a delegated case">
               The graph shows the case, the issuers that signed its mandates, the Residency Agent's root mandate, every child
               mandate WAKALA issued from it, and any denied attempt to expand authority.
