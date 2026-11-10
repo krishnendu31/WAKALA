@@ -68,6 +68,10 @@ class Settings:
     dev_mandate_lifetime_minutes: int = 120
     # Where the Phase 5 evidence API reads generated benchmark files from.
     evidence_dir: str = DEFAULT_EVIDENCE_DIR
+    # Behaviour Watch: "watch-2.0" (default) or "phase5-original" (kept only to reproduce the Phase 5 benchmark).
+    watch_policy: str = "watch-2.0"
+    # Operating schedule for the OFF_SCHEDULE signal, local UAE time (UTC+4), e.g. "06:00-22:00". None = 24/7 service.
+    watch_operating_hours: str | None = None
     # Document Shield storage (originals are written once, read-only; extractions are separate files).
     documents_dir: str = DEFAULT_DOCUMENTS_DIR
 
@@ -90,5 +94,7 @@ class Settings:
             dev_keys_dir=os.getenv("WAKALA_DEV_KEYS_DIR", DEFAULT_DEV_KEYS_DIR),
             max_request_skew_seconds=int(os.getenv("WAKALA_MAX_REQUEST_SKEW_SECONDS", "60")),
             evidence_dir=os.getenv("WAKALA_EVIDENCE_DIR", DEFAULT_EVIDENCE_DIR),
+            watch_policy=os.getenv("WAKALA_WATCH_POLICY", "watch-2.0"),
+            watch_operating_hours=os.getenv("WAKALA_WATCH_HOURS") or None,
             documents_dir=os.getenv("WAKALA_DOCUMENTS_DIR", DEFAULT_DOCUMENTS_DIR),
         )

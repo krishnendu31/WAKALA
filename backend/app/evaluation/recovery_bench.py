@@ -101,11 +101,31 @@ def _one(env: Any, r: WorkflowRunner, token: str) -> dict[str, Any]:
             "unrelated_case_id": o.case_id, "final_state": final.state.value, "recovery_status": final.recovery_status}
 
 
-def _condition(n: int, shared: bool) -> dict[str, Any]:
+ATTACK_CODES = {"DENY_SCOPE_VIOLATION", "DENY_CASE_SCOPE_VIOLATION"}
+
+
+def _decisions(env: Any) -> dict[str, int]:
+    """Counted from the audit trail: every denial / hold the gateway actually recorded during the run."""
+    rows = env.db.query("SELECT payload FROM audit_events WHERE json_extract(payload, '$.decision') IN ('denied','escalated')")
+    import json
+    out = {"denied_attack": 0, "denied_other": 0, "held": 0}
+    for r in rows:
+        p = json.loads(r["payload"])
+        if p["decision"] == "escalated":
+            out["held"] += 1
+        elif set(p.get("reason_codes", [])) & ATTACK_CODES:
+            out["denied_attack"] += 1
+        else:
+            out["denied_other"] += 1
+    return out
+
+
+def _condition(n: int, shared: bool, policy: str = "watch-2.0") -> dict[str, Any]:
     runs: list[dict[str, Any]] = []
     rate_hits = 0
     chains_valid = True
     t0 = time.perf_counter()
+    counts = {"denied_attack": 0, "denied_other": 0, "held": 0}
 
     def one(env: Any, keys: Any, r: WorkflowRunner, token: str, i: int) -> None:
         try:
@@ -115,21 +135,36 @@ def _condition(n: int, shared: bool) -> dict[str, Any]:
 
     if shared:
         with isolated_env("memory") as (env, _c, keys):
+            env.assurance.policy = policy
             token = env.officers.login("OFF-0101", keys.officer_password("OFF-0101"))[0]
             r = WorkflowRunner(env, "recovery-benchmark")
             for i in range(n):
                 one(env, keys, r, token, i)
             chains_valid = env.audit.verify().valid
+            counts = _decisions(env)
             rate_hits = len([x for x in env.assurance.incidents.list(limit=100000) if x.rule_id == "REQUEST_RATE"])
     else:
         for i in range(n):
             with isolated_env("memory") as (env, _c, keys):
+                env.assurance.policy = policy
                 token = env.officers.login("OFF-0101", keys.officer_password("OFF-0101"))[0]
                 one(env, keys, WorkflowRunner(env, "recovery-benchmark"), token, i)
                 chains_valid = chains_valid and env.audit.verify().valid
+                for k, v in _decisions(env).items():
+                    counts[k] += v
                 rate_hits += len([x for x in env.assurance.incidents.list(limit=100000) if x.rule_id == "REQUEST_RATE"])
     ok = [x for x in runs if x.get("failed_at") is None]
+    attacks = sum(1 for x in runs if x.get("checks", {}).get("1_valid_case_initiated"))
+    designed_holds = sum(1 for x in runs if x.get("checks", {}).get("5_officer_intervention_applied"))
     return {
+        "policy": policy,
+        "legitimate_impact": {
+            "attack_requests_sent": attacks, "attack_requests_denied": counts["denied_attack"],
+            "designed_holds_expected": designed_holds, "holds_recorded": counts["held"],
+            "legitimate_requests_held_unexpectedly": max(0, counts["held"] - designed_holds),
+            "legitimate_requests_denied": counts["denied_other"],
+            "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval).",
+        },
         "eligible_incidents": n,
         "recovery_success": rate(len(ok), n),
         "per_step_success": {s: rate(sum(1 for x in runs if x.get("checks", {}).get(s)), n) for s in STEPS},
@@ -145,11 +180,11 @@ def _condition(n: int, shared: bool) -> dict[str, Any]:
     }
 
 
-def run_recovery(n: int = 20) -> dict[str, Any]:
+def run_recovery(n: int = 20, policy: str = "watch-2.0") -> dict[str, Any]:
     return {
-        "independent_incidents": {**_condition(n, shared=False),
+        "independent_incidents": {**_condition(n, shared=False, policy=policy),
                                   "condition": "Each incident in its own fresh isolated environment (no cross-incident history)."},
-        "back_to_back_shared": {**_condition(n, shared=True),
+        "back_to_back_shared": {**_condition(n, shared=True, policy=policy),
                                 "condition": "All incidents back-to-back at machine speed in ONE environment: same agents, "
                                              "rules see the accumulated history (stress condition)."},
         "note": "Times are machine time with automated officer calls; real recoveries are dominated by human review time.",

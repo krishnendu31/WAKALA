@@ -15,7 +15,10 @@ import secrets
 from datetime import datetime, timedelta
 from typing import Any
 
-from app.core.assurance import DEFAULT_RULES, INTERPRETATION, EventFacts, Finding, evaluate_rules, plan_response
+import json
+
+from app.core.assurance import (ALL_RULES, DEFAULT_RULES, INTERPRETATION, LEVEL_ORDER, RULES_BY_ID, SEVERITY_LEVEL,
+                                 EventFacts, Finding, evaluate_rules, plan_response)
 from app.models.database import Database
 from app.schemas import ActionRequest, AuditEvent
 from app.schemas.assurance import (
@@ -30,9 +33,10 @@ from app.schemas.case import CaseEvent, CaseState
 from app.services.cases import CaseStore, InvalidTransition, next_case, with_event
 
 logger = logging.getLogger("wakala.assurance")
-LOOKBACK = max(r.window for r in DEFAULT_RULES)
+LOOKBACK = max(r.window for r in ALL_RULES)
 RECENT_EVENT_CAP = 120  # 2x the largest rule threshold (see _recent_for)
-assert RECENT_EVENT_CAP >= 2 * max(max(r.threshold, r.escalate_at or 0) for r in DEFAULT_RULES)
+assert RECENT_EVENT_CAP >= 2 * max(max(r.threshold, r.escalate_at or 0) for r in ALL_RULES)
+UAE_OFFSET = timedelta(hours=4)
 # Operations that require officer approval while the case has an active incident.
 SENSITIVE_OPERATIONS = frozenset({"payment.collect_renewal_fee", "residency.complete_renewal", "delegation.commission_task"})
 
@@ -123,6 +127,27 @@ class AssuranceService:
         self.incidents = IncidentStore(env.db)
         self.suspensions = SuspensionStore(env.db)
         self._record_lock = threading.Lock()
+        self.policy = getattr(env.settings, "watch_policy", "watch-2.0")
+        self._categories: dict[str, frozenset[str] | None] = {}
+
+    # --- context ------------------------------------------------------------------
+    def _declared_categories(self, agent_id: str) -> frozenset[str] | None:
+        if agent_id not in self._categories:
+            try:
+                p = self.env.repo.get_agent(agent_id)
+            except Exception:  # noqa: BLE001
+                p = None
+            self._categories[agent_id] = frozenset(t.split(".")[0] for t in p.declared_tools) if p else None
+        return self._categories[agent_id]
+
+    def _off_schedule(self, at: datetime) -> bool:
+        hours = getattr(self.env.settings, "watch_operating_hours", None)
+        if not hours:
+            return False
+        start, end = ((int(x[:2]) * 60 + int(x[3:5])) for x in hours.split("-"))
+        local = at + UAE_OFFSET
+        minute = local.hour * 60 + local.minute
+        return not (start <= minute < end) if start <= end else (end <= minute < start)
 
     # --- facts ----------------------------------------------------------------
     def _facts(self, events: list[AuditEvent]) -> list[EventFacts]:
@@ -139,6 +164,12 @@ class AssuranceService:
                 target = e.evidence_metadata.get("target_resource")
                 if citizen and isinstance(target, str) and target.startswith("C-") and target != citizen:
                     tags.add("cross_citizen")
+            if self.policy == "watch-2.0":
+                cats = self._declared_categories(e.actor) if e.authenticated else None
+                if cats is not None and "." in str(e.action) and str(e.action).split(".")[0] not in cats:
+                    tags.add("unexpected_category")
+                if self._off_schedule(e.timestamp):
+                    tags.add("off_schedule")
             out.append(EventFacts(e, case_cache.get(cid) if isinstance(cid, str) else None, frozenset(tags)))
         return out
 
@@ -170,10 +201,46 @@ class AssuranceService:
             latest = next((f for f in reversed(facts) if f.event.event_id == event.event_id), None)
             if latest is None:
                 return []
-            return [self._record(f, now) for f in evaluate_rules(subject, facts, now, latest=latest)]
+            out = []
+            for f in evaluate_rules(subject, facts, now, latest=latest, policy=self.policy):
+                if f.level == "OBSERVE":
+                    self._observe(f, now)  # recorded for review; never an incident, never containment
+                else:
+                    out.append(self._record(f, now))
+            return out
         except Exception:  # noqa: BLE001 — detection must never affect the decision already returned
             logger.exception("assurance evaluation failed")
             return []
+
+    def _observe(self, finding: Finding, now: datetime) -> None:
+        key = f"{finding.rule.rule_id}|{finding.subject}|{finding.case_id or '-'}"
+        since = (now - finding.rule.window).isoformat()
+        with self.env.db.transaction() as conn:
+            row = conn.execute("SELECT obs_id, payload FROM watch_observations WHERE dedupe_key = ? AND last_seen >= ? "
+                               "ORDER BY last_seen DESC LIMIT 1", (key, since)).fetchone()
+            payload = {"signal": finding.rule.rule_id, "title": finding.rule.title, "agent_id": finding.subject,
+                       "case_id": finding.case_id, "observed": finding.observed, "expected": finding.expected,
+                       "concern": finding.concern, "severity": finding.severity, "level": "OBSERVE",
+                       "action_taken": "Observed only: recorded for review, no incident and no containment.",
+                       "evidence_event_ids": list(finding.evidence_event_ids)[-20:], "policy": self.policy}
+            if row:
+                conn.execute("UPDATE watch_observations SET last_seen = ?, count = ?, payload = ? WHERE obs_id = ?",
+                             (now.isoformat(), finding.count, json.dumps(payload), row["obs_id"]))
+            else:
+                conn.execute("INSERT INTO watch_observations (obs_id, dedupe_key, signal, agent_id, case_id, first_seen, last_seen, "
+                             "count, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                             (f"OBS-{secrets.token_hex(4).upper()}", key, finding.rule.rule_id, finding.subject, finding.case_id,
+                              now.isoformat(), now.isoformat(), finding.count, json.dumps(payload)))
+
+    def observations(self, limit: int = 200) -> list[dict[str, Any]]:
+        rows = self.env.db.query("SELECT obs_id, first_seen, last_seen, count, payload FROM watch_observations "
+                                 "ORDER BY last_seen DESC LIMIT ?", (limit,))
+        return [{"obs_id": r["obs_id"], "first_seen": r["first_seen"], "last_seen": r["last_seen"], "count": r["count"],
+                 **json.loads(r["payload"])} for r in rows]
+
+    @staticmethod
+    def level_of(incident: Incident) -> str:
+        return incident.intervention_level or SEVERITY_LEVEL.get(incident.severity, "REQUIRE_APPROVAL")
 
     def _record(self, finding: Finding, now: datetime) -> Incident:
         # Phase 5 (found by the concurrency stress test): concurrent decisions for the same subject raced on the
@@ -193,11 +260,14 @@ class AssuranceService:
         if existing is not None:
             evidence = list(dict.fromkeys([*existing.evidence_event_ids, *finding.evidence_event_ids]))[-200:]
             escalated = SEVERITY_ORDER[finding.severity] > SEVERITY_ORDER[existing.severity]
+            level = max(self.level_of(existing), finding.level, key=lambda x: LEVEL_ORDER[x])
             updated = existing.model_copy(update={
                 "last_seen": now, "occurrences": max(existing.occurrences, finding.count), "evidence_event_ids": evidence,
                 "severity": finding.severity if escalated else existing.severity, "summary": finding.summary,
-                "mandate_id": finding.mandate_id or existing.mandate_id,
+                "mandate_id": finding.mandate_id or existing.mandate_id, "intervention_level": level,
+                "observed": finding.observed,
             })
+            escalated = escalated or LEVEL_ORDER[level] > LEVEL_ORDER[self.level_of(existing)]
             if escalated:
                 updated = self._apply(updated, finding, now)  # graduated response only on escalation
             self.incidents.save(existing, updated)
@@ -208,6 +278,8 @@ class AssuranceService:
             agent_id=finding.subject, case_id=finding.case_id, mandate_id=finding.mandate_id, first_seen=now, last_seen=now,
             occurrences=finding.count, evidence_event_ids=list(finding.evidence_event_ids), summary=finding.summary,
             interpretation=INTERPRETATION[finding.rule.classification],
+            intervention_level=finding.level, observed=finding.observed, expected=finding.expected, concern=finding.concern,
+            policy=self.policy,
         )
         incident = self._apply(incident, finding, now)
         self.incidents.insert(incident, key)
@@ -224,9 +296,16 @@ class AssuranceService:
         records = list(incident.responses)
         contain = self._contain_allowed(finding)
         containment = {ResponseAction.SUSPEND_MANDATE, ResponseAction.REVOKE_MANDATE, ResponseAction.REQUIRE_HUMAN_APPROVAL}
-        for step in plan_response(finding):
+        steps = plan_response(finding)
+        if finding.level == "ALERT":  # alert-only: officer review, never automatic containment
+            from app.core.assurance.response import PlannedResponse
+            steps = [PlannedResponse(ResponseAction.ESCALATE_INCIDENT, InterventionReason.RESP_MONITOR_ONLY, finding.case_id),
+                     PlannedResponse(ResponseAction.DENY, InterventionReason.RESP_NO_AGENT_WIDE_ACTION, finding.subject)]
+        for step in steps:
             applied, detail = False, ""
-            if step.action in containment and not contain:
+            if finding.level == "ALERT" and step.action is ResponseAction.ESCALATE_INCIDENT:
+                applied, detail = True, "Alert raised for officer review. No automatic containment; requests are still decided by the gateway."
+            elif step.action in containment and not contain:
                 applied, detail = False, ("Not applied automatically: the case incident policy is 'monitor'. "
                                           "An authorized officer may apply it.")
             elif step.action is ResponseAction.SUSPEND_MANDATE and step.target:
@@ -284,8 +363,18 @@ class AssuranceService:
         case = self.env.cases.get(request.case_id)
         if case is None or case.incident_policy != "contain":
             return None
-        inc = self.incidents.case_has_active(request.case_id)
-        return inc.incident_id if inc else None
+        return self.gating_incident(request.case_id)
+
+    def gating_incident(self, case_id: str) -> str | None:
+        """Active incident on this case whose intervention level requires approval (ALERT never gates)."""
+        marks = ",".join("?" for _ in ACTIVE_INCIDENT_STATUSES)
+        rows = self.env.db.query(f"SELECT payload FROM incidents WHERE case_id = ? AND status IN ({marks}) ORDER BY last_seen DESC",
+                                 (case_id, *ACTIVE_INCIDENT_STATUSES))
+        for r in rows:
+            inc = Incident.model_validate_json(r["payload"])
+            if LEVEL_ORDER[self.level_of(inc)] >= LEVEL_ORDER["REQUIRE_APPROVAL"]:
+                return inc.incident_id
+        return None
 
     # --- officer-side updates -----------------------------------------------------------------
     def set_status(self, incident_id: str, status: str, officer_id: str, note: str, now: datetime) -> Incident:

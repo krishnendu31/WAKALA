@@ -74,6 +74,12 @@ class Incident(StrictModel):
     responses: list[ResponseRecord] = Field(default_factory=list)
     notes: list[dict[str, Any]] = Field(default_factory=list)
     version: int = Field(default=1, ge=1)
+    # Behaviour Watch 2.0 (absent on incidents recorded before Phase 6; treated as the severity's legacy level)
+    intervention_level: str | None = None
+    observed: str | None = None
+    expected: str | None = None
+    concern: str | None = None
+    policy: str | None = None
     synthetic: Literal[True] = True
 
 

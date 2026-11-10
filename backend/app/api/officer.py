@@ -157,6 +157,31 @@ def list_incidents(env: Env, p: Officer) -> list[dict[str, Any]]:
     return [i.model_dump(mode="json") for i in env.assurance.incidents.list()]
 
 
+@router.get("/watch")
+def behaviour_watch(env: Env, p: Officer) -> dict[str, Any]:
+    """Behaviour Watch 2.0: observations (no incident) and alert/containment findings, each with observed vs expected."""
+    need(p, "incidents.read")
+    from app.core.assurance import LEVELS, RULES_BY_ID
+    a = env.assurance
+    findings = []
+    for i in a.incidents.list(limit=200):
+        rule = RULES_BY_ID.get(i.rule_id)
+        applied = [r.detail for r in i.responses if r.applied and r.action.value != "DENY"]
+        findings.append({
+            "kind": "incident", "id": i.incident_id, "signal": i.rule_id, "title": i.title, "agent_id": i.agent_id,
+            "case_id": i.case_id, "severity": i.severity, "level": a.level_of(i), "status": i.status,
+            "observed": i.observed or i.summary, "expected": i.expected or (rule.expected if rule else None),
+            "concern": i.concern or i.interpretation, "action_taken": applied or ["Recorded"],
+            "evidence_event_ids": i.evidence_event_ids[-20:], "last_seen": i.last_seen.isoformat(), "policy": i.policy or "phase5-original",
+        })
+    obs = [{"kind": "observation", "id": o["obs_id"], "status": "observed", "last_seen": o["last_seen"], **o}
+           for o in a.observations(200)]
+    return {"policy": a.policy, "levels": list(LEVELS), "operating_hours": env.settings.watch_operating_hours,
+            "note": "Monitoring signals are rule-based and statistical thresholds, not AI threat prediction. "
+                    "They never authorize or deny a request; the gateway decides independently.",
+            "findings": sorted(findings + obs, key=lambda f: f["last_seen"], reverse=True)}
+
+
 @router.get("/incidents/{incident_id}")
 def investigate(incident_id: IncidentPath, env: Env, p: Officer) -> dict[str, Any]:
     need(p, "evidence.read")
