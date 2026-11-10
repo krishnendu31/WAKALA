@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>illustration</title>
+<style>
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #F7F6F2; font-family: "Segoe UI", Arial, sans-serif; }
+  svg { display: block; }
+</style></head>
+<body>
+<svg id="s" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<script>
+// Conceptual illustrations for the WAKALA explainer. Deterministic: window.draw(scene, t) renders one frame at time t (s).
+// These scenes are illustrations, not product UI; every frame carries a "Conceptual illustration" label.
+const C = { pearl: "#F7F6F2", card: "#FFFFFF", navy: "#193E60", ink: "#1D3040", muted: "#687783", line: "#D9DEDD",
+            teal: "#1F7A72", emerald: "#0E4D48", gold: "#B48A55", red: "#B42318", redSoft: "#FBE9E7", tealSoft: "#E3F1EF" };
+const cl = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (t) => t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t);
+const span = (t, a, b) => ease((t - a) / (b - a));          // 0→1 between a and b
+const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+function txt(x, y, s, o = {}) {
+  return `<text x="${x}" y="${y}" font-size="${o.size || 26}" font-weight="${o.w || 500}" fill="${o.fill || C.ink}" text-anchor="${o.anchor || "start"}"
+    letter-spacing="${o.ls || 0}" opacity="${o.op ?? 1}">${esc(s)}</text>`;
+}
+function card(x, y, w, h, o = {}) {
+  return `<g opacity="${o.op ?? 1}"><rect x="${x}" y="${y + 6}" width="${w}" height="${h}" rx="20" fill="#1d304012"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20" fill="${o.fill || C.card}" stroke="${o.stroke || C.line}" stroke-width="${o.sw || 2}"/></g>`;
+}
+function person(cx, cy, col, op = 1) {
+  return `<g opacity="${op}"><circle cx="${cx}" cy="${cy - 12}" r="15" fill="${col}"/><path d="M${cx - 26} ${cy + 26} q26 -36 52 0" fill="${col}"/></g>`;
+}
+function agent(cx, cy, label, sub, o = {}) {            // circular agent node with a simple robot glyph
+  const col = o.col || C.emerald, op = o.op ?? 1, r = 54 * (o.scale ?? 1);
+  return `<g opacity="${op}">
+    <circle cx="${cx}" cy="${cy}" r="${r + 10}" fill="${o.halo || "transparent"}"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="${C.card}" stroke="${col}" stroke-width="4"/>
+    <rect x="${cx - 22}" y="${cy - 16}" width="44" height="32" rx="9" fill="${col}"/>
+    <circle cx="${cx - 9}" cy="${cy}" r="4.5" fill="#fff"/><circle cx="${cx + 9}" cy="${cy}" r="4.5" fill="#fff"/>
+    <line x1="${cx}" y1="${cy - 16}" x2="${cx}" y2="${cy - 26}" stroke="${col}" stroke-width="4"/><circle cx="${cx}" cy="${cy - 29}" r="4" fill="${col}"/>
+    ${txt(cx + r + 26, cy - 4, label, { size: 28, w: 600, fill: C.navy })}${txt(cx + r + 26, cy + 30, sub, { size: 21, fill: C.muted })}</g>`;
+}
+function flow(x1, y1, x2, y2, t, o = {}) {              // connecting line with moving dots
+  const col = o.col || C.teal, op = o.op ?? 1, dash = o.dash ? `stroke-dasharray="14 12"` : "";
+  let s = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${o.sw || 4}" stroke-linecap="round" opacity="${op}" ${dash}/>`;
+  if (o.dots !== false) for (let k = 0; k < 3; k++) {
+    const p = ((t * (o.speed || 0.45)) + k / 3) % 1;
+    s += `<circle cx="${x1 + (x2 - x1) * p}" cy="${y1 + (y2 - y1) * p}" r="7" fill="${col}" opacity="${op * Math.sin(Math.PI * p)}"/>`;
+  }
+  return s;
+}
+function tick(cx, cy, op, col = C.gold) {
+  return `<g opacity="${op}"><circle cx="${cx}" cy="${cy}" r="17" fill="${col}"/><path d="M${cx - 8} ${cy} l6 6 l11 -12" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+}
+function shield(cx, cy, s, col, op, label) {
+  return `<g opacity="${op}" transform="translate(${cx} ${cy}) scale(${s})">
+    <path d="M0 -70 L-58 -46 V8 C-58 46 -30 72 0 84 C30 72 58 46 58 8 V-46 Z" fill="${C.card}" stroke="${col}" stroke-width="7" stroke-linejoin="round"/>
+    ${label === "x" ? `<path d="M-20 -14 L20 26 M20 -14 L-20 26" stroke="${col}" stroke-width="9" stroke-linecap="round"/>` :
+      `<path d="M-22 6 l15 15 l29 -32" fill="none" stroke="${col}" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>`}</g>`;
+}
+function band(chip, head, chipCol) {                     // lower third, same position as the product shots
+  return `<g><rect x="240" y="872" width="${chip.length * 12.6 + 40}" height="50" rx="25" fill="${chipCol}"/>
+    ${txt(260, 905, chip, { size: 22, w: 600, fill: "#fff", ls: 0.4 })}
+    ${txt(240 + chip.length * 12.6 + 60, 908, head, { size: 33, w: 600, fill: C.navy })}</g>`;
+}
+const label = () => `<g><rect x="60" y="44" width="300" height="44" rx="22" fill="#b48a551f" stroke="#b48a5566"/>${txt(210, 74, "CONCEPTUAL ILLUSTRATION", { size: 18, w: 600, fill: "#8A6534", anchor: "middle", ls: 1.6 })}</g>`;
+
+// shared layout
+const M = { x: 230, y: 330, w: 330, h: 150 };                   // Mariam's request
+const A = [[820, 200, "Residency Agent", "registers & checks eligibility"], [820, 420, "Insurance Agent", "delegated insurance check"], [820, 640, "Payment Agent", "collects the AED 500 fee"]];
+const SV = [[1430, 160, "Residency service"], [1430, 380, "Insurance records · Mariam"], [1430, 600, "Treasury (synthetic)"]];
+const OTHER = { x: 1430, y: 442, w: 380, h: 96 };
+
+function base(t, o = {}) {
+  let s = "";
+  s += card(M.x, M.y, M.w, M.h, { op: o.mOp ?? 1 }) + person(M.x + 62, M.y + 72, C.navy, o.mOp ?? 1) +
+       txt(M.x + 112, M.y + 64, "Mariam", { size: 30, w: 700, fill: C.navy, op: o.mOp ?? 1 }) +
+       txt(M.x + 112, M.y + 100, "Residency renewal", { size: 22, fill: C.muted, op: o.mOp ?? 1 });
+  A.forEach(([x, y, l, sub], i) => {
+    const appear = o.agentsIn ? span(t, 0.8 + i * 0.6, 1.6 + i * 0.6) : 1;
+    const ins = i === 1;
+    const col = ins && o.insCol ? o.insCol : C.emerald;
+    const op = appear * (ins && o.insOp !== undefined ? o.insOp : 1);
+    s += flow(M.x + M.w, M.y + M.h / 2, x - 64, y, t + i, { op: appear * (o.flowOp ?? 0.9), col: C.teal, dots: o.dots !== false });
+    s += agent(x, y, l, sub, { op, col, halo: ins && o.insHalo ? o.insHalo : "transparent" });
+    const sv = SV[i];
+    s += card(sv[0], sv[1] - 46, 380, 92, { op: appear }) + txt(sv[0] + 30, sv[1] + 9, sv[2], { size: 24, w: 600, fill: C.ink, op: appear });
+    s += flow(x + 64 + 300, y, sv[0], sv[1], t + 0.5 + i, { op: appear * (ins && o.insFlowOp !== undefined ? o.insFlowOp : 0.9), dots: o.dots !== false });
+    if (o.ticks) s += tick(sv[0] + 350, sv[1] - 40, span(t, 3.5 + i * 0.8, 4.0 + i * 0.8));
+  });
+  return s;
+}
+
+const SCENES = {
+  // 1 · agents collaborate on a citizen service
+  a(t) {
+    const z = 1 + 0.03 * cl(t / 11);
+    return `<g transform="translate(960 470) scale(${z}) translate(-960 -470)" opacity="${span(t, 0, 0.6)}">${base(t, { agentsIn: true, ticks: true })}</g>` +
+      label() + band("Illustration", "Government AI agents collaborate on citizen services", C.gold);
+  },
+  // 2 · the Insurance Agent reaches for another citizen's record
+  b(t) {
+    const z = 1.03 + 0.02 * cl(t / 9);
+    const rec = span(t, 0.8, 1.8), reach = span(t, 2.6, 5.2);
+    const [ax, ay] = [A[1][0] + 54, A[1][1] + 30];
+    const ex = ax + (OTHER.x - ax) * reach, ey = ay + (OTHER.y + 48 - ay) * reach;
+    let s = base(t, { insCol: reach > 0.1 ? C.red : C.emerald, insHalo: reach > 0.1 ? "#b4231818" : "transparent" });
+    s += card(OTHER.x, OTHER.y, OTHER.w, OTHER.h, { op: rec, stroke: "#e7b9b4" }) + person(OTHER.x + 50, OTHER.y + 50, C.muted, rec) +
+         txt(OTHER.x + 92, OTHER.y + 44, "Another citizen's record", { size: 24, w: 600, fill: C.ink, op: rec }) +
+         txt(OTHER.x + 92, OTHER.y + 76, "C-1003 · not in Mariam's case", { size: 20, fill: C.muted, op: rec });
+    if (reach > 0) s += `<line x1="${ax}" y1="${ay}" x2="${ex}" y2="${ey}" stroke="${C.red}" stroke-width="5" stroke-dasharray="16 12" stroke-linecap="round"/>
+      <circle cx="${ex}" cy="${ey}" r="9" fill="${C.red}"/>`;
+    s += txt(OTHER.x + 410, OTHER.y + 64, "?", { size: 52, w: 700, fill: C.red, anchor: "middle", op: span(t, 5.2, 5.8) });
+    return `<g transform="translate(960 470) scale(${z}) translate(-960 -470)">${s}</g>` + label() +
+      band("Illustration", "A legitimate agent reaches for the wrong citizen's record", C.gold);
+  },
+  // 3 · WAKALA checks signed, case-specific authority and blocks
+  c(t) {
+    const z = 1.05;
+    const [ax, ay] = [A[1][0] + 54, A[1][1] + 30];
+    const gx = 1300, gy = 505;
+    const man = span(t, 0.2, 0.9), sh = span(t, 0.4, 1.0), block = span(t, 1.5, 1.9);
+    const reach = Math.min(1, span(t, 0.0, 1.5));
+    const ex = ax + (gx - 70 - ax) * reach, ey = ay + (gy - ay) * reach;
+    let s = base(t, { insCol: C.red, dots: false, flowOp: 0.5, insFlowOp: 0.5 });
+    s += card(OTHER.x, OTHER.y, OTHER.w, OTHER.h, { stroke: "#e7b9b4" }) + person(OTHER.x + 50, OTHER.y + 50, C.muted) +
+         txt(OTHER.x + 92, OTHER.y + 44, "Another citizen's record", { size: 24, w: 600 }) + txt(OTHER.x + 92, OTHER.y + 76, "protected · not returned", { size: 20, fill: C.red, op: block });
+    s += `<line x1="${ax}" y1="${ay}" x2="${ex}" y2="${ey}" stroke="${C.red}" stroke-width="5" stroke-dasharray="16 12" stroke-linecap="round"/>`;
+    s += shield(gx, gy - 6, 0.9 + 0.08 * Math.sin(Math.PI * block), block > 0.5 ? C.red : C.navy, sh, block > 0.5 ? "x" : "ok");
+    s += `<rect x="${gx - 110}" y="${gy + 82}" width="220" height="42" rx="21" fill="${C.pearl}" opacity="${sh}"/>`;
+    s += txt(gx, gy + 112, block > 0.5 ? "BLOCKED" : "WAKALA gateway", { size: 26, w: 700, fill: block > 0.5 ? C.red : C.navy, anchor: "middle", op: sh, ls: 1.5 });
+    // signed mandate card
+    s += card(240, 560, 330, 130, { op: man, stroke: C.gold, sw: 3 }) +
+         txt(268, 602, "Signed mandate", { size: 25, w: 700, fill: C.navy, op: man }) +
+         txt(268, 636, "Case: Mariam only", { size: 22, fill: C.ink, op: man }) + txt(268, 668, "Task: her insurance check", { size: 22, fill: C.ink, op: man });
+    return `<g transform="translate(960 470) scale(${z}) translate(-960 -470)">${s}</g>` + label() +
+      band("Illustration", "WAKALA checks signed, case-specific authority", C.gold);
+  },
+  // 4 · an authorized officer restores valid authority
+  d(t) {
+    const z = 1.03;
+    const off = span(t, 0.1, 0.7), swap = span(t, 0.8, 1.8);
+    let s = base(t, { insCol: C.muted, insOp: 1 - swap, insFlowOp: 0.9 * (1 - swap), dots: true });
+    const [sx, sy] = [A[1][0] + 0, A[1][1] + 0];
+    s += agent(sx + 40 * (1 - swap), sy + 0, "Standby Insurance Agent", "trusted replacement", { op: swap, col: C.teal, scale: 1.02 });
+    s += card(240, 560, 340, 150, { op: off, stroke: C.navy, sw: 3 }) + `<g opacity="${off}"><circle cx="300" cy="635" r="30" fill="${C.navy}"/>
+      <path d="M300 615 l14 6 v10 c0 10 -6 17 -14 20 c-8 -3 -14 -10 -14 -20 v-10 z" fill="#fff"/></g>` +
+      txt(350, 625, "Authorized officer", { size: 24, w: 700, fill: C.navy, op: off }) + txt(350, 657, "signed in · reviews", { size: 20, fill: C.muted, op: off });
+    s += tick(560, 575, span(t, 1.6, 2.0), C.teal);
+    return `<g transform="translate(960 470) scale(${z}) translate(-960 -470)">${s}</g>` + label() +
+      band("Illustration", "An authorized officer restores valid authority", C.gold);
+  },
+};
+
+window.draw = (scene, t) => { document.getElementById("s").innerHTML = SCENES[scene](t); };
+window.ready = true;
+</script>
+</body></html>

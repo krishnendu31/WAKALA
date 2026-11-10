@@ -1,0 +1,51 @@
+﻿[
+    {
+        "clip":  "s1_1",
+        "expected_words":  19,
+        "matched":  15,
+        "ratio":  0.79,
+        "heard":  "Across gov\u0027t a IE agents are beginning to work together on citizen services king eligibility sharing tasks in collecting fees"
+    },
+    {
+        "clip":  "s2_1",
+        "expected_words":  23,
+        "matched":  20,
+        "ratio":  0.87,
+        "heard":  "But what happens when a legitimate agent with the genuine identity just for another citizens record when it was never authorized to see"
+    },
+    {
+        "clip":  "s3_1",
+        "expected_words":  9,
+        "matched":  7,
+        "ratio":  0.78,
+        "heard":  "Block all a checks every request against signed a specific authority"
+    },
+    {
+        "clip":  "s3_2",
+        "expected_words":  14,
+        "matched":  12,
+        "ratio":  0.86,
+        "heard":  "In our working prototype quest is blocked before any protected data is returned"
+    },
+    {
+        "clip":  "s4_1",
+        "expected_words":  21,
+        "matched":  19,
+        "ratio":  0.9,
+        "heard":  "An authorized security officer reviews the incident means only the affected authority and hence the task to a trusted standby agent"
+    },
+    {
+        "clip":  "s5_1",
+        "expected_words":  19,
+        "matched":  14,
+        "ratio":  0.74,
+        "heard":  "After the required approval marion\u0027s renewal complete safely every decision stays on record other citizens application continues untouched"
+    },
+    {
+        "clip":  "s6_1",
+        "expected_words":  5,
+        "matched":  4,
+        "ratio":  0.8,
+        "heard":  "Block all a autonomous Ai accountable actions"
+    }
+]

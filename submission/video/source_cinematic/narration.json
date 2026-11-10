@@ -1,0 +1,66 @@
+{
+ "voice_note": "Local Windows text-to-speech (Microsoft Zira). No online voice service. A human recording is recommended.",
+ "scenes": [
+  {
+   "id": "s1",
+   "start": 0,
+   "end": 11,
+   "rate": -1,
+   "title": "Agents collaborate",
+   "lines": [
+    "Across government, AI agents are beginning to work together on citizen services: checking eligibility, sharing tasks, and collecting fees."
+   ]
+  },
+  {
+   "id": "s2",
+   "start": 11,
+   "end": 20,
+   "rate": 0,
+   "title": "A legitimate agent oversteps",
+   "lines": [
+    "But what happens when a legitimate agent, with a genuine identity, reaches for another citizen's record, one it was never authorized to see?"
+   ]
+  },
+  {
+   "id": "s3",
+   "start": 20,
+   "end": 32,
+   "rate": -1,
+   "title": "WAKALA blocks it",
+   "lines": [
+    "WAKALA checks every request against signed, case-specific authority.",
+    "In our working prototype, the request is blocked before any protected data is returned."
+   ]
+  },
+  {
+   "id": "s4",
+   "start": 32,
+   "end": 42,
+   "rate": -1,
+   "title": "An officer restores valid authority",
+   "lines": [
+    "An authorized security officer reviews the incident, contains only the affected authority, and hands the task to a trusted standby agent."
+   ]
+  },
+  {
+   "id": "s5",
+   "start": 42,
+   "end": 53,
+   "rate": -1,
+   "title": "The service recovers",
+   "lines": [
+    "After the required approval, Mariam's renewal completes safely, every decision stays on record, and another citizen's application continues untouched."
+   ]
+  },
+  {
+   "id": "s6",
+   "start": 53,
+   "end": 60,
+   "rate": -1,
+   "title": "WAKALA",
+   "lines": [
+    "WAKALA. Autonomous AI. Accountable actions."
+   ]
+  }
+ ]
+}

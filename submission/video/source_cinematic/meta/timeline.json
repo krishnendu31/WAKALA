@@ -1,0 +1,181 @@
+{
+ "total": 60.0,
+ "shots": [
+  {
+   "id": "a",
+   "kind": "anim",
+   "scene": "s1",
+   "start": 0.0,
+   "visible": 11.0
+  },
+  {
+   "id": "b",
+   "kind": "anim",
+   "scene": "s2",
+   "start": 11.0,
+   "visible": 9.0
+  },
+  {
+   "id": "c",
+   "kind": "anim",
+   "scene": "s3",
+   "start": 20.0,
+   "visible": 3.5
+  },
+  {
+   "id": "r_block",
+   "kind": "still",
+   "scene": "s3",
+   "start": 23.5,
+   "visible": 4.5
+  },
+  {
+   "id": "r_facts",
+   "kind": "still",
+   "scene": "s3",
+   "start": 28.0,
+   "visible": 4.0
+  },
+  {
+   "id": "d",
+   "kind": "anim",
+   "scene": "s4",
+   "start": 32.0,
+   "visible": 3.0
+  },
+  {
+   "id": "r_invest",
+   "kind": "still",
+   "scene": "s4",
+   "start": 35.0,
+   "visible": 3.4
+  },
+  {
+   "id": "r_officer",
+   "kind": "still",
+   "scene": "s4",
+   "start": 38.4,
+   "visible": 3.6
+  },
+  {
+   "id": "r_recovered",
+   "kind": "still",
+   "scene": "s5",
+   "start": 42.0,
+   "visible": 5.5
+  },
+  {
+   "id": "r_portal",
+   "kind": "still",
+   "scene": "s5",
+   "start": 47.5,
+   "visible": 5.5
+  },
+  {
+   "id": "close",
+   "kind": "still",
+   "scene": "s6",
+   "start": 53.0,
+   "visible": 7.0
+  }
+ ],
+ "narration": [
+  {
+   "file": "s1_1.wav",
+   "start": 0.61,
+   "length": 9.479
+  },
+  {
+   "file": "s2_1.wav",
+   "start": 11.35,
+   "length": 8.045
+  },
+  {
+   "file": "s3_1.wav",
+   "start": 20.702,
+   "length": 4.612
+  },
+  {
+   "file": "s3_2.wav",
+   "start": 25.564,
+   "length": 5.435
+  },
+  {
+   "file": "s4_1.wav",
+   "start": 32.35,
+   "length": 9.063
+  },
+  {
+   "file": "s5_1.wav",
+   "start": 42.369,
+   "length": 9.962
+  },
+  {
+   "file": "s6_1.wav",
+   "start": 53.901,
+   "length": 4.897
+  }
+ ],
+ "subtitles": [
+  {
+   "start": 0.61,
+   "end": 6.146,
+   "text": "Across government, AI agents are beginning to work together on citizen services:"
+  },
+  {
+   "start": 6.146,
+   "end": 10.09,
+   "text": "checking eligibility, sharing tasks, and collecting fees."
+  },
+  {
+   "start": 11.35,
+   "end": 15.17,
+   "text": "But what happens when a legitimate agent, with a genuine identity,"
+  },
+  {
+   "start": 15.17,
+   "end": 19.395,
+   "text": "reaches for another citizen's record, one it was never authorized to see?"
+  },
+  {
+   "start": 20.702,
+   "end": 25.314,
+   "text": "WAKALA checks every request against signed, case-specific authority."
+  },
+  {
+   "start": 25.564,
+   "end": 27.143,
+   "text": "In our working prototype,"
+  },
+  {
+   "start": 27.143,
+   "end": 30.998,
+   "text": "the request is blocked before any protected data is returned."
+  },
+  {
+   "start": 32.35,
+   "end": 35.815,
+   "text": "An authorized security officer reviews the incident,"
+  },
+  {
+   "start": 35.815,
+   "end": 41.413,
+   "text": "contains only the affected authority, and hands the task to a trusted standby agent."
+  },
+  {
+   "start": 42.369,
+   "end": 46.581,
+   "text": "After the required approval, Mariam's renewal completes safely,"
+  },
+  {
+   "start": 46.581,
+   "end": 52.331,
+   "text": "every decision stays on record, and another citizen's application continues untouched."
+  },
+  {
+   "start": 53.901,
+   "end": 58.799,
+   "text": "WAKALA. Autonomous AI. Accountable actions."
+  }
+ ]
+}

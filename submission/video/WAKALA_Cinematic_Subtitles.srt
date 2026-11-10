@@ -1,0 +1,47 @@
+1
+00:00:00,610 --> 00:00:06,146
+Across government, AI agents are beginning to work together on citizen services:
+
+2
+00:00:06,146 --> 00:00:10,090
+checking eligibility, sharing tasks, and collecting fees.
+
+3
+00:00:11,350 --> 00:00:15,170
+But what happens when a legitimate agent, with a genuine identity,
+
+4
+00:00:15,170 --> 00:00:19,395
+reaches for another citizen's record, one it was never authorized to see?
+
+5
+00:00:20,702 --> 00:00:25,314
+WAKALA checks every request against signed, case-specific authority.
+
+6
+00:00:25,564 --> 00:00:27,143
+In our working prototype,
+
+7
+00:00:27,143 --> 00:00:30,998
+the request is blocked before any protected data is returned.
+
+8
+00:00:32,350 --> 00:00:35,815
+An authorized security officer reviews the incident,
+
+9
+00:00:35,815 --> 00:00:41,413
+contains only the affected authority, and hands the task to a trusted standby agent.
+
+10
+00:00:42,369 --> 00:00:46,581
+After the required approval, Mariam's renewal completes safely,
+
+11
+00:00:46,581 --> 00:00:52,331
+every decision stays on record, and another citizen's application continues untouched.
+
+12
+00:00:53,901 --> 00:00:58,799
+WAKALA. Autonomous AI. Accountable actions.

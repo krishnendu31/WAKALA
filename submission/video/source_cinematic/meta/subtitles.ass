@@ -1,0 +1,24 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Sub,Segoe UI,36,&H00FFFFFF,&H00FFFFFF,&H00603E19,&H10603E19,0,0,0,0,100,100,0,0,3,12,0,2,260,260,30,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.61,0:00:06.15,Sub,,0,0,0,,Across government, AI agents are beginning to work together on citizen services:
+Dialogue: 0,0:00:06.15,0:00:10.09,Sub,,0,0,0,,checking eligibility, sharing tasks, and collecting fees.
+Dialogue: 0,0:00:11.35,0:00:15.17,Sub,,0,0,0,,But what happens when a legitimate agent, with a genuine identity,
+Dialogue: 0,0:00:15.17,0:00:19.39,Sub,,0,0,0,,reaches for another citizen's record, one it was never authorized to see?
+Dialogue: 0,0:00:20.70,0:00:25.31,Sub,,0,0,0,,WAKALA checks every request against signed, case-specific authority.
+Dialogue: 0,0:00:25.56,0:00:27.14,Sub,,0,0,0,,In our working prototype,
+Dialogue: 0,0:00:27.14,0:00:31.00,Sub,,0,0,0,,the request is blocked before any protected data is returned.
+Dialogue: 0,0:00:32.35,0:00:35.82,Sub,,0,0,0,,An authorized security officer reviews the incident,
+Dialogue: 0,0:00:35.82,0:00:41.41,Sub,,0,0,0,,contains only the affected authority, and hands the task to a trusted standby agent.
+Dialogue: 0,0:00:42.37,0:00:46.58,Sub,,0,0,0,,After the required approval, Mariam's renewal completes safely,
+Dialogue: 0,0:00:46.58,0:00:52.33,Sub,,0,0,0,,every decision stays on record, and another citizen's application continues untouched.
+Dialogue: 0,0:00:53.90,0:00:58.80,Sub,,0,0,0,,WAKALA. Autonomous AI. Accountable actions.
