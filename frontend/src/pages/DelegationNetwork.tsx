@@ -1,3 +1,4 @@
+import { CHART } from "@/lib/chartTheme";
 import "@xyflow/react/dist/style.css";
 import clsx from "clsx";
 import {
@@ -32,7 +33,7 @@ function statusTone(s: string): Tone {
   if (["invalid", "denied"].includes(s)) return "deny";
   return "neutral";
 }
-const EDGE_COLOR: Record<Tone, string> = { trust: "#2dd4bf", warn: "#fbbf24", deny: "#f43f5e", plan: "#a5b4fc", neutral: "#3b5280" };
+const EDGE_COLOR: Record<Tone, string> = { trust: CHART.emerald, warn: CHART.warn, deny: CHART.deny, plan: CHART.plan, neutral: CHART.neutral };
 
 type FlowData = { node: AuthorityGraphNode };
 type FlowNode = Node<FlowData, "authority">;
@@ -48,7 +49,7 @@ function AuthorityNode({ data, selected }: NodeProps<FlowNode>) {
       n.kind === "denied_attempt" && "border-dashed border-deny/60 bg-deny-soft/40",
       n.kind !== "child_mandate" && n.kind !== "denied_attempt" && "border-line-strong",
       tone === "warn" && "border-warn/50", tone === "deny" && n.kind !== "denied_attempt" && "border-deny/50",
-      selected && "!border-trust shadow-[0_0_0_3px_#2dd4bf22]",
+      selected && "!border-trust shadow-[0_0_0_3px_#0e4d4822]",
     )}>
       <Handle type="target" position={Position.Left} className="!size-2 !border-0 !bg-line-strong" />
       <div className="flex items-center gap-2">
@@ -82,14 +83,14 @@ function layout(graph: AuthorityGraph): { nodes: FlowNode[]; edges: Edge[] } {
   nodes.forEach((n) => { n.position.y += (max - (heights[COLUMN[n.data.node.kind] ?? 2] ?? max)) / 2; });
   const edges: Edge[] = graph.edges.map((e) => {
     const tone: Tone = e.kind === "denied_delegation" ? "deny" : statusTone(e.status);
-    const color = e.kind === "delegated" && tone === "trust" ? "#38bdf8" : EDGE_COLOR[tone];
+    const color = e.kind === "delegated" && tone === "trust" ? CHART.navy : EDGE_COLOR[tone];
     return {
       id: e.id, source: e.source, target: e.target,
       label: e.kind === "delegated" ? e.label : e.kind === "denied_delegation" ? `denied · ${e.label.split(", ")[0]?.replace("DENY_", "")}` : undefined,
       style: { stroke: color, strokeWidth: e.kind === "delegated" ? 2 : 1.3,
                strokeDasharray: tone === "deny" || tone === "warn" ? "5 4" : undefined },
       markerEnd: { type: MarkerType.ArrowClosed, color, width: 15, height: 15 },
-      labelStyle: { fill: "#9aa9c3", fontSize: 10.5 }, labelBgStyle: { fill: "#0a1222" }, labelBgPadding: [5, 2] as [number, number],
+      labelStyle: { fill: CHART.tick, fontSize: 10.5 }, labelBgStyle: { fill: CHART.surface }, labelBgPadding: [5, 2] as [number, number],
     };
   });
   return { nodes, edges };
@@ -213,7 +214,7 @@ function GraphPanel({ caseId }: { caseId: string }) {
                 nodeTypes={nodeTypes} onNodeClick={(_, n) => setSelected(n.id)} fitView fitViewOptions={{ padding: 0.08 }}
                 nodesDraggable={false} nodesConnectable={false} zoomOnScroll={false} minZoom={0.3} maxZoom={1.5}
                 proOptions={{ hideAttribution: true }}>
-                <Background color="#1b2a46" gap={22} size={1} />
+                <Background color={CHART.dots} gap={22} size={1} />
               </ReactFlow>
             </div>
           )}

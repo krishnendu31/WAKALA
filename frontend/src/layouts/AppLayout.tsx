@@ -10,9 +10,9 @@ import type { Health, SystemCapabilities } from "@/types/api";
 function BrandMark() {
   return (
     <svg viewBox="0 0 32 32" className="size-9 shrink-0" aria-hidden>
-      <rect width="32" height="32" rx="9" fill="#0d172b" stroke="#263a5e" />
-      <path d="M16 6 8 9.2v5.9c0 4.8 3.4 8.6 8 9.9 4.6-1.3 8-5.1 8-9.9V9.2L16 6Z" fill="none" stroke="#2dd4bf" strokeWidth="1.6" strokeLinejoin="round" />
-      <path d="m12.2 15.4 2.7 2.7 5-5.4" fill="none" stroke="#2dd4bf" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <rect width="32" height="32" rx="9" fill="#0e4d48" />
+      <path d="M16 6 8 9.2v5.9c0 4.8 3.4 8.6 8 9.9 4.6-1.3 8-5.1 8-9.9V9.2L16 6Z" fill="none" stroke="#ffffff" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="m12.2 15.4 2.7 2.7 5-5.4" fill="none" stroke="#d9b77e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -24,7 +24,6 @@ function ApiStatus() {
   return (
     <div className="flex items-center gap-2 text-xs text-fg-muted" title={API_BASE_URL}>
       <span className="relative flex size-2">
-        {online && <span className="absolute inline-flex size-full animate-ping rounded-full bg-trust/50 [animation-duration:2.4s]" />}
         <span className={clsx("relative inline-flex size-2 rounded-full", online ? "bg-trust" : health.status === "loading" ? "bg-fg-subtle" : "bg-deny")} />
       </span>
       {label}
@@ -64,14 +63,14 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-screen">
-      <aside className="sticky top-0 hidden h-screen w-[268px] shrink-0 flex-col border-r border-line bg-ink-950/70 backdrop-blur lg:flex">
+      <aside className="sticky top-0 hidden h-screen w-[268px] shrink-0 flex-col border-r border-line bg-ink-950 lg:flex">
         <div className="flex items-center gap-3 px-5 pb-6 pt-6">
           <BrandMark />
           <div className="min-w-0">
-            <p className="flex items-baseline gap-2 text-[17px] font-semibold tracking-[0.08em] text-fg">
+            <p className="flex items-baseline gap-2 text-[17px] font-semibold tracking-[0.08em] text-navy">
               WAKALA
               <span className="text-line-strong">|</span>
-              <span lang="ar" className="text-[17px] tracking-normal">وكالة</span>
+              <span lang="ar" className="text-[17px] tracking-normal text-gold">وكالة</span>
             </p>
             <p className="truncate text-[11.5px] text-fg-subtle">Autonomous AI. Accountable Authority.</p>
           </div>
@@ -90,7 +89,7 @@ export function AppLayout() {
               className={({ isActive }) =>
                 clsx(
                   "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[14px] transition-colors duration-150",
-                  isActive ? "bg-ink-750 text-fg" : "text-fg-muted hover:bg-ink-800 hover:text-fg",
+                  isActive ? "bg-trust-soft font-medium text-trust" : "text-fg-muted hover:bg-ink-800 hover:text-fg",
                 )
               }
             >
@@ -111,8 +110,8 @@ export function AppLayout() {
           </Fragment>))}
         </nav>
 
-        <div className="m-3 rounded-xl border border-warn/20 bg-warn-soft p-3.5">
-          <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-warn">
+        <div className="m-3 rounded-xl border border-gold/30 bg-gold-soft p-3.5">
+          <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-gold-strong">
             <FlaskConical className="size-3.5" aria-hidden /> Synthetic environment
           </p>
           <p className="mt-1.5 text-[12px] leading-relaxed text-fg-muted">
@@ -125,7 +124,7 @@ export function AppLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b border-line bg-ink-900/80 px-5 backdrop-blur-md lg:px-8">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b border-line bg-ink-900 px-5 lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex items-center gap-2 lg:hidden">
               <ShieldCheck className="size-5 text-trust" aria-hidden />

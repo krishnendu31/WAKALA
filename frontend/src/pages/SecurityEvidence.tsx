@@ -1,3 +1,4 @@
+import { CHART } from "@/lib/chartTheme";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import clsx from "clsx";
 import { AlertTriangle, BarChart3, Calculator, CheckCircle2, Clock, Database, FileText, Gauge, LifeBuoy, ShieldCheck, ShieldX, type LucideIcon } from "lucide-react";
@@ -13,7 +14,7 @@ type Summary = Record<string, any>;
 const LABEL = "Synthetic prototype benchmark — not production government statistics.";
 const CONFIGS = ["A", "B", "C"] as const;
 const CONFIG_NAME: Record<string, string> = { A: "A · role-only baseline", B: "B · case-bound WAKALA", C: "C · full WAKALA" };
-const COLORS: Record<string, string> = { A: "#f59e0b", B: "#a5b4fc", C: "#2dd4bf" };
+const COLORS: Record<string, string> = { A: CHART.gold, B: CHART.steel, C: CHART.emerald };
 
 const pct = (r?: Rate | null) => (r && r.denominator ? `${(100 * (r.rate ?? 0)).toFixed(1)}%` : "n/a");
 const frac = (r?: Rate | null) => (r && r.denominator ? `${r.numerator}/${r.denominator}` : "0 applicable");
@@ -251,10 +252,10 @@ function Evidence({ s }: { s: Summary }) {
           <div className="h-[380px] px-2 py-4">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chart} layout="vertical" margin={{ left: 40, right: 16 }}>
-                <CartesianGrid horizontal={false} stroke="#1b2a46" />
-                <XAxis type="number" domain={[0, 100]} tick={{ fill: "#64748f", fontSize: 11 }} unit="%" />
-                <YAxis type="category" dataKey="category" width={170} tick={{ fill: "#94a3b8", fontSize: 10.5 }} />
-                <Tooltip contentStyle={{ background: "#0d172b", border: "1px solid #263a5e", borderRadius: 10, fontSize: 12 }} labelStyle={{ color: "#e7edf7" }} />
+                <CartesianGrid horizontal={false} stroke={CHART.grid} />
+                <XAxis type="number" domain={[0, 100]} tick={{ fill: CHART.tick, fontSize: 11 }} unit="%" />
+                <YAxis type="category" dataKey="category" width={170} tick={{ fill: CHART.tickStrong, fontSize: 10.5 }} />
+                <Tooltip contentStyle={CHART.tooltip} labelStyle={CHART.tooltipLabel} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
                 {CONFIGS.map((k) => <Bar key={k} dataKey={k} name={CONFIG_NAME[k]} fill={COLORS[k]} barSize={5} />)}
               </BarChart>

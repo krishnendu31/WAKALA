@@ -1,65 +1,66 @@
 {
- "note": "Genuine screenshots of the locally running WAKALA prototype with synthetic data. Produced by real backend calls in shots.js; not edited.",
- "case_id": "CASE-F87AF2FC",
- "unrelated_case_id": "CASE-42821F2A",
- "first_case_id": "CASE-BFF43119",
+ "note": "Genuine screenshots of the locally running WAKALA prototype (light theme, WAKALA 2.0 design system) with synthetic data. Produced by real backend calls in source/capture_screenshots.js; not edited, except 04_receipt cropped to the dialog.",
+ "case_id": "CASE-5429C7D5",
+ "unrelated_case_id": "CASE-2DFB618D",
+ "first_case_id": "CASE-DE38D469",
  "approval_executed": true,
  "final_state": "COMPLETED",
  "recovery_status": "recovered",
  "continue_status": "completed",
  "unrelated_status": "completed",
  "audit_chain_valid": true,
- "audit_events": 386,
+ "audit_events": 495,
  "shots": [
   {
    "name": "01_portal_blocked",
    "url": "/portal",
-   "captured_at": "2026-11-10T16:19:31.335Z"
+   "captured_at": "2026-11-10T16:58:47.086Z"
   },
   {
    "name": "02_soc_incident",
    "url": "/soc",
-   "captured_at": "2026-11-10T16:19:39.750Z"
+   "captured_at": "2026-11-10T16:58:55.886Z"
   },
   {
    "name": "03_portal_recovered",
    "url": "/portal",
-   "captured_at": "2026-11-10T16:19:46.019Z"
+   "captured_at": "2026-11-10T16:59:01.933Z"
   },
   {
    "name": "04_receipt",
    "url": "(same page)",
-   "captured_at": "2026-11-10T16:19:51.710Z"
+   "captured_at": "2026-11-10T16:59:07.502Z"
   },
   {
    "name": "05_case_view",
-   "url": "/delegation?case=CASE-F87AF2FC",
-   "captured_at": "2026-11-10T16:19:56.977Z"
+   "url": "/delegation?case=CASE-5429C7D5",
+   "captured_at": "2026-11-10T16:59:12.680Z"
   },
   {
    "name": "06_attack_lab",
    "url": "/attack-lab",
-   "captured_at": "2026-11-10T16:20:15.716Z"
+   "captured_at": "2026-11-10T16:59:31.494Z"
   },
   {
    "name": "07_document_shield",
    "url": "/documents",
-   "captured_at": "2026-11-10T16:20:26.211Z"
+   "captured_at": "2026-11-10T16:59:42.046Z"
   },
   {
    "name": "08_evidence",
    "url": "/evidence",
-   "captured_at": "2026-11-10T16:20:33.059Z"
+   "captured_at": "2026-11-10T16:59:48.827Z"
   },
   {
    "name": "09_shadow",
    "url": "/shadow",
-   "captured_at": "2026-11-10T16:20:45.601Z"
+   "captured_at": "2026-11-10T17:00:01.515Z"
   },
   {
    "name": "10_soc_watch",
    "url": "/soc",
-   "captured_at": "2026-11-10T16:20:52.465Z"
+   "captured_at": "2026-11-10T17:00:08.832Z"
   }
- ]
+ ],
+ "captured_with_theme": "light"
 }

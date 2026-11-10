@@ -188,7 +188,7 @@ function PortalView() {
   return (
     <div className="-mx-2 space-y-5 sm:mx-0">
       {/* fictional service header */}
-      <div className="overflow-hidden rounded-2xl border border-line bg-gradient-to-r from-[#0a1a33] via-[#0c2240] to-[#0b2b3a]">
+      <div className="overflow-hidden rounded-2xl border border-line border-t-[3px] border-t-trust bg-ink-850 shadow-[var(--shadow-card)]">
         <div className="flex flex-wrap items-center gap-4 px-6 py-5">
           <span className="flex size-12 items-center justify-center rounded-xl border border-trust/30 bg-trust-soft"><Building2 className="size-6 text-trust" /></span>
           <div className="min-w-0 flex-1">
@@ -201,7 +201,7 @@ function PortalView() {
             <span className="text-[11px] text-fg-subtle">Not an official government website</span>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-3 border-t border-white/5 bg-black/20 px-6 py-2 text-[12px] text-fg-muted">
+        <div className="flex flex-wrap items-center gap-3 border-t border-line bg-ink-800 px-6 py-2 text-[12px] text-fg-muted">
           <Sparkles className="size-3.5 text-trust" />
           Assistant: <b className="text-fg">{cfg?.agent_mode ?? "…"}</b>
           {view && <><span className="text-line-strong">|</span>Case <span className="font-mono text-fg">{view.case_id}</span> · {view.state}</>}

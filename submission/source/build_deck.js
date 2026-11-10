@@ -250,7 +250,7 @@ async function main() {
       const x = 0.6 + i * 4.1, w = 3.85;
       card(pres, s, x, 1.5, w, 4.55, {});
       const iw = w - 0.24, bh = iw / 1.3, ar = p[5], ih = Math.min(bh, iw / ar), iw2 = ih * ar;
-      s.addShape(pres.shapes.RECTANGLE, { x: x + 0.12, y: 1.62, w: iw, h: bh, fill: { color: C.navy }, line: { color: C.navy } });
+      s.addShape(pres.shapes.RECTANGLE, { x: x + 0.12, y: 1.62, w: iw, h: bh, fill: { color: "F7F6F2" }, line: { color: C.line, width: 0.75 } });
       s.addImage({ path: p[0], x: x + 0.12 + (iw - iw2) / 2, y: 1.62 + (bh - ih) / 2, w: iw2, h: ih });
       const ty = 1.62 + bh + 0.2;
       s.addShape(pres.shapes.OVAL, { x: x + 0.2, y: ty, w: 0.4, h: 0.4, fill: { color: p[4] }, line: { color: p[4] } });
@@ -260,7 +260,7 @@ async function main() {
     });
     card(pres, s, 0.6, 6.2, 12.13, 0.6, { fill: C.greenSoft, line: "A7DCC4", noShadow: true });
     s.addImage({ path: I.check, x: 0.8, y: 6.33, w: 0.34, h: 0.34 });
-    s.addText("Same run: an unrelated citizen's case completed  ·  audit chain verified (386 events)  ·  plain-language AI-activity receipt for Mariam",
+    s.addText("Same run: an unrelated citizen's case completed  ·  audit chain verified (495 events)  ·  plain-language AI-activity receipt for Mariam",
       { x: 1.3, y: 6.2, w: 11.3, h: 0.6, fontFace: B, fontSize: 12, color: C.ink, margin: 0, valign: "middle" });
     NOTES[4] = "[1:05–1:40]  This is the real prototype. Mariam asks to renew her residency permit. The delegated Insurance Agent tries to read another citizen's record. WAKALA blocks it before it runs — no data returned. Security Operations sees the same case: the violated rule, the verified chain, and only that one mandate suspended. An officer reassigns the task, and Mariam's renewal completes. An unrelated case never stopped.\n\n(Screens: submission/screenshots 01, 02, 03 — captured from the running prototype, unedited apart from cropping.)";
     s.addNotes(NOTES[4]);

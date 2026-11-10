@@ -1,3 +1,4 @@
+import { CHART } from "@/lib/chartTheme";
 import clsx from "clsx";
 import { ArrowRight, Bot, CheckCircle2, Circle, Database, FileSignature, Gauge, Landmark, Link2, RefreshCw, ShieldCheck, Users, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
@@ -191,16 +192,16 @@ function CapabilityStatusCard() {
               <div className="h-[150px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chart} margin={{ top: 4, right: 4, bottom: 0, left: -24 }} barCategoryGap="28%">
-                    <CartesianGrid vertical={false} stroke="#1b2a46" />
-                    <XAxis dataKey="phase" tick={{ fill: "#64748f", fontSize: 12 }} axisLine={false} tickLine={false} />
-                    <YAxis allowDecimals={false} tick={{ fill: "#64748f", fontSize: 12 }} axisLine={false} tickLine={false} />
+                    <CartesianGrid vertical={false} stroke={CHART.grid} />
+                    <XAxis dataKey="phase" tick={{ fill: CHART.tick, fontSize: 12 }} axisLine={false} tickLine={false} />
+                    <YAxis allowDecimals={false} tick={{ fill: CHART.tick, fontSize: 12 }} axisLine={false} tickLine={false} />
                     <Tooltip
-                      cursor={{ fill: "#16243f66" }}
-                      contentStyle={{ background: "#0d172b", border: "1px solid #263a5e", borderRadius: 10, fontSize: 12 }}
-                      labelStyle={{ color: "#e7edf7" }}
+                      cursor={{ fill: CHART.cursor }}
+                      contentStyle={CHART.tooltip}
+                      labelStyle={CHART.tooltipLabel}
                     />
-                    <Bar dataKey="implemented" stackId="a" fill="#2dd4bf" name="Implemented" />
-                    <Bar dataKey="planned" stackId="a" fill="#a5b4fc99" name="Planned" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="implemented" stackId="a" fill={CHART.emerald} name="Implemented" />
+                    <Bar dataKey="planned" stackId="a" fill={CHART.plan + "99"} name="Planned" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

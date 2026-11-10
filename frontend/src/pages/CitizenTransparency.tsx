@@ -11,7 +11,7 @@ const insuranceTone: Record<Citizen["insurance"]["status"], Tone> = { valid: "tr
 
 function Receipt({ citizen, agents, service }: { citizen: Citizen; agents: AgentPassport[]; service: GovernmentService }) {
   return (
-    <div className="relative mx-auto max-w-[620px] overflow-hidden rounded-2xl border border-line-strong bg-[#0c1528] shadow-[0_24px_60px_-30px_#000]">
+    <div className="relative mx-auto max-w-[620px] overflow-hidden rounded-2xl border border-line bg-ink-850 shadow-[var(--shadow-card)]">
       <div
         className="pointer-events-none absolute inset-0 grid select-none place-items-center text-[38px] font-bold uppercase tracking-[0.22em] text-warn/[0.06] [transform:rotate(-18deg)]"
         aria-hidden

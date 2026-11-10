@@ -37,7 +37,7 @@ export function Badge({ tone = "neutral", children, dot, className }: { tone?: T
 
 export function SyntheticBadge({ label = "Synthetic data" }: { label?: string }) {
   return (
-    <Badge tone="warn" className="uppercase tracking-wider">
+    <Badge className="border-gold/35 bg-gold-soft uppercase tracking-wider text-gold-strong">
       <FlaskConical className="size-3" aria-hidden />
       {label}
     </Badge>
@@ -62,8 +62,8 @@ export function PageHeader({
       <div className="max-w-3xl">
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <h1 className="text-[28px] font-semibold tracking-tight text-fg">{title}</h1>
-          <span lang="ar" dir="rtl" className="text-xl text-fg-subtle">
+          <h1 className="text-[28px] font-semibold tracking-tight text-navy">{title}</h1>
+          <span lang="ar" dir="rtl" className="text-xl text-gold">
             {titleAr}
           </span>
         </div>

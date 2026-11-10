@@ -12,7 +12,7 @@ export function AiActivityReceipt({ caseId, onClose }: { caseId: string; onClose
   const [err, setErr] = useState<string | null>(null);
   useEffect(() => { apiGet<any>(`/api/portal/cases/${caseId}/receipt`).then(setR).catch((e) => setErr(String(e))); }, [caseId]);
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="My AI Activity">
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-fg/45 p-4" role="dialog" aria-modal="true" aria-label="My AI Activity">
       <div className="my-8 w-full max-w-[760px] rounded-2xl border border-line bg-ink-900 shadow-2xl">
         <div className="flex items-center gap-3 border-b border-line px-6 py-4">
           <ReceiptText className="size-5 text-trust" />

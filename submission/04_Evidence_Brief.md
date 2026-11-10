@@ -29,7 +29,7 @@
 | Test suite | **493** backend tests pass, including 34 security invariants | `FINAL_TECHNICAL_READINESS.md` §1, §3 |
 | Demo verified end-to-end | **12 / 12** steps, 15 routes render | `FINAL_TECHNICAL_READINESS.md` §1, §5 |
 | Shadow Mode prediction vs enforcement | **11 / 11** matched | `docs/PHASE6.md` M5 |
-| Demo audit chain | Verified, 386 events at capture | `submission/screenshots/CAPTURE_LOG.json` |
+| Demo audit chain | Verified, 495 events at capture (cumulative demo database) | `submission/screenshots/CAPTURE_LOG.json` |
 
 ## 3. How to read these numbers
 
