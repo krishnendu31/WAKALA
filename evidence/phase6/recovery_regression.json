@@ -1,0 +1,215 @@
+{
+ "generated_at": "2026-11-10T15:11:33.448507+00:00",
+ "git": {
+  "commit": "4440f91bd93493c2dd5ddcf22254f0a1b357ae57",
+  "branch": "phase-6-intelligent-assurance",
+  "dirty": false
+ },
+ "incidents_per_condition": 20,
+ "policies": {
+  "phase5-original": {
+   "independent_incidents": {
+    "recovery_success": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 20,
+     "revoked": 0,
+     "none": 0
+    },
+    "request_rate_incidents_during_run": 0,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 17.27,
+    "condition": "Each incident in its own fresh isolated environment (no cross-incident history)."
+   },
+   "back_to_back_shared": {
+    "recovery_success": {
+     "numerator": 2,
+     "denominator": 20,
+     "rate": 0.1
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 3,
+     "attack_requests_denied": 3,
+     "designed_holds_expected": 3,
+     "holds_recorded": 13,
+     "legitimate_requests_held_unexpectedly": 10,
+     "legitimate_requests_denied": 24,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 2,
+     "revoked": 1,
+     "none": 0
+    },
+    "request_rate_incidents_during_run": 35,
+    "failures": [
+     {
+      "incident": 3,
+      "failed_at": "9_unrelated_case_unaffected",
+      "cause": null
+     },
+     {
+      "incident": 4,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "legitimate setup request held for approval: REQUEST_RATE"
+     },
+     {
+      "incident": 5,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "legitimate setup request held for approval: REQUEST_RATE"
+     },
+     {
+      "incident": 6,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "legitimate setup request held for approval: REQUEST_RATE"
+     },
+     {
+      "incident": 7,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "legitimate setup request held for approval: REQUEST_RATE"
+     },
+     {
+      "incident": 8,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "legitimate setup request held for approval: REQUEST_RATE"
+     },
+     {
+      "incident": 9,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "legitimate setup request held for approval: REQUEST_RATE"
+     },
+     {
+      "incident": 10,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 11,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 12,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 13,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 14,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 15,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 16,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 17,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 18,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 19,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     },
+     {
+      "incident": 20,
+      "failed_at": "1_valid_case_initiated",
+      "cause": "setup request denied"
+     }
+    ],
+    "audit_chain_valid": true,
+    "wall_seconds": 2.27,
+    "condition": "All incidents back-to-back at machine speed in ONE environment: same agents, rules see the accumulated history (stress condition)."
+   }
+  },
+  "watch-2.0": {
+   "independent_incidents": {
+    "recovery_success": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 20,
+     "revoked": 0,
+     "none": 0
+    },
+    "request_rate_incidents_during_run": 0,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 17.41,
+    "condition": "Each incident in its own fresh isolated environment (no cross-incident history)."
+   },
+   "back_to_back_shared": {
+    "recovery_success": {
+     "numerator": 20,
+     "denominator": 20,
+     "rate": 1.0
+    },
+    "legitimate_impact": {
+     "attack_requests_sent": 20,
+     "attack_requests_denied": 20,
+     "designed_holds_expected": 20,
+     "holds_recorded": 20,
+     "legitimate_requests_held_unexpectedly": 0,
+     "legitimate_requests_denied": 0,
+     "note": "From the audit trail. One hold per recovery is by design (the resumed delegation needs officer approval)."
+    },
+    "containment_actions": {
+     "suspended": 2,
+     "revoked": 18,
+     "none": 0
+    },
+    "request_rate_incidents_during_run": 0,
+    "failures": [],
+    "audit_chain_valid": true,
+    "wall_seconds": 8.02,
+    "condition": "All incidents back-to-back at machine speed in ONE environment: same agents, rules see the accumulated history (stress condition)."
+   }
+  }
+ },
+ "changes": [
+  "REQUEST_RATE counts one agent's requests within ONE case (threshold unchanged: 30 per 60 s). Agent-wide volume is a separate AGENT_REQUEST_VOLUME signal (60 per 60 s) that never contains a case; spread over >=5 cases with <=10% denials it is recorded as OBSERVE (legitimate batch).",
+  "REPEATED_DENIALS spread over several cases becomes an agent-level ALERT instead of being attached to the latest case; inside one case the Phase 5 behaviour is unchanged.",
+  "ALERT-level incidents never require approval or contain anything; approval gating considers only incidents at REQUIRE_APPROVAL or above."
+ ]
+}
