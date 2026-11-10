@@ -163,6 +163,11 @@ CREATE TABLE IF NOT EXISTS officer_credentials (
     password_hash TEXT NOT NULL,
     updated_at  TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS portal_runs (run_id TEXT PRIMARY KEY, case_id TEXT NOT NULL, created_at TEXT NOT NULL, payload TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS portal_runs_case ON portal_runs(case_id);
+CREATE TABLE IF NOT EXISTS portal_documents (case_id TEXT NOT NULL, document_id TEXT NOT NULL, attached_at TEXT NOT NULL,
+                                             PRIMARY KEY (case_id, document_id));
+CREATE TABLE IF NOT EXISTS portal_demo (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS shield_documents (
     document_id TEXT PRIMARY KEY,
     sha256      TEXT NOT NULL,

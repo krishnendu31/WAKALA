@@ -124,7 +124,12 @@ def test_no_key_generation_or_signing_endpoints(client):
                            ("/api/evidence/business-model", "POST"),  # Phase 5: stateless assumption calculator
                            # Document Shield: dev-only upload/sample/adversarial test; officer-authenticated review
                            ("/api/documents", "POST"), ("/api/documents/samples/{key}", "POST"),
-                           ("/api/documents/{doc_id}/adversarial-test", "POST"), ("/api/documents/{doc_id}/review", "POST")}
+                           ("/api/documents/{doc_id}/adversarial-test", "POST"), ("/api/documents/{doc_id}/review", "POST"),
+                           # Government AI Portal (fictional): all developer-mode only
+                           ("/api/portal/requests", "POST"), ("/api/portal/scenes/incident", "POST"), ("/api/portal/demo/reset", "POST"),
+                           ("/api/portal/cases/{case_id}/continue", "POST"), ("/api/portal/cases/{case_id}/documents", "POST"),
+                           ("/api/portal/cases/{case_id}/documents/samples/{key}", "POST"),
+                           ("/api/portal/cases/{case_id}/documents/{doc_id}/injection-test", "POST")}
 
 
 # --- developer endpoints ---------------------------------------------------------

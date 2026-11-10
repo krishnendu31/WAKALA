@@ -56,6 +56,11 @@ def need(p: OfficerPrincipal, permission: str) -> None:
         raise HTTPException(status_code=403, detail={"code": "PERMISSION_DENIED", "message": f"Requires {permission}."})
 
 
+def _first_name(env: Any, citizen_ref: str) -> str | None:
+    c = env.repo.get_citizen(citizen_ref)
+    return c.full_name.split()[0] if c else None
+
+
 def _run(fn, *args: Any, **kw: Any) -> Any:  # type: ignore[no-untyped-def]
     try:
         return iv.guarded(fn, *args, **kw)  # refused attempts are audited
@@ -163,6 +168,14 @@ def investigate(incident_id: IncidentPath, env: Env, p: Officer) -> dict[str, An
         rows = env.db.query("SELECT payload FROM audit_events WHERE event_id = ?", (eid,))
         if rows:
             evidence.append(AuditEvent.model_validate_json(rows[0]["payload"]).model_dump(mode="json"))
+    case_for_explain = env.cases.get(inc.case_id) if inc.case_id else None
+    from app.portal.explain import explain as _explain
+    for ev in evidence:
+        target = ev["evidence_metadata"].get("target_resource")
+        ev["plain_english"] = _explain({"allowed": ev["decision"] == "allowed", "reason_codes": ev["reason_codes"]}, agent_id=ev["actor"],
+                                       tool_name=ev["action"], parameters={"citizen_ref": target} if str(target).startswith("C-") else {},
+                                       case_citizen=case_for_explain.citizen_ref if case_for_explain else None,
+                                       citizen_name=_first_name(env, case_for_explain.citizen_ref) if case_for_explain else None)
     out: dict[str, Any] = {"incident": inc.model_dump(mode="json"), "evidence": evidence,
                            "violated_rules": sorted({c for e in evidence for c in e["reason_codes"]})}
     if inc.case_id:

@@ -3,6 +3,7 @@ fastapi==0.115.12
 uvicorn==0.34.2
 pydantic==2.11.4
 cryptography==44.0.3   # Ed25519 mandate signatures (Phase 1)
+anthropic==2.7.0       # OPTIONAL: model-driven agent (only used when WAKALA_AGENT_MODEL_PROVIDER=anthropic)
 pymupdf==1.25.5        # Document Shield PDF inspection (AGPL-3.0 or commercial licence; see docs/DOCUMENT_SHIELD.md)
 
 # Test tooling
