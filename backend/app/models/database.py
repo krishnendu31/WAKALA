@@ -163,6 +163,14 @@ CREATE TABLE IF NOT EXISTS officer_credentials (
     password_hash TEXT NOT NULL,
     updated_at  TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS shield_documents (
+    document_id TEXT PRIMARY KEY,
+    sha256      TEXT NOT NULL,
+    created_at  TEXT NOT NULL,
+    disposition TEXT NOT NULL,
+    version     INTEGER NOT NULL DEFAULT 1,
+    payload     TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS officer_sessions (
     token_hash  TEXT PRIMARY KEY,
     officer_id  TEXT NOT NULL,

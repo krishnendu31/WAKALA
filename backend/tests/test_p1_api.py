@@ -121,7 +121,10 @@ def test_no_key_generation_or_signing_endpoints(client):
     assert non_officer == {("/api/gateway/authorize", "POST"), ("/api/gateway/execute", "POST"), ("/api/dev/scenarios/{key}/run", "POST"),
                            ("/api/workflow/scenarios/{key}/run", "POST"), ("/api/workflow/recovery/{case_id}/continue", "POST"),
                            ("/api/workflow/oversight-comparison", "POST"),
-                           ("/api/evidence/business-model", "POST")}  # Phase 5: stateless assumption calculator
+                           ("/api/evidence/business-model", "POST"),  # Phase 5: stateless assumption calculator
+                           # Document Shield: dev-only upload/sample/adversarial test; officer-authenticated review
+                           ("/api/documents", "POST"), ("/api/documents/samples/{key}", "POST"),
+                           ("/api/documents/{doc_id}/adversarial-test", "POST"), ("/api/documents/{doc_id}/review", "POST")}
 
 
 # --- developer endpoints ---------------------------------------------------------

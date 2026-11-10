@@ -38,11 +38,12 @@ LOCKOUT_WINDOW = timedelta(minutes=10)
 ROLE_PERMISSIONS: dict[str, frozenset[str]] = {
     "auditor": frozenset({"incidents.read", "cases.read", "approvals.read", "evidence.read"}),
     "case_officer": frozenset({"incidents.read", "cases.read", "approvals.read", "evidence.read", "incidents.update",
-                               "approvals.decide", "mandates.suspend", "mandates.reinstate", "cases.resume", "cases.reassign"}),
+                               "approvals.decide", "mandates.suspend", "mandates.reinstate", "cases.resume", "cases.reassign",
+                               "documents.review"}),
     "security_supervisor": frozenset({"incidents.read", "cases.read", "approvals.read", "evidence.read", "incidents.update",
                                       "approvals.decide", "mandates.suspend", "mandates.reinstate", "mandates.revoke",
                                       "cases.resume", "cases.reassign", "cases.revoke_authority", "agents.suspend",
-                                      "agents.revoke", "incidents.close", "all_entities"}),
+                                      "agents.revoke", "incidents.close", "documents.review", "all_entities"}),
 }
 
 
