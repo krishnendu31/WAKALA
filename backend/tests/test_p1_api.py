@@ -129,7 +129,9 @@ def test_no_key_generation_or_signing_endpoints(client):
                            ("/api/portal/requests", "POST"), ("/api/portal/scenes/incident", "POST"), ("/api/portal/demo/reset", "POST"),
                            ("/api/portal/cases/{case_id}/continue", "POST"), ("/api/portal/cases/{case_id}/documents", "POST"),
                            ("/api/portal/cases/{case_id}/documents/samples/{key}", "POST"),
-                           ("/api/portal/cases/{case_id}/documents/{doc_id}/injection-test", "POST")}
+                           ("/api/portal/cases/{case_id}/documents/{doc_id}/injection-test", "POST"),
+                           # Phase 6 Attack Lab (dev-only, isolated environments)
+                           ("/api/attack-lab/run", "POST"), ("/api/attack-lab/reset", "POST")}
 
 
 # --- developer endpoints ---------------------------------------------------------

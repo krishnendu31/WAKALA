@@ -1,4 +1,4 @@
-import { Activity, BarChart3, Bot, Building2, FileSearch, FileSignature, FlaskConical, Landmark, LayoutDashboard, Network, ReceiptText, ShieldAlert, type LucideIcon } from "lucide-react";
+import { Activity, BarChart3, Bot, Building2, Swords, FileSearch, FileSignature, FlaskConical, Landmark, LayoutDashboard, Network, ReceiptText, ShieldAlert, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   path: string;
@@ -11,6 +11,7 @@ export interface NavItem {
 /** First five: the presentation order for the end-to-end demonstration. The rest stay fully functional. */
 export const NAV_ITEMS: NavItem[] = [
   { path: "/portal", label: "Government AI Portal", labelAr: "بوابة الخدمات الذكية", icon: Building2, section: "demo" },
+  { path: "/attack-lab", label: "Attack Lab", labelAr: "مختبر الهجمات", icon: Swords, section: "demo" },
   { path: "/soc", label: "Security Operations", labelAr: "العمليات الأمنية", icon: ShieldAlert, section: "demo" },
   { path: "/delegation", label: "Delegation Network", labelAr: "شبكة التفويض", icon: Network, section: "demo" },
   { path: "/documents", label: "Document Shield", labelAr: "درع المستندات", icon: FileSearch, section: "demo" },

@@ -40,7 +40,10 @@ def explain(decision: dict[str, Any], *, agent_id: str, tool_name: str, paramete
     if "DENY_REPLAYED_REQUEST" in codes:
         return "Blocked: this exact request had already been used once and cannot be replayed."
     target = p.get("citizen_ref")
-    if ({"DENY_CASE_SCOPE_VIOLATION", "DENY_SCOPE_VIOLATION"} & codes) and target and case_citizen and target != case_citizen:
+    if any(c.startswith("DENY_DELEGATION") for c in codes):
+        return f"Blocked: the {who} tried to hand on more authority than it was given."
+    if (({"DENY_CASE_SCOPE_VIOLATION", "DENY_SCOPE_VIOLATION"} & codes) and isinstance(target, str) and target.startswith("C-")
+            and case_citizen and target != case_citizen):
         return (f"Blocked: this AI agent was authorized to {action} for {owner}, not another citizen's record ({target}).")
     if "DENY_AMOUNT_EXCEEDS_LIMIT" in codes or "DENY_RECIPIENT_NOT_ALLOWLISTED" in codes:
         parts = []
