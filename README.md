@@ -17,13 +17,50 @@ enforces authority outside the agent, at the boundary of every protected tool.
 | | |
 |---|---|
 | Competition | UAE Hackathon 2026 — Challenge #27, *Secure Agentic AI for Government Services* (UAE Cyber Security Council) |
-| Status | **Phase 5: adversarial security benchmark and evidence** on top of Phase 4's continuous assurance, human intervention and safe recovery, and Phase 3's signed mandate chains, Phase 2's protected services and Phase 1's security engine. **Development prototype — not production-ready or certified. Agents are simulated; keys are development keys; single process.** |
+| Status | **Integrated demonstration: fictional Government AI Services Portal + Security Operations**, with Document Shield and the Phase 5 adversarial benchmark, on top of Phase 4's continuous assurance, human intervention and safe recovery, and Phase 3's signed mandate chains, Phase 2's protected services and Phase 1's security engine. **Development prototype — not production-ready or certified. Agents are simulated; keys are development keys; single process.** |
 | Data | **100% synthetic.** No real people, entities, accounts or government systems. |
 
 The "digital power of attorney" framing is a conceptual analogy. WAKALA mandates are technical authorization artefacts and
 are **not** legally recognised powers of attorney.
 
 ---
+
+## Live demonstration (3 minutes)
+
+One story: a citizen asks a government AI assistant to renew a residency permit, and AI agents collaborate to process
+it. WAKALA verifies every sensitive action independently, blocks an unauthorized request, and lets a human officer
+intervene. The legitimate service then continues.
+
+```bash
+cd backend
+.venv\Scripts\python run_dev.py
+```
+
+```bash
+cd frontend
+npm run dev
+```
+
+```bash
+cd backend
+.venv\Scripts\python -m app.devtools.cli officers set-password OFF-0101
+```
+
+Open http://localhost:5173/portal and use **Open Security Operations side by side**. Then run the presenter scenes:
+1. **Normal service** — the request completes through six gateway-allowed signed steps, with delegated insurance and an
+   AED 500 synthetic fee.
+2. **Cross-citizen incident** — "Blocked: this AI agent was authorized to check insurance for Mariam, not another
+   citizen's record."
+3. **Accountable recovery** — the officer suspends only the affected authority, reassigns to the standby agent, and
+   approves the held step after re-authorization. The case completes and an unrelated case is unaffected.
+4. **Malicious PDF** — Document Shield quarantines the hidden white-text instruction, and a simulated manipulated agent's
+   AED 50,000 payment is denied by the gateway with the ledger unchanged.
+5. **Real evidence** — the Phase 5 benchmark, including its unfavourable back-to-back recovery result.
+
+The demo runs fully offline. The Residency Agent planner is **deterministic unless you opt in** to a real model
+(`WAKALA_AGENT_MODEL_PROVIDER=anthropic` plus `ANTHROPIC_API_KEY`). Details, the exact click path and the limitations
+are in [docs/GOVERNMENT_PORTAL.md](docs/GOVERNMENT_PORTAL.md). Document Shield is described in
+[docs/DOCUMENT_SHIELD.md](docs/DOCUMENT_SHIELD.md).
 
 ## Current capabilities (Phase 5)
 
