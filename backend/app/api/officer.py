@@ -43,6 +43,8 @@ def current_officer(request: Request, authorization: Annotated[str | None, Heade
     try:
         return env.officers.authenticate(_bearer(authorization))
     except AuthError as e:
+        if authorization:  # a presented-but-invalid credential is audited; a missing header is just a 401
+            iv.audit_session_rejection(env, e.code)
         raise HTTPException(status_code=e.status, detail={"code": e.code, "message": "Officer authentication required."}) from None
 
 
@@ -56,7 +58,7 @@ def need(p: OfficerPrincipal, permission: str) -> None:
 
 def _run(fn, *args: Any, **kw: Any) -> Any:  # type: ignore[no-untyped-def]
     try:
-        return fn(*args, **kw)
+        return iv.guarded(fn, *args, **kw)  # refused attempts are audited
     except AuthError as e:
         raise HTTPException(status_code=e.status, detail={"code": e.code, "message": "Not permitted."}) from None
     except iv.InterventionError as e:

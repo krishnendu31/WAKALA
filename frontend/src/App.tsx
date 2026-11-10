@@ -5,6 +5,7 @@ import { CommandCenter } from "@/pages/CommandCenter";
 import { AgentRegistry } from "@/pages/AgentRegistry";
 import { GovernmentWorkflow } from "@/pages/GovernmentWorkflow";
 import { SecurityOperations } from "@/pages/SecurityOperations";
+import { SecurityEvidence } from "@/pages/SecurityEvidence";
 import { DigitalMandates } from "@/pages/DigitalMandates";
 import { SecurityEvents } from "@/pages/SecurityEvents";
 import { CitizenTransparency } from "@/pages/CitizenTransparency";
@@ -20,6 +21,7 @@ export function App() {
         <Route element={<AppLayout />}>
           <Route index element={<CommandCenter />} />
           <Route path="soc" element={<SecurityOperations />} />
+          <Route path="evidence" element={<SecurityEvidence />} />
           <Route path="workflow" element={<GovernmentWorkflow />} />
           <Route path="agents" element={<AgentRegistry />} />
           <Route path="mandates" element={<DigitalMandates />} />

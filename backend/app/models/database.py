@@ -184,6 +184,8 @@ CREATE TABLE IF NOT EXISTS audit_events (
 );
 CREATE INDEX IF NOT EXISTS audit_actor ON audit_events(json_extract(payload, '$.actor'));
 CREATE INDEX IF NOT EXISTS audit_claimed ON audit_events(json_extract(payload, '$.claimed_agent_id'));
+CREATE INDEX IF NOT EXISTS audit_actor_seq ON audit_events(json_extract(payload, '$.actor'), seq);
+CREATE INDEX IF NOT EXISTS audit_claimed_seq ON audit_events(json_extract(payload, '$.claimed_agent_id'), seq);
 CREATE INDEX IF NOT EXISTS audit_case ON audit_events(json_extract(payload, '$.evidence_metadata.case_id'));
 """
 

@@ -112,8 +112,8 @@ function SignIn({ onSignedIn }: { onSignedIn: (o: Officer) => void }) {
           {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <UserCheck className="size-4" aria-hidden />} Sign in
         </button>
         <p className="text-[12px] leading-relaxed text-fg-subtle">
-          Development-only credentials are generated locally on first start and never shipped to the browser. Print them with{" "}
-          <span className="font-mono">.venv\Scripts\python -m app.devtools.cli officers credentials</span> in <span className="font-mono">backend/</span>.
+          Development-only passwords are never stored in clear or shipped to the browser. Issue one (shown once) with{" "}
+          <span className="font-mono">.venv\Scripts\python -m app.devtools.cli officers set-password OFF-0101</span> in <span className="font-mono">backend/</span>.
           Roles: OFF-0101 / OFF-0202 case officers, OFF-0900 security supervisor, OFF-0950 read-only auditor.
         </p>
       </form>

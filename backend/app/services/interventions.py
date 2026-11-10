@@ -76,6 +76,26 @@ def _case_event(env: WakalaEnvironment, case_id: str, p: OfficerPrincipal, kind:
 
 
 # --- incidents -----------------------------------------------------------------
+def guarded(fn: Any, env: WakalaEnvironment, p: OfficerPrincipal, *args: Any, **kw: Any) -> Any:
+    """Run an intervention; a refused attempt by an authenticated officer is itself audited (Phase 5:
+    previously only successful officer actions reached the hash-chained audit trail)."""
+    try:
+        return fn(env, p, *args, **kw)
+    except (AuthError, InterventionError) as e:
+        target = next((a for a in args if isinstance(a, str)), None)
+        _audit(env, p, "action_refused", {"attempted": getattr(fn, "__name__", "unknown"), "code": e.code,
+                                          "target": target[:64] if target else None})
+        raise
+
+
+def audit_session_rejection(env: WakalaEnvironment, code: str) -> None:
+    """Unauthenticated officer requests carry no trustworthy identity; record the rejection without one."""
+    env.audit.append(AuditEvent(
+        event_id=f"EVT-{secrets.token_hex(8).upper()}", timestamp=env.clock(), actor="UNAUTHENTICATED",
+        action="officer.session_rejected", decision="informational",
+        evidence_metadata={"code": code, "origin": "officer_console"}))
+
+
 def set_incident_status(env: WakalaEnvironment, p: OfficerPrincipal, incident_id: str, status: str, note: str) -> Any:
     _require(p, "incidents.close" if status in ("resolved", "dismissed") and not p.can("incidents.update") else "incidents.update")
     inc = env.assurance.incidents.get(incident_id)

@@ -10,6 +10,7 @@ details — only their own decision.
 from __future__ import annotations
 
 import logging
+import threading
 import secrets
 from datetime import datetime, timedelta
 from typing import Any
@@ -30,6 +31,8 @@ from app.services.cases import CaseStore, InvalidTransition, next_case, with_eve
 
 logger = logging.getLogger("wakala.assurance")
 LOOKBACK = max(r.window for r in DEFAULT_RULES)
+RECENT_EVENT_CAP = 120  # 2x the largest rule threshold (see _recent_for)
+assert RECENT_EVENT_CAP >= 2 * max(max(r.threshold, r.escalate_at or 0) for r in DEFAULT_RULES)
 # Operations that require officer approval while the case has an active incident.
 SENSITIVE_OPERATIONS = frozenset({"payment.collect_renewal_fee", "residency.complete_renewal", "delegation.commission_task"})
 
@@ -63,6 +66,10 @@ class SuspensionStore:
 
     def list(self) -> list[dict[str, Any]]:
         return [{k: r[k] for k in r.keys()} for r in self._db.query("SELECT * FROM mandate_suspensions ORDER BY suspended_at DESC")]
+
+
+class IncidentConflict(RuntimeError):
+    pass
 
 
 class IncidentStore:
@@ -107,7 +114,7 @@ class IncidentStore:
                                (after.status, after.severity, after.last_seen.isoformat(), after.version, after.model_dump_json(),
                                 before.incident_id, before.version))
             if cur.rowcount != 1:
-                raise RuntimeError("incident changed concurrently")
+                raise IncidentConflict("incident changed concurrently")
 
 
 class AssuranceService:
@@ -115,6 +122,7 @@ class AssuranceService:
         self.env = env
         self.incidents = IncidentStore(env.db)
         self.suspensions = SuspensionStore(env.db)
+        self._record_lock = threading.Lock()
 
     # --- facts ----------------------------------------------------------------
     def _facts(self, events: list[AuditEvent]) -> list[EventFacts]:
@@ -136,11 +144,20 @@ class AssuranceService:
 
     def _recent_for(self, subject: str, now: datetime) -> list[AuditEvent]:
         since = (now - LOOKBACK).isoformat()
-        rows = self.env.db.query(
-            "SELECT payload FROM audit_events WHERE timestamp >= ? AND json_extract(payload, '$.decision') IN ('allowed','denied','escalated') "
-            "AND (json_extract(payload, '$.actor') = ? OR json_extract(payload, '$.claimed_agent_id') = ?) ORDER BY seq",
-            (since, subject, subject))
-        return [AuditEvent.model_validate_json(r["payload"]) for r in rows]
+        # Phase 5 bottleneck fix (found by the stress benchmark): before, every event of the subject in the lookback
+        # was parsed on every decision, so cost grew linearly with the agent's recent history. Now two bounded
+        # queries are merged: the most recent RECENT_EVENT_CAP decisions of any kind (REQUEST_RATE) and the most
+        # recent RECENT_EVENT_CAP denials (all denial rules). Rule firing is exact while a subject has at most
+        # RECENT_EVENT_CAP denials in the lookback; beyond that counts saturate at the cap (still above every
+        # threshold), and a category-specific escalation could be missed if > cap other denials are interleaved.
+        # Each (column, decision set) branch walks a composite (subject, seq) index backwards and stops at the cap.
+        rows: dict[int, str] = {}
+        for column in ("$.actor", "$.claimed_agent_id"):
+            for decisions in ("'allowed','denied','escalated'", "'denied'"):
+                sql = (f"SELECT seq, payload FROM audit_events WHERE json_extract(payload, '{column}') = ? "
+                       f"AND json_extract(payload, '$.decision') IN ({decisions}) AND timestamp >= ? ORDER BY seq DESC LIMIT ?")
+                rows.update({r["seq"]: r["payload"] for r in self.env.db.query(sql, (subject, since, RECENT_EVENT_CAP))})
+        return [AuditEvent.model_validate_json(rows[s]) for s in sorted(rows)]
 
     # --- observer hook (called by the gateway after each audited decision) ------------
     def observe(self, event: AuditEvent, request: ActionRequest) -> list[Incident]:
@@ -159,6 +176,18 @@ class AssuranceService:
             return []
 
     def _record(self, finding: Finding, now: datetime) -> Incident:
+        # Phase 5 (found by the concurrency stress test): concurrent decisions for the same subject raced on the
+        # incident's compare-and-swap and the losing update was dropped. Re-read and re-apply, bounded.
+        for attempt in range(5):
+            try:
+                with self._record_lock:  # serialises read-modify-write within this process; CAS still guards others
+                    return self._record_once(finding, now)
+            except IncidentConflict:
+                if attempt == 4:
+                    raise
+        raise AssertionError("unreachable")
+
+    def _record_once(self, finding: Finding, now: datetime) -> Incident:
         key = f"{finding.rule.rule_id}|{finding.subject}|{finding.case_id or '-'}"
         existing = self.incidents.active_for(key)
         if existing is not None:

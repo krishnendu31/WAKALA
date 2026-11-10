@@ -1,4 +1,4 @@
-import { Activity, Bot, FileSignature, FlaskConical, Landmark, LayoutDashboard, Network, ReceiptText, ShieldAlert, type LucideIcon } from "lucide-react";
+import { Activity, BarChart3, Bot, FileSignature, FlaskConical, Landmark, LayoutDashboard, Network, ReceiptText, ShieldAlert, type LucideIcon } from "lucide-react";
 
 export interface NavItem {
   path: string;
@@ -10,6 +10,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { path: "/", label: "Command Center", labelAr: "مركز القيادة", icon: LayoutDashboard },
   { path: "/soc", label: "Security Operations", labelAr: "العمليات الأمنية", icon: ShieldAlert },
+  { path: "/evidence", label: "Security Evidence", labelAr: "الأدلة الأمنية", icon: BarChart3 },
   { path: "/workflow", label: "Government Workflow", labelAr: "سير العمل الحكومي", icon: Landmark },
   { path: "/agents", label: "Agent Registry", labelAr: "سجل الوكلاء", icon: Bot },
   { path: "/mandates", label: "Digital Mandates", labelAr: "التفويضات الرقمية", icon: FileSignature },

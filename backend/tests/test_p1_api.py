@@ -120,7 +120,8 @@ def test_no_key_generation_or_signing_endpoints(client):
     non_officer = {w for w in writable if not w[0].startswith("/api/officer/")}
     assert non_officer == {("/api/gateway/authorize", "POST"), ("/api/gateway/execute", "POST"), ("/api/dev/scenarios/{key}/run", "POST"),
                            ("/api/workflow/scenarios/{key}/run", "POST"), ("/api/workflow/recovery/{case_id}/continue", "POST"),
-                           ("/api/workflow/oversight-comparison", "POST")}
+                           ("/api/workflow/oversight-comparison", "POST"),
+                           ("/api/evidence/business-model", "POST")}  # Phase 5: stateless assumption calculator
 
 
 # --- developer endpoints ---------------------------------------------------------

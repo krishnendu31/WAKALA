@@ -159,6 +159,9 @@ def bootstrap(
     gateway.suspended_ids = env.assurance.suspensions.active_ids
     env.officers = OfficerAuth(db, clock, getattr(keystore, "officer_password", None))
     env.officers.provision()
+    if isinstance(keystore, DevKeystore):
+        from app.services.officers import migrate_legacy_plaintext
+        migrate_legacy_plaintext(env.officers, settings.dev_keys_dir)  # Phase 4 plaintext file -> hashes, then deleted
     env.approvals.expire_due(clock())  # pending approvals never survive past their TTL, including across restarts
     if issue_mandates:
         # Startup recovery: record outcomes for any authorized-but-unrecorded executions.

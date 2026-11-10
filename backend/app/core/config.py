@@ -23,6 +23,8 @@ DEFAULT_CORS_ORIGINS = (
 )
 DEFAULT_DB_PATH = str(BACKEND_DIR / "var" / "wakala.db")
 DEFAULT_DEV_KEYS_DIR = str(BACKEND_DIR / ".dev_keys")
+# Phase 5 generated benchmark evidence (committed JSON + Markdown; read-only for the API).
+DEFAULT_EVIDENCE_DIR = str(BACKEND_DIR.parent / "evidence" / "phase5")
 
 
 class ConfigurationError(RuntimeError):
@@ -62,6 +64,8 @@ class Settings:
     max_request_skew_seconds: int = 60
     # Lifetime of development mandates issued at startup.
     dev_mandate_lifetime_minutes: int = 120
+    # Where the Phase 5 evidence API reads generated benchmark files from.
+    evidence_dir: str = DEFAULT_EVIDENCE_DIR
 
     def __post_init__(self) -> None:
         if self.environment == "production":
@@ -81,4 +85,5 @@ class Settings:
             dev_mode=_flag("WAKALA_DEV_MODE"),
             dev_keys_dir=os.getenv("WAKALA_DEV_KEYS_DIR", DEFAULT_DEV_KEYS_DIR),
             max_request_skew_seconds=int(os.getenv("WAKALA_MAX_REQUEST_SKEW_SECONDS", "60")),
+            evidence_dir=os.getenv("WAKALA_EVIDENCE_DIR", DEFAULT_EVIDENCE_DIR),
         )

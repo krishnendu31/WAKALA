@@ -9,7 +9,8 @@ Run from backend/:  python -m app.devtools.cli <command>
     mandates revoke <ID> [reason]
     mandates tamper-demo <ID>    show that modifying a signed mandate breaks verification
     agents set-status <AGENT_ID> <active|suspended|revoked|pending_review>
-    officers credentials         print DEVELOPMENT-ONLY officer sign-in credentials (local file)
+    officers list                list officers and whether a password hash is set
+    officers set-password ID|all generate a DEVELOPMENT-ONLY password; shown once, only its hash is stored
     cases list                   list renewal cases
     cases revoke-authority <CASE_ID> [reason]   revoke a case's mandates and all delegated children
     delegations list             list trusted delegation records
@@ -116,14 +117,16 @@ def main(argv: list[str]) -> int:
         elif cmd == "agents" and rest[:1] == ["set-status"] and len(rest) == 3:
             a = env.repo.set_agent_status(rest[1], rest[2])  # type: ignore[arg-type]
             print(f"{a.agent_id} status = {a.status} (until next server restart reseeds the registry)")
-        elif cmd == "officers" and rest[:1] == ["credentials"]:
-            pw = getattr(env.keystore, "officer_password", None)
-            if pw is None:
-                print("this keystore has no officer credentials")
-                return 1
-            print("DEVELOPMENT-ONLY credentials (stored in backend/.dev_keys/officer_credentials.json, git-ignored):")
+        elif cmd == "officers" and rest[:1] in (["list"], ["credentials"]):
+            if rest[:1] == ["credentials"]:
+                print("Plaintext officer credentials are no longer stored. Use: officers set-password <ID|all>")
             for o in env.officers.officers():
-                print(f"  {o.officer_id}  {o.role:<20} {o.name:<20} password: {pw(o.officer_id)}")
+                print(f"  {o.officer_id}  {o.role:<20} {o.name:<20} password set: {'yes' if env.officers.has_password(o.officer_id) else 'no'}")
+        elif cmd == "officers" and rest[:1] == ["set-password"] and len(rest) == 2:
+            ids = [o.officer_id for o in env.officers.officers()] if rest[1] == "all" else [rest[1]]
+            print("DEVELOPMENT-ONLY passwords. Shown once; only a scrypt hash is stored. Existing sessions were ended.")
+            for oid in ids:
+                print(f"  {oid}  password: {env.officers.set_password(oid)}")
         elif cmd == "cases" and rest[:1] == ["list"]:
             for c in env.cases.list():
                 print(f"{c.case_id:<15} {c.citizen_ref:<7} {c.state.value:<18} {','.join(c.completed_prerequisites) or '-':<50} {c.recovery_status}")
