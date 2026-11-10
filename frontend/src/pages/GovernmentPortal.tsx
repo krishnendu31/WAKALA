@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { AlertTriangle, ArrowRight, BadgeCheck, Bot, Building2, CheckCircle2, ChevronDown, Circle, CircleDot, ExternalLink, FileUp, Loader2, Lock, MonitorPlay, PauseCircle, RotateCcw, Send, ShieldCheck, ShieldX, Sparkles, UserRound, type LucideIcon } from "lucide-react";
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { AiActivityReceipt } from "@/components/AiActivityReceipt";
 import { Badge } from "@/components/ui";
 import { API_BASE_URL, ApiError, apiGet, apiPost } from "@/lib/api";
 
@@ -145,6 +146,7 @@ function PortalView() {
   const [inj, setInj] = useState<Any | null>(null);
   const [details, setDetails] = useState(false);
   const [presenter, setPresenter] = useState(true);
+  const [receipt, setReceipt] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {  // follow the demo session's most recent case when none is selected
@@ -231,6 +233,10 @@ function PortalView() {
             <p className="mb-4 text-[12px] uppercase tracking-wider text-fg-subtle">Application progress</p>
             {view ? <ol>{view.steps.map((s: Any, i: number) => <Step key={s.key} s={s} last={i === view.steps.length - 1} />)}</ol>
               : <p className="text-[13px] text-fg-subtle">No application yet.</p>}
+            {view && <div className="mt-3 flex flex-col gap-1.5">
+              <button onClick={() => setReceipt(true)} className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-trust/50 px-3 py-1.5 text-[12.5px] font-medium text-trust hover:bg-trust-soft">My AI Activity</button>
+              <Link to={`/delegation?case=${view.case_id}`} className="text-center text-[11.5px] text-fg-muted hover:text-fg">See who was authorized (Case View) →</Link>
+            </div>}
             {view && view.ledger?.length > 0 && <p className="mt-1 font-mono text-[11.5px] text-fg-subtle">Receipt {view.ledger[0].transaction_id ?? ""} · AED {view.ledger[0].amount} → {view.ledger[0].recipient}</p>}
           </div>
         </div>
@@ -294,6 +300,7 @@ function PortalView() {
           </div>
         </div>
 
+        {receipt && caseId && <AiActivityReceipt caseId={caseId} onClose={() => setReceipt(false)} />}
         {/* presenter */}
         {presenter && (
           <div className="space-y-3 xl:col-span-3 2xl:col-span-1">

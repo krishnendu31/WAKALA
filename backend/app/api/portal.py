@@ -84,6 +84,16 @@ def case(case_id: CasePath, env: Env) -> dict[str, Any]:
     return _guard(P.case_view, env, case_id)
 
 
+@router.get("/cases/{case_id}/receipt")
+def receipt(case_id: CasePath, env: Env) -> dict[str, Any]:
+    """My AI Activity: citizen-safe transparency receipt (synthetic; the portal has no citizen login — local/dev only)."""
+    from app.portal.receipt import build_receipt
+    r = build_receipt(env, case_id)
+    if r is None:
+        raise HTTPException(status_code=404, detail={"code": "CASE_NOT_FOUND", "message": "Unknown case."})
+    return r
+
+
 @router.post("/cases/{case_id}/continue", dependencies=[Depends(require_dev_access)])
 def cont(case_id: CasePath, env: Env, body: ContinueBody | None = None) -> dict[str, Any]:
     return _guard(P.continue_request, env, case_id, prefer_model=(body or ContinueBody()).use_model)
