@@ -1,4 +1,4 @@
-# WAKALA Security Model (Phase 2)
+# WAKALA Security Model (Phase 3)
 
 > **Status.** Phase 1 enforces identity, mandate and authorization checks. Phase 2 adds case-bound authority in front of
 > protected synthetic government services. Both run in a local development prototype on synthetic data. It is **not production-ready and not government-certified**. Each control below is marked ✅ when it
@@ -28,8 +28,12 @@ is denied.
 | ✅ Protected services (Phase 2) | Handlers re-validate the case in one transaction with compare-and-swap; any refusal rolls back. The payment service independently accepts only the official fee and treasury, and is idempotent per case | `test_p2_workflow.py` |
 | ✅ Case lifecycle (Phase 2) | Pure transition table with prerequisite guards; impossible transitions raise | state-machine tests |
 | ✅ Safety pause (Phase 2, prototype) | After a denied payment in scenario C, a server-side control pauses the case (audited). Resume via the officer CLI only | scenario C test |
-| ⏳ Non-expanding delegation | Requests with a `delegation_chain` are denied until Phase 3 | — |
-| ⏳ Authenticated officer console | Phase 3; officer actions are CLI-only today | — |
+| ✅ Signed mandate chains (Phase 3) | Children are issued only after a gateway-authorized commission, signed by the delegation-only issuer, and stored with a trusted delegation record. At use, the gateway resolves the chain server-side and verifies every ancestor and link | `test_p3_delegation.py` |
+| ✅ Non-expansion (Phase 3) | child ⊆ parent's commission grant ∩ task catalogue ∩ receiving-entity authority ∩ parent case/citizen/request/service/money/time; depth ≤ min(grant, 3); no cycles | pure + gateway tests |
+| ✅ Client chains ignored (Phase 3) | A `delegation_chain` in the request is never trusted; non-empty → `DENY_DELEGATION_CHAIN_INVALID` | test |
+| ✅ Selective, persistent revocation (Phase 3) | Mandate-level (cascade), case-level, agent-wide (separate); survives restart; ancestor revocation also enforced at verification | revocation tests |
+| ✅ Transactional outcome audit (Phase 3) | Service writes and outcome event share one transaction; idempotent reconciliation | `test_p3_audit_consistency.py` |
+| ⏳ Authenticated officer console | Phase 4; officer actions are CLI-only today | — |
 
 ## 2a. The Phase 2 problem: authorized for the service, not for this case
 
@@ -51,6 +55,33 @@ mandates):
 - no citizen record or case is modified
 - no payment is created
 - no success event is recorded; only a `denied` decision event is written
+
+## 2b. Phase 3: delegated authority
+
+**Threats addressed**
+
+| Threat | Control | Tested outcome |
+|---|---|---|
+| Child reads another citizen | Child resources = task template instantiated with the case citizen; case binding | `DENY_SCOPE_VIOLATION`, `DENY_CASE_SCOPE_VIOLATION` |
+| Child performs an unrelated operation (payment) | `allowed_tools` ⊆ task operations; parent's denials are inherited | `DENY_TOOL_EXPLICITLY_DENIED` |
+| Child creates a broader child | Children carry no commission grant; depth limit; catalogue receivers | `DENY_DELEGATION_NOT_PERMITTED` + depth |
+| Forged / modified delegation | Ed25519 over canonical child bytes, delegation-only issuer key | `DENY_SIGNATURE_INVALID` |
+| Correctly signed but expanding child | `check_non_expansion` at every use | `DENY_DELEGATION_EXPANDS_AUTHORITY` |
+| Delegation authority used to mint a root | `delegation_only` issuers may sign children only | `DENY_ISSUER_AUTHORITY_EXCEEDED` |
+| Expired / revoked ancestor | `verify_chain` checks every ancestor's lifecycle | `DENY_PARENT_MANDATE_EXPIRED` / `…_REVOKED` |
+| Child reused on another case | `child.case_id` signed; root must be the case's mandate | `DENY_DELEGATION_CASE_MISMATCH` |
+| Cycles, excessive depth | Agent and mandate uniqueness along the chain; depth ≤ min(grant, 3); bounded resolution | `DENY_DELEGATION_CYCLE`, `…_DEPTH_EXCEEDED` |
+| Replayed commission or delegated call | Nonce store | `DENY_REPLAYED_REQUEST`; child issued once |
+| Receiving entity no longer authorizes its agent | Task's receiving issuer authority checked at every use | `DENY_DELEGATION_NOT_PERMITTED` |
+
+**Measured verification cost.** The figures below come from `python -m app.devtools.cli bench delegation 300`, run
+on this machine with in-memory SQLite in a single process. They are a measurement, not a performance claim.
+
+| Measurement | Median | p95 |
+|---|---|---|
+| Direct-mandate authorization | 2.77 ms | 4.19 ms |
+| Delegated-mandate authorization (2-link chain) | 3.50 ms | 5.46 ms |
+| Chain verification alone (2 Ed25519 verifies + narrowing) | 0.47 ms | 0.65 ms |
 
 ## 3. Identity authentication
 
@@ -176,17 +207,20 @@ documents tail truncation. Production needs:
 | Tool handler raises after ALLOW | `execution_failed`; the decision stays audited |
 | Clock skew > window | `DENY_REQUEST_STALE` |
 
-## 9a. Phase 2 audit semantics
+## 9a. Audit semantics (repaired in Phase 3)
 
-For each protected service call there are two hash-chained events:
+For each protected service call there are two hash-chained events: a **decision** event (authorization) and an
+**outcome** event (execution). They are never merged.
 
-1. **Decision event**, written *before* execution. If it cannot be written, nothing runs.
-2. **Execution event**, written *after* execution. It records the execution status, the case state afterwards, and a
-   SHA-256 digest of the result; never the result itself.
-
-If writing the execution event fails, the service change has already committed and the API returns 503. The decision
-event still proves the action was authorized, but the outcome record is missing. Closing this gap needs a
-transactional outbox in the same database transaction as the service write; it is not implemented.
+- **Phase 2 gap, now closed.** Previously the outcome event was written after the service committed, so a failed
+  write left a committed change with no outcome record.
+- **Now** the outcome event is written with `append_in(conn, …)` inside the service's own SQLite transaction, so the
+  change and its outcome commit or roll back together.
+- **Failure injection is tested.** The API then reports `OUTCOME_NOT_RECORDED_ROLLED_BACK`, the ledger, case and
+  delegation tables are unchanged, and reconciliation later records `authorized_not_executed`. It is idempotent.
+- **Non-transactional effects** (for example a future external bank API) cannot share the transaction. They would be
+  reported as `OUTCOME_NOT_RECORDED` (committed) and reconstructed by reconciliation from service-side records keyed
+  by `decision_id`. Production would add a transactional outbox plus an idempotency key towards the external system.
 
 ## 10. Known limitations
 
@@ -202,8 +236,18 @@ transactional outbox in the same database transaction as the service write; it i
 - **Case intake is unauthenticated** apart from dev-mode, loopback and origin checks. It stands in for a front office
   and signs case mandates with development issuer keys.
 - **Execution events are best-effort** after commit (see §9a).
-- **No delegation.** Cross-agent delegation is not implemented; the three agents act under independent, case-scoped
-  mandates issued by three issuers. This is **not** signed delegation.
+- **Delegation scope.** Delegation exists for the catalogued tasks only (insurance check; fee collection is catalogued
+  but no issuer grants it). There is a single delegation authority, the global maximum depth is 3, and the demo grant
+  allows depth 1.
+- **Development-only cryptographic keys.** The government issuers, the delegation authority and the agents all sign
+  with unencrypted PEM keys in `backend/.dev_keys/` (git-ignored). The delegation authority key sits in the same
+  process as the gateway. Anyone with filesystem access to that directory can mint mandates. Production requires
+  HSM/KMS-backed issuer and delegation signing, with officer approval for roots.
+- **Single-process trust.** Gateway, policy engine, delegation service, protected services and audit store share one
+  Python process and one SQLite file. A compromise of that process or file defeats every control above. There is no
+  separation between policy decision and enforcement points, and no mTLS between services.
+- **Revocation latency.** Revocation is immediate within this process (one DB). Distributed deployments would need
+  status propagation (short-lived mandates, status lists or push invalidation).
 - **Phase 1 placeholders remain.** The Phase 1 authorization-only tools (`payment.request_fee_payment`,
   `residency.prepare_renewal`) are still registered for the Phase 1 demo.
 - There is one active key per agent and no rotation workflow. Re-running with a deleted `.dev_keys/` rotates all keys

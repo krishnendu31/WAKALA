@@ -35,7 +35,7 @@ class CaseEvent(StrictModel):
     at: AwareDatetime
     actor: ShortText
     kind: Literal["case_opened", "mandates_issued", "operation_executed", "state_transition", "prerequisite_completed",
-                  "prerequisite_failed", "paused_for_review", "resumed"]
+                  "prerequisite_failed", "paused_for_review", "resumed", "delegation_issued", "authority_revoked"]
     detail: NonEmptyText
     audit_reference: str | None = None
     from_state: CaseState | None = None
@@ -58,6 +58,12 @@ class RenewalCase(StrictModel):
     created_at: AwareDatetime
     expires_at: AwareDatetime
     recovery_status: RecoveryStatus = "none"
+    # Phase 3: case-level revocation (persistent). Revokes the case's mandates and
+    # every mandate delegated from them; other cases are unaffected.
+    authority_revoked: bool = False
+    # How agents obtain authority: "direct" (one issuer mandate each, Phase 2) or
+    # "delegated" (some agents only receive WAKALA-issued child mandates).
+    authority_model: Literal["direct", "delegated"] = "direct"
     version: int = Field(default=1, ge=1)
     history: list[CaseEvent] = Field(default_factory=list)
     synthetic: Literal[True] = True

@@ -17,7 +17,7 @@ enforces authority outside the agent, at the boundary of every protected tool.
 | | |
 |---|---|
 | Competition | UAE Hackathon 2026 — Challenge #27, *Secure Agentic AI for Government Services* (UAE Cyber Security Council) |
-| Status | **Phase 2: protected government workflows.** Phase 1's security engine (Ed25519 identity, signed mandates, default-deny gateway, hash-chained audit) now protects three synthetic government services, with case-specific authority. **Development prototype — not production-ready or certified. Agents are simulated.** |
+| Status | **Phase 3: secure mandate chains.** Signed, non-expanding agent-to-agent delegation on top of Phase 2's protected services and Phase 1's security engine. Selective, persistent revocation. Transactional outcome audit. **Development prototype — not production-ready or certified. Agents are simulated; keys are development keys; single process.** |
 | Data | **100% synthetic.** No real people, entities, accounts or government systems. |
 
 The "digital power of attorney" framing is a conceptual analogy. WAKALA mandates are technical authorization artefacts and
@@ -25,7 +25,7 @@ are **not** legally recognised powers of attorney.
 
 ---
 
-## Current capabilities (Phase 2)
+## Current capabilities (Phase 3)
 
 `GET /api/system/capabilities` is the source of truth for this list, and the console renders it directly.
 
@@ -47,8 +47,13 @@ are **not** legally recognised powers of attorney.
 | **Agent adapter interface**: signing adapter with in-process and HTTP transports; **simulated, deterministic** agents | ✅ Phase 2 |
 | Scenarios A–D in the Government Workflow view, including an **isolated, intentionally weak baseline** comparison | ✅ Phase 2 |
 | Automatic pause after a denied high-risk payment; officer resume via the dev CLI | ✅ Phase 2 (prototype) |
-| Signed cross-agent delegation, authenticated officer console, LLM tool-use adapters | ⏳ Phase 3 |
-| Citizen receipts generated from audit data | ⏳ Phase 3 |
+| **Signed mandate chains**: commission via the gateway → WAKALA-signed child mandate → chain re-verified on every use | ✅ Phase 3 |
+| **Non-expansion**: child = parent grant ∩ task catalogue ∩ receiving-entity authority ∩ case; depth and cycle limits | ✅ Phase 3 |
+| **Commission authority separate from execution authority** | ✅ Phase 3 |
+| **Selective, cascading, persistent revocation** (mandate, case, agent-wide) | ✅ Phase 3 |
+| **Transactional outcome audit** + idempotent reconciliation (repairs the Phase 2 gap) | ✅ Phase 3 |
+| **Live authority-chain graph** (Delegation Network) | ✅ Phase 3 |
+| Authenticated officer console, LLM tool-use adapters, agent-driven attacks, citizen receipts | ⏳ Phase 4 |
 | Benchmarks | ⏳ Phase 4 |
 
 The console shows only real backend state:
@@ -59,10 +64,11 @@ The console shows only real backend state:
 
 The delegation and receipt views remain labelled as illustrative.
 
-### What Phase 2 does not do
+### What Phase 3 does not do
 
-- **No cross-agent delegation yet.** Three agents take part in one workflow, but each acts under its own case-scoped
-  mandate from a different issuer. Requests with a delegation chain are refused. Signed delegation is Phase 3.
+- **Delegation is limited to catalogued tasks.** Today that means the insurance check, with a single delegation
+  authority.
+- **Officer actions are CLI-only.** Revoke and resume are run from the dev CLI; there is no authenticated officer UI.
 - **Agents are simulated.** They are deterministic Python scripts, not model-driven autonomous AI.
 - **The service boundary is in-process.** Services are only reachable via the trusted tool registry and have no HTTP
   routes, but production needs network-isolated services that verify gateway authorization themselves. See
@@ -105,7 +111,7 @@ backend/
     services/            Bootstrap, repository, mandate store, case store, protected government services, capabilities
     data/                Synthetic JSON fixtures (including issuers.json) and documents
   run_dev.py             Starts the API in dev mode on 127.0.0.1:8000
-  tests/                 255 offline tests (Phase 0, Phase 1 security suite, Phase 2 workflow suite)
+  tests/                 304 offline tests (Phases 0–3, including delegation and audit failure injection)
 frontend/src/            layouts/ pages/ components/ hooks/ lib/ types/ styles/
 docs/                    ARCHITECTURE, SECURITY_MODEL, PRODUCT_VISION, DEMO_SCENARIOS
 scripts/                 bootstrap.ps1 / bootstrap.sh
@@ -218,6 +224,7 @@ npm run build
 | GET / POST | `/api/dev/scenarios`, `/api/dev/scenarios/{key}/run` | **Dev mode only**, loopback clients, fixed scenarios |
 | POST | `/api/workflow/scenarios/{key}/run` | Runs workflow scenario A–D (body `{"citizen_ref"}` for A). **Dev mode, loopback client, same-site origin** |
 | GET | `/api/workflow/scenarios`, `/cases`, `/cases/{id}`, `/ledger`, `/tools` | Case state, history, linked audit events, synthetic ledger, exported tool definitions. **Loopback clients only** |
+| GET | `/api/workflow/cases/{id}/authority-graph`, `/api/workflow/delegations` | Live authority chain (verified now) and trusted delegation records. **Loopback clients only** |
 
 The `/api/gateway/*` body is a `SignedActionRequest`:
 - `request` is the action, including `agent_id`, `mandate_id`, `tool_name`, `parameters`, `target_resource`,
@@ -235,8 +242,14 @@ run from `backend/`:
 .venv\Scripts\python -m app.devtools.cli mandates list
 ```
 
-The other commands are `keys`, `mandates verify|issue|revoke|tamper-demo`, `agents set-status`, `cases list|resume` and
-`audit verify|tail`.
+The other commands are:
+- `keys`
+- `mandates verify|issue|revoke|tamper-demo` (`revoke` cascades to delegated children)
+- `agents set-status|revoke`
+- `cases list|resume|revoke-authority`
+- `delegations list`
+- `audit verify|tail|reconcile`
+- `bench delegation`
 
 ## Configuration
 
@@ -260,9 +273,9 @@ exists only to demonstrate WAKALA.
 ## Next development phases
 
 1. ~~Phase 2 — protected services and case-bound authority~~ ✅
-2. **Phase 3 — Delegation, humans and adversarial runs:**
-   - signed, non-expanding cross-agent delegation
-   - an authenticated officer console for pause, resume and revoke
+2. ~~Phase 3 — signed, non-expanding mandate chains; selective revocation; transactional audit~~ ✅
+3. **Phase 4 — humans and adversarial runs:**
+   - an authenticated officer console
    - LLM tool-use adapters through the same signing interface
    - agent-driven prompt-injection runs
    - citizen receipts generated from audit data

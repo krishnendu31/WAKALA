@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import sqlite3
+
 from app.models.database import Database
 from app.schemas import AuditEvent
 
@@ -12,6 +14,19 @@ class AuditUnavailableError(RuntimeError):
     """Raised when an event cannot be recorded. Callers must fail closed."""
 
 
+class OutcomeAuditUnavailable(AuditUnavailableError):
+    """The execution outcome could not be recorded.
+
+    ``committed`` states truthfully whether the protected operation's own
+    changes committed (True only for non-transactional handlers) or were rolled
+    back together with the failed outcome record (False).
+    """
+
+    def __init__(self, message: str, *, committed: bool) -> None:
+        super().__init__(message)
+        self.committed = committed
+
+
 class SqliteAuditSink:
     def __init__(self, db: Database) -> None:
         self._db = db
@@ -20,19 +35,32 @@ class SqliteAuditSink:
         """Assign sequence + chain hashes atomically and persist. Never updates rows."""
         try:
             with self._db.transaction() as conn:
-                row = conn.execute("SELECT seq, event_hash FROM audit_events ORDER BY seq DESC LIMIT 1").fetchone()
-                seq = 1 if row is None else int(row["seq"]) + 1
-                prev = GENESIS_HASH if row is None else str(row["event_hash"])
-                event = draft.model_copy(update={"sequence": seq, "previous_event_hash": prev, "event_hash": None})
-                event = AuditEvent.model_validate(event.model_dump())  # re-validate the completed event
-                final = event.model_copy(update={"event_hash": compute_event_hash(event)})
-                conn.execute(
-                    "INSERT INTO audit_events (seq, event_id, timestamp, event_hash, payload) VALUES (?, ?, ?, ?, ?)",
-                    (seq, final.event_id, final.timestamp.isoformat(), final.event_hash, final.model_dump_json()),
-                )
-            return final
+                return self._insert(conn, draft)
         except Exception as exc:  # any storage failure must stop the action
             raise AuditUnavailableError("audit event could not be recorded") from exc
+
+    def append_in(self, conn: sqlite3.Connection, draft: AuditEvent) -> AuditEvent:
+        """Append inside the CALLER's transaction, so the event commits or rolls back
+        together with the caller's other writes (transactional outcome record).
+        The database lock held for that transaction also serialises the chain."""
+        try:
+            return self._insert(conn, draft)
+        except Exception as exc:
+            raise AuditUnavailableError("audit event could not be recorded") from exc
+
+    @staticmethod
+    def _insert(conn: sqlite3.Connection, draft: AuditEvent) -> AuditEvent:
+        row = conn.execute("SELECT seq, event_hash FROM audit_events ORDER BY seq DESC LIMIT 1").fetchone()
+        seq = 1 if row is None else int(row["seq"]) + 1
+        prev = GENESIS_HASH if row is None else str(row["event_hash"])
+        event = draft.model_copy(update={"sequence": seq, "previous_event_hash": prev, "event_hash": None})
+        event = AuditEvent.model_validate(event.model_dump())  # re-validate the completed event
+        final = event.model_copy(update={"event_hash": compute_event_hash(event)})
+        conn.execute(
+            "INSERT INTO audit_events (seq, event_id, timestamp, event_hash, payload) VALUES (?, ?, ?, ?, ?)",
+            (seq, final.event_id, final.timestamp.isoformat(), final.event_hash, final.model_dump_json()),
+        )
+        return final
 
     def count(self) -> int:
         return int(self._db.query("SELECT COUNT(*) AS n FROM audit_events")[0]["n"])

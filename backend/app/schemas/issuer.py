@@ -23,6 +23,12 @@ class IssuerAuthority(StrictModel):
     max_amount: Money | None = None
     recipients: list[SyntheticAccountRef] = Field(default_factory=list)
     max_lifetime_hours: int = Field(ge=1, le=24)
+    # Phase 3: which delegable tasks this issuer may grant commission authority for.
+    commissionable_tasks: list[str] = Field(default_factory=list)
+    max_delegation_depth: int = Field(default=0, ge=0, le=4)
+    # A delegation-only issuer signs child mandates only (never chain roots), and
+    # only after the gateway has verified the parent and the narrowing.
+    delegation_only: bool = False
 
     @model_validator(mode="after")
     def _money_consistency(self) -> "IssuerAuthority":

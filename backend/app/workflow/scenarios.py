@@ -19,7 +19,9 @@ from app.agents import (
     SimulatedResidencyAgent,
     ToolCall,
 )
-from app.schemas import AuditEvent
+from typing import Any
+
+from app.schemas import AuditEvent, ExecutionResponse
 from app.schemas.case import CaseState, RenewalCase
 from app.schemas.views import CheckTraceView
 from app.schemas.workflow import BaselineComparison, WorkflowRun, WorkflowStep
@@ -50,6 +52,15 @@ WORKFLOW_SCENARIOS: tuple[ScenarioDef, ...] = (
                 "destination. A safety control then pauses the case for human review."),
     ScenarioDef("baseline_comparison", "D · Weak baseline vs WAKALA",
                 "The same wrong-citizen request sent to an isolated, intentionally weak role-based baseline and to WAKALA."),
+    ScenarioDef("delegated_renewal", "E · Delegated renewal (mandate chain)",
+                "The Residency Agent commissions the insurance check; WAKALA issues a narrowed, signed child mandate to the "
+                "Insurance Agent, which uses it through the gateway. The renewal then completes.", True),
+    ScenarioDef("delegation_attacks", "F · Delegation attack suite",
+                "Ten delegation checks (valid use, wrong citizen, payment, broader child, forged signature, expired parent, "
+                "revoked parent, cross-case reuse, cycle/depth, selective revocation), each against the real gateway."),
+    ScenarioDef("selective_revocation", "G · Selective revocation",
+                "Two independent delegated cases. Revoking one case's authority cascades to its child mandate only; the "
+                "other case continues."),
 )
 SCENARIO_KEYS = {s.key: s for s in WORKFLOW_SCENARIOS}
 OUT_OF_SCOPE_CITIZEN = "C-1003"
@@ -76,10 +87,18 @@ class WorkflowRunner:
             raise RuntimeError(f"case {case_id} not found")
         return c
 
-    def run(self, agent_id: str, call: ToolCall, case: RenewalCase, title: str, intent: str, note: str | None = None) -> WorkflowStep:
+    def run(self, agent_id: str, call: ToolCall, case: RenewalCase, title: str, intent: str, note: str | None = None,
+            *, mandate_id: str | None = None, mandate_source: Any = None, **sign_overrides: Any) -> WorkflowStep:
         before = self.case(case.case_id).state.value
-        signed, resp = self.agents[agent_id].submit(call, case, origin=self.origin)
-        out = self.transport.last_outcome
+        if mandate_id is not None:
+            sign_overrides["mandate_id"] = mandate_id
+        if sign_overrides or mandate_source is not None:
+            signed = self.agents[agent_id].sign(call, case, **sign_overrides)
+            out = self.env.gateway.execute(signed, origin=self.origin, mandate_source=mandate_source)
+            resp = ExecutionResponse(decision=out.decision, executed=out.executed, execution_status=out.status, result=out.result)
+        else:
+            signed, resp = self.agents[agent_id].submit(call, case, origin=self.origin)
+            out = self.transport.last_outcome
         step = WorkflowStep(
             index=len(self.steps) + 1, title=title, intent=intent,  # type: ignore[arg-type]
             agent_id=agent_id, tool_name=call.tool_name, parameters=signed.request.parameters,
@@ -93,11 +112,19 @@ class WorkflowRunner:
         self.steps.append(step)
         return step
 
-    def finish(self, key: str, case_id: str, baseline: BaselineComparison | None = None) -> WorkflowRun:
+    def finish(self, key: str, case_id: str, baseline: BaselineComparison | None = None,
+               related: list[str] | None = None) -> WorkflowRun:
         d = SCENARIO_KEYS[key]
+        related = [c for c in (related or []) if c != case_id]
+        events = case_audit_events(self.env, case_id)
+        for rc in related:
+            events += case_audit_events(self.env, rc)
         return WorkflowRun(scenario=key, title=d.title, description=d.description, case=self.case(case_id), steps=self.steps,
                            ledger=self.env.services.ledger(case_id), renewals=self.env.services.renewals(case_id),
-                           audit_events=case_audit_events(self.env, case_id), baseline=baseline)
+                           audit_events=sorted(events, key=lambda e: e.sequence or 0), baseline=baseline,
+                           related_cases=[self.case(c) for c in related],
+                           delegations=[{k: str(v) for k, v in d.items()} for cid in [case_id, *related]
+                                        for d in self.env.mandates.delegations(cid)])
 
 
 def case_audit_events(env: WakalaEnvironment, case_id: str) -> list[AuditEvent]:
@@ -142,6 +169,9 @@ def _verify_prereqs(r: WorkflowRunner, case: RenewalCase) -> RenewalCase:
 def run_workflow(env: WakalaEnvironment, key: str, citizen_ref: str = "C-1001") -> WorkflowRun:
     if key not in SCENARIO_KEYS:
         raise KeyError(key)
+    if key in {"delegated_renewal", "delegation_attacks", "selective_revocation"}:
+        from .delegation_scenarios import run_delegation_scenario
+        return run_delegation_scenario(env, key, citizen_ref if SCENARIO_KEYS[key].citizen_selectable else "C-1001")
     if not SCENARIO_KEYS[key].citizen_selectable:
         citizen_ref = "C-1001"
     r = WorkflowRunner(env, key)

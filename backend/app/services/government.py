@@ -48,11 +48,22 @@ class ProtectedServices:
         case = CaseStore.load_in(conn, params.case_id)
         if case is None or ctx.case_id != case.case_id:
             raise ServiceRefusal("CASE_NOT_FOUND")
-        if case.citizen_ref != params.citizen_ref or ctx.agent_id not in case.assigned_agents:
+        if case.citizen_ref != params.citizen_ref or case.authority_revoked:
+            raise ServiceRefusal("CASE_SCOPE_MISMATCH")
+        if ctx.agent_id not in case.assigned_agents and not self._holds_delegation(conn, case.case_id, ctx):
             raise ServiceRefusal("CASE_SCOPE_MISMATCH")
         if case.state not in states:
             raise ServiceRefusal("CASE_STATE_CHANGED")
         return case
+
+    @staticmethod
+    def _holds_delegation(conn: sqlite3.Connection, case_id: str, ctx: ExecutionContext) -> bool:
+        """The agent acts for this case only through a trusted, unrevoked delegation record."""
+        row = conn.execute(
+            "SELECT 1 FROM delegations d JOIN mandates m ON m.mandate_id = d.child_mandate_id "
+            "WHERE d.case_id = ? AND d.to_agent = ? AND d.child_mandate_id = ? AND m.revoked = 0",
+            (case_id, ctx.agent_id, ctx.mandate_id)).fetchone()
+        return row is not None
 
     @staticmethod
     def _citizen(conn: sqlite3.Connection, citizen_ref: str) -> Citizen:
@@ -79,7 +90,9 @@ class ProtectedServices:
             after = with_event(before, self._op_event(ctx, "Renewal application registered with the residency service"))
             after = self._move(after, S.VERIFYING, ctx, "Verification started")
             CaseStore.save_in(conn, before, after)
-        return {"case_id": after.case_id, "case_state": after.state.value}
+            result: dict[str, Scalar] = {"case_id": after.case_id, "case_state": after.state.value}
+            ctx.record_outcome(conn, result)  # outcome event commits with the change, or neither does
+        return result
 
     def check_eligibility(self, params: CaseOperationParams, ctx: ExecutionContext) -> dict[str, Scalar]:
         with self._db.transaction() as conn:
@@ -96,9 +109,11 @@ class ProtectedServices:
                                                     detail="Applicant is not eligible for renewal", audit_reference=ctx.audit_reference))
                 after = self._move(after, S.FAILED, ctx, "Residency eligibility not met; officer review required")
             CaseStore.save_in(conn, before, after)
-        # Minimal disclosure: eligibility facts only, never the full record.
-        return {"citizen_ref": citizen.citizen_ref, "eligible": eligible, "permit_status": citizen.residency.status,
-                "permit_expiry": citizen.residency.expiry_date.isoformat(), "case_state": after.state.value}
+            # Minimal disclosure: eligibility facts only, never the full record.
+            result = {"citizen_ref": citizen.citizen_ref, "eligible": eligible, "permit_status": citizen.residency.status,
+                      "permit_expiry": citizen.residency.expiry_date.isoformat(), "case_state": after.state.value}
+            ctx.record_outcome(conn, result)
+        return result
 
     def complete_renewal(self, params: CaseOperationParams, ctx: ExecutionContext) -> dict[str, Scalar]:
         with self._db.transaction() as conn:
@@ -114,7 +129,9 @@ class ProtectedServices:
                  ctx.now.isoformat(), ctx.decision_id),
             )
             CaseStore.save_in(conn, before, after)
-        return {"case_id": after.case_id, "renewed_permit_expiry": renewed.isoformat(), "case_state": after.state.value}
+            result = {"case_id": after.case_id, "renewed_permit_expiry": renewed.isoformat(), "case_state": after.state.value}
+            ctx.record_outcome(conn, result)
+        return result
 
     # --- Insurance service ------------------------------------------------------
     def verify_insurance(self, params: CaseOperationParams, ctx: ExecutionContext) -> dict[str, Scalar]:
@@ -133,9 +150,11 @@ class ProtectedServices:
                                                     detail="No valid insurance cover", audit_reference=ctx.audit_reference))
                 after = self._move(after, S.FAILED, ctx, "Insurance prerequisite not met; officer review required")
             CaseStore.save_in(conn, before, after)
-        # Only what the case needs: valid yes/no and until when. No policy number or provider.
-        return {"citizen_ref": citizen.citizen_ref, "insurance_valid": valid,
-                "valid_until": ins.valid_until.isoformat() if ins.valid_until else None, "case_state": after.state.value}
+            # Only what the case needs: valid yes/no and until when. No policy number or provider.
+            result = {"citizen_ref": citizen.citizen_ref, "insurance_valid": valid,
+                      "valid_until": ins.valid_until.isoformat() if ins.valid_until else None, "case_state": after.state.value}
+            ctx.record_outcome(conn, result)
+        return result
 
     def _maybe_await_payment(self, case: RenewalCase, ctx: ExecutionContext) -> RenewalCase:
         if {"residency_eligibility", "insurance_verified"} <= set(case.completed_prerequisites):
@@ -156,9 +175,12 @@ class ProtectedServices:
                 if not same:
                     raise ServiceRefusal("FEE_ALREADY_COLLECTED")
                 case = self._case(conn, params, ctx, {S.READY_TO_COMPLETE, S.AWAITING_PAYMENT})
-                return {"transaction_id": existing["transaction_id"], "amount": existing["amount"], "currency": existing["currency"],
-                        "recipient": existing["recipient"], "status": "settled_synthetic", "idempotent_replay": True,
-                        "case_state": case.state.value}
+                replay: dict[str, Scalar] = {
+                    "transaction_id": existing["transaction_id"], "amount": existing["amount"], "currency": existing["currency"],
+                    "recipient": existing["recipient"], "status": "settled_synthetic", "idempotent_replay": True,
+                    "case_state": case.state.value}
+                ctx.record_outcome(conn, replay)
+                return replay
             before = self._case(conn, params, ctx, {S.AWAITING_PAYMENT})
             txn = f"TXN-SYNTH-{secrets.token_hex(5).upper()}"
             conn.execute(
@@ -172,8 +194,11 @@ class ProtectedServices:
                                       audit_reference=ctx.audit_reference)
             after = self._move(after, S.READY_TO_COMPLETE, ctx, "Fee received; ready to complete")
             CaseStore.save_in(conn, before, after)
-        return {"transaction_id": txn, "amount": f"{params.amount:.2f}", "currency": params.currency, "recipient": params.recipient,
-                "status": "settled_synthetic", "idempotent_replay": False, "case_state": after.state.value}
+            result = {"transaction_id": txn, "amount": f"{params.amount:.2f}", "currency": params.currency,
+                      "recipient": params.recipient, "status": "settled_synthetic", "idempotent_replay": False,
+                      "case_state": after.state.value}
+            ctx.record_outcome(conn, result)
+        return result
 
     # --- read models -------------------------------------------------------------
     def ledger(self, case_id: str | None = None) -> list[dict[str, str]]:

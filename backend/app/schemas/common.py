@@ -34,6 +34,8 @@ CitizenRef = Annotated[str, StringConstraints(pattern=r"^C-\d{4}$")]
 MandateId = Annotated[str, StringConstraints(pattern=r"^MND-[A-Z0-9-]{4,40}$")]
 IssuerId = Annotated[str, StringConstraints(pattern=r"^ISS-[A-Z0-9-]{3,40}$")]
 CaseId = Annotated[str, StringConstraints(pattern=r"^CASE-[A-Z0-9]{6,12}$")]
+# Delegable business task from the trusted server-side catalog, e.g. insurance_eligibility_check.
+TaskId = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_]{2,40}$")]
 RequestId = Annotated[str, StringConstraints(pattern=r"^REQ-[A-Z0-9-]{4,40}$")]
 ActionId = Annotated[str, StringConstraints(pattern=r"^ACT-[A-Z0-9-]{4,40}$")]
 DecisionId = Annotated[str, StringConstraints(pattern=r"^DEC-[A-Z0-9-]{4,40}$")]

@@ -1,5 +1,36 @@
 # WAKALA Demo Scenarios
 
+## Phase 3: Delegated authority (console → **Delegation Network**)
+
+| Scenario | What happens | Measured outcome (tests reproduce it) |
+|---|---|---|
+| **E · Delegated renewal** | Delegated case. The Residency Agent commissions `insurance_eligibility_check`; WAKALA issues child `MND-DLG-…` to the Insurance Agent, which verifies insurance with it. Then fee and completion | 6/6 ALLOW, case COMPLETED, one delegation record, chain of 2 verified |
+| **F · Attack suite (A–J)** | Three delegated cases; each attack is a real signed request | A ALLOW · B `DENY_SCOPE_VIOLATION`+`DENY_CASE_SCOPE_VIOLATION` · C `DENY_TOOL_EXPLICITLY_DENIED`… · D `DENY_DELEGATION_NOT_PERMITTED`+depth · E `DENY_SIGNATURE_INVALID` (×2: widened copy, attacker key) · F `DENY_PARENT_MANDATE_EXPIRED` · G `DENY_PARENT_MANDATE_REVOKED` · H `DENY_DELEGATION_CASE_MISMATCH`… · I `DENY_DELEGATION_CYCLE`+`…_DEPTH_EXCEEDED` · J case-1 operation denied, case-2 ALLOW |
+| **G · Selective revocation** | Two delegated cases; the officer revokes case 1 authority | Case 1 child denied (`DENY_PARENT_MANDATE_REVOKED`); case 2 child allowed |
+
+The graph for each case is built from stored records. Click a node to see the mandate, its live verification, and its
+audit evidence.
+
+From the dev CLI (`backend/`):
+
+```bash
+.venv\Scripts\python -m app.devtools.cli delegations list
+```
+
+```bash
+.venv\Scripts\python -m app.devtools.cli cases revoke-authority <CASE_ID> reason
+```
+
+```bash
+.venv\Scripts\python -m app.devtools.cli audit reconcile
+```
+
+```bash
+.venv\Scripts\python -m app.devtools.cli bench delegation 300
+```
+
+---
+
 ## Phase 2: Government Workflow (console → **Government Workflow**)
 
 Each run opens a **new case** through intake, which issues three case-scoped mandates signed by the three issuers.
@@ -61,7 +92,7 @@ authority:
 | 5 | Forged or modified mandate | ✅ | `modified_mandate` · `test_modified_mandate_*`, `test_untrusted_issuer_rejected` | DENY `DENY_SIGNATURE_INVALID` / `DENY_ISSUER_UNTRUSTED` |
 | 5b | Forged agent identity | ✅ | `test_incorrect_signing_key_denied`, HTTP demo | DENY `DENY_REQUEST_SIGNATURE_INVALID` |
 | 5c | Replayed request | ✅ | `replayed_request` · `test_replayed_request_denied` | First ALLOW, then DENY `DENY_REPLAYED_REQUEST`; tool runs once |
-| 6 | Delegation privilege escalation | ⏳ Phase 3 | `test_delegated_request_denied_in_phase_1` | *All* delegated requests are refused (`DENY_DELEGATION_CHAIN_INVALID`); narrowing rules are verified in Phase 3 |
+| 6 | Delegation privilege escalation | ✅ Phase 3 | `test_p3_delegation.py` | Client-supplied chains are still refused (`DENY_DELEGATION_CHAIN_INVALID`); real delegation uses server-side signed chains (see the Phase 3 section) |
 
 Every run writes exactly one hash-chained audit event per gateway decision (two for the replay scenario). Latency
 values shown in the console are measured per decision on the local machine; they are not benchmarks.

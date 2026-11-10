@@ -316,6 +316,8 @@ export interface RenewalCase {
   created_at: string;
   expires_at: string;
   recovery_status: string;
+  authority_revoked: boolean;
+  authority_model: "direct" | "delegated";
   version: number;
   history: CaseEvent[];
 }
@@ -368,6 +370,8 @@ export interface WorkflowRun {
   renewals: Record<string, string>[];
   audit_events: AuditEvent[];
   baseline: BaselineComparison | null;
+  related_cases: RenewalCase[];
+  delegations: Record<string, string>[];
 }
 
 export interface CaseDetail {
@@ -392,4 +396,36 @@ export interface CaseSummary {
   expires_at: string;
   completed_prerequisites: string[];
   recovery_status: string;
+  authority_model?: "direct" | "delegated";
+  authority_revoked?: boolean;
+}
+
+// --- Phase 3: authority chains ----------------------------------------------
+
+export type GraphNodeKind = "case" | "issuer" | "mandate" | "child_mandate" | "agent" | "denied_attempt";
+
+export interface AuthorityGraphNode {
+  id: string;
+  kind: GraphNodeKind;
+  label: string;
+  sublabel: string;
+  status: string;
+  data: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+}
+
+export interface AuthorityGraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  kind: "signed" | "binds" | "delegated" | "held_by" | "denied_delegation";
+  label: string;
+  status: string;
+}
+
+export interface AuthorityGraph {
+  case_id: string;
+  generated_at: string;
+  nodes: AuthorityGraphNode[];
+  edges: AuthorityGraphEdge[];
+  delegations: Record<string, string>[];
 }

@@ -58,11 +58,24 @@ class ToolSpec:
     needs_context: bool = False
     # Record a second, informational audit event with the execution result.
     audit_execution: bool = False
+    # Phase 3: authorized via the mandate's commission grant, not allowed_tools.
+    commission: bool = False
 
 
 class CaseOperationParams(StrictModel):
     case_id: CaseId
     citizen_ref: CitizenRef
+
+
+class CommissionParams(StrictModel):
+    """Request to commission a catalogued task from another agent (Phase 3)."""
+
+    case_id: CaseId
+    citizen_ref: CitizenRef
+    task: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_]{2,40}$")]
+    receiving_agent_id: Annotated[str, Field(pattern=r"^AGT-[A-Z]{3,8}-\d{3}$")]
+    # Comma-separated tool names (parameters are flat scalars by design).
+    requested_operations: Annotated[str, Field(pattern=r"^[a-z][a-z0-9_.,]{2,300}$")]
 
 
 class FeeCollectionParams(FeePaymentParams):
@@ -80,6 +93,14 @@ class ExecutionContext:
     decision_id: str
     audit_reference: str
     now: datetime
+    mandate_id: str | None = None
+    # Records the mandatory outcome event inside the handler's own transaction.
+    outcome: Any = None
+
+    def record_outcome(self, conn: Any, result: dict[str, Scalar]) -> None:
+        """Call once, inside the service transaction, after all writes."""
+        if self.outcome is not None:
+            self.outcome.record(conn, "executed", result)
 
 
 class ServiceRefusal(RuntimeError):

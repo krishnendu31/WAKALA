@@ -1,5 +1,5 @@
 {
-  "_notice": "SYNTHETIC DATA — fictional mandate issuers. Each issuer may only grant the authority listed here. Public keys are provisioned at startup from the development keystore; no key material is stored in this file.",
+  "_notice": "SYNTHETIC DATA — fictional mandate issuers. Each issuer may only grant the authority listed here. Public keys are provisioned at startup from the development keystore; no key material is stored in this file. ISS-WAKALA-DELEGATION signs child mandates only, after the gateway has verified the parent mandate's commission grant; its authority here is an outer bound — the effective child authority is always the narrower intersection enforced by the chain verifier.",
   "issuers": [
     {
       "issuer_id": "ISS-RESIDENCY-AUTH",
@@ -22,7 +22,11 @@
         ],
         "max_amount": null,
         "recipients": [],
-        "max_lifetime_hours": 12
+        "max_lifetime_hours": 12,
+        "commissionable_tasks": [
+          "insurance_eligibility_check"
+        ],
+        "max_delegation_depth": 1
       }
     },
     {
@@ -70,6 +74,36 @@
           "SYNTH-GOV-TREASURY-0001"
         ],
         "max_lifetime_hours": 2
+      }
+    },
+    {
+      "issuer_id": "ISS-WAKALA-DELEGATION",
+      "name": "WAKALA delegation authority (development key)",
+      "status": "active",
+      "key_id": "KEY-ISS-WAKALA-DELEGATION",
+      "authority": {
+        "services": [
+          "residency_renewal"
+        ],
+        "agents": [
+          "AGT-INS-001",
+          "AGT-PAY-001"
+        ],
+        "tools": [
+          "insurance.verify_case_eligibility",
+          "payment.collect_renewal_fee"
+        ],
+        "max_amount": {
+          "amount": "500.00",
+          "currency": "AED"
+        },
+        "recipients": [
+          "SYNTH-GOV-TREASURY-0001"
+        ],
+        "max_lifetime_hours": 1,
+        "commissionable_tasks": [],
+        "max_delegation_depth": 3,
+        "delegation_only": true
       }
     }
   ]

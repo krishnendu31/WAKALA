@@ -55,8 +55,9 @@ def run_dev_scenario(key: ScenarioKey, env: Env) -> DevScenarioResult:
         outcome, signed, note = run_scenario(env, key)
     except ScenarioUnavailable as exc:
         raise HTTPException(status_code=409, detail={"code": "SCENARIO_UNAVAILABLE", "message": str(exc)}) from None
-    except AuditUnavailableError:
-        raise HTTPException(status_code=503, detail={"code": "AUDIT_UNAVAILABLE", "message": "Audit unavailable; nothing executed."}) from None
+    except AuditUnavailableError as exc:
+        from app.api.gateway import audit_failure
+        raise audit_failure(exc) from None
     req = signed.request
     return DevScenarioResult(
         scenario=_info(key),

@@ -20,7 +20,8 @@
         "residency.check_eligibility",
         "insurance.verify_case_eligibility",
         "payment.collect_renewal_fee",
-        "residency.complete_renewal"
+        "residency.complete_renewal",
+        "delegation.commission_task"
       ]
     }
   ]

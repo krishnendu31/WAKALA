@@ -29,6 +29,8 @@ from pydantic import AwareDatetime, Field, field_validator, model_validator
 
 from .common import (
     AgentId,
+    CaseId,
+    TaskId,
     CitizenRef,
     IssuerId,
     KeyId,
@@ -103,6 +105,18 @@ class DigitalMandate(StrictModel):
     parent_mandate_id: MandateId | None = None
     # ``None`` means unsigned. The gateway rejects unsigned mandates.
     signature_metadata: SignatureMetadata | None = None
+    # --- Phase 3: mandate chains (all signed; omitted from canonical bytes when default)
+    # The government case this mandate is bound to (required for delegation).
+    case_id: CaseId | None = None
+    # Child mandates: the chain root, depth below it, who delegated and which task.
+    root_mandate_id: MandateId | None = None
+    delegation_depth: int = Field(default=0, ge=0, le=8)
+    delegated_by_agent: AgentId | None = None
+    delegated_task: TaskId | None = None
+    # Commission authority: tasks this holder may commission from other agents.
+    # Separate from ``allowed_tools`` (what the holder may execute itself).
+    commissionable_tasks: list[TaskId] = Field(default_factory=list, max_length=8)
+    max_delegation_depth: int = Field(default=0, ge=0, le=4)
 
     @field_validator("allowed_tools", "denied_tools", "recipient_allowlist")
     @classmethod
@@ -126,6 +140,12 @@ class DigitalMandate(StrictModel):
             raise ValueError("a recipient_allowlist requires an explicit amount_limit")
         if self.parent_mandate_id is not None and self.parent_mandate_id == self.mandate_id:
             raise ValueError("a mandate cannot be its own parent")
+        if self.delegation_depth > 0 and self.parent_mandate_id is None:
+            raise ValueError("a delegated mandate (depth > 0) requires parent_mandate_id")
+        if len(set(self.commissionable_tasks)) != len(self.commissionable_tasks):
+            raise ValueError("commissionable_tasks contains duplicates")
+        if self.commissionable_tasks and self.max_delegation_depth <= self.delegation_depth:
+            raise ValueError("commissionable_tasks require max_delegation_depth above the current depth")
         return self
 
     def is_expired_at(self, moment: datetime) -> bool:

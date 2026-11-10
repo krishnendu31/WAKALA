@@ -37,10 +37,42 @@ class MandateStore:
 
     def put(self, mandate: DigitalMandate) -> None:
         with self._db.transaction() as conn:
-            conn.execute(
-                "INSERT INTO mandates (mandate_id, agent_id, issued_at, payload) VALUES (?, ?, ?, ?)",
-                (mandate.mandate_id, mandate.agent_id, mandate.issued_at.isoformat(), mandate.model_dump_json()),
-            )
+            self.put_in(conn, mandate)
+
+    @staticmethod
+    def put_in(conn, mandate: DigitalMandate) -> None:  # type: ignore[no-untyped-def]
+        conn.execute(
+            "INSERT INTO mandates (mandate_id, agent_id, issued_at, payload) VALUES (?, ?, ?, ?)",
+            (mandate.mandate_id, mandate.agent_id, mandate.issued_at.isoformat(), mandate.model_dump_json()),
+        )
+
+    @staticmethod
+    def get_in(conn, mandate_id: str) -> tuple[DigitalMandate, bool] | None:  # type: ignore[no-untyped-def]
+        row = conn.execute("SELECT payload, revoked FROM mandates WHERE mandate_id = ?", (mandate_id,)).fetchone()
+        if row is None:
+            return None
+        return DigitalMandate.model_validate_json(row["payload"]), bool(row["revoked"])
+
+    def descendants(self, mandate_id: str) -> list[str]:
+        """All mandates delegated (transitively) from ``mandate_id``, via trusted delegation records."""
+        out: list[str] = []
+        frontier = [mandate_id]
+        while frontier and len(out) < 1000:
+            marks = ",".join("?" for _ in frontier)
+            rows = self._db.query(f"SELECT child_mandate_id FROM delegations WHERE parent_mandate_id IN ({marks})", tuple(frontier))
+            frontier = [r["child_mandate_id"] for r in rows if r["child_mandate_id"] not in out]
+            out += frontier
+        return out
+
+    def delegations(self, case_id: str | None = None) -> list[dict[str, object]]:
+        sql, args = "SELECT * FROM delegations", ()
+        if case_id:
+            sql, args = sql + " WHERE case_id = ?", (case_id,)
+        return [{k: r[k] for k in r.keys()} for r in self._db.query(sql + " ORDER BY issued_at", args)]
+
+    def is_revoked(self, mandate_id: str) -> bool:
+        rows = self._db.query("SELECT revoked FROM mandates WHERE mandate_id = ?", (mandate_id,))
+        return bool(rows and rows[0]["revoked"])
 
     def get(self, mandate_id: str) -> DigitalMandate | None:
         """Raises MandateMalformedError if the stored row does not parse."""

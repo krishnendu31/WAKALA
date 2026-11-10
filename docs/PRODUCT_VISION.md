@@ -61,8 +61,9 @@ if the agent is fooled, the gateway refuses, the refusal is audited, and Mariam'
 | 0 | Engineering foundation: contracts, synthetic environment, console shell *(complete)* |
 | 1 | Ed25519 identity, signed mandates, default-deny gateway, protected execution, hash-chained audit *(complete — development prototype)* |
 | 2 | Protected synthetic government services, case-specific authority, simulated agent adapters *(complete — development prototype)* |
-| 3 | Signed delegation, officer console, LLM adapters, adversarial runs, citizen receipts |
-| 4 | Measured benchmarks from real runs |
+| 3 | Signed, non-expanding mandate chains; selective revocation; transactional outcome audit *(complete — development prototype)* |
+| 4 | Officer console, LLM adapters, adversarial runs, citizen receipts |
+| 4b | Measured benchmarks from real runs |
 
 ## Principles
 

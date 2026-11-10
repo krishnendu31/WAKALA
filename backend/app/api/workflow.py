@@ -58,15 +58,17 @@ def run_workflow_scenario(key: Annotated[str, Path(pattern=r"^[a-z_]{3,40}$")], 
         return run_workflow(env, key, (body or RunRequest()).citizen_ref)
     except IntakeRefused:
         raise HTTPException(status_code=404, detail={"code": "CITIZEN_NOT_FOUND", "message": "Unknown citizen."}) from None
-    except AuditUnavailableError:
-        raise HTTPException(status_code=503, detail={"code": "AUDIT_UNAVAILABLE", "message": "Audit unavailable; workflow stopped."}) from None
+    except AuditUnavailableError as exc:
+        from app.api.gateway import audit_failure
+        raise audit_failure(exc) from None
 
 
 @router.get("/cases", response_model=list[dict[str, Any]])
 def list_cases(env: Env) -> list[dict[str, Any]]:
     return [{"case_id": c.case_id, "citizen_ref": c.citizen_ref, "state": c.state.value, "created_at": c.created_at.isoformat(),
              "expires_at": c.expires_at.isoformat(), "completed_prerequisites": c.completed_prerequisites,
-             "recovery_status": c.recovery_status} for c in env.cases.list()]
+             "recovery_status": c.recovery_status, "authority_model": c.authority_model,
+             "authority_revoked": c.authority_revoked} for c in env.cases.list()]
 
 
 @router.get("/cases/{case_id}", response_model=CaseDetail)
@@ -76,6 +78,22 @@ def get_case(case_id: CaseIdPath, env: Env) -> CaseDetail:
         raise HTTPException(status_code=404, detail={"code": "CASE_NOT_FOUND", "message": "No such case."})
     return CaseDetail(case=case, ledger=env.services.ledger(case_id), renewals=env.services.renewals(case_id),
                       audit_events=case_audit_events(env, case_id))
+
+
+@router.get("/cases/{case_id}/authority-graph", response_model=dict[str, Any])
+def authority_graph(case_id: CaseIdPath, env: Env) -> dict[str, Any]:
+    """Live authority chain for a case: issuers, root and child mandates (verified now),
+    agents and denied delegation attempts — derived only from stored records."""
+    from app.workflow.authority_graph import build_authority_graph
+    graph = build_authority_graph(env, case_id)
+    if graph is None:
+        raise HTTPException(status_code=404, detail={"code": "CASE_NOT_FOUND", "message": "No such case."})
+    return graph
+
+
+@router.get("/delegations", response_model=list[dict[str, Any]])
+def list_delegations(env: Env) -> list[dict[str, Any]]:
+    return [{k: str(v) for k, v in d.items()} for d in env.mandates.delegations()]
 
 
 @router.get("/ledger", response_model=list[dict[str, str]])

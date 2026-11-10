@@ -8,13 +8,14 @@ truncation or a consistent rewrite by whoever controls the storage (see
 
 from .chain import GENESIS_HASH, IntegrityReport, compute_event_hash, verify_chain
 from .interfaces import AuditSink
-from .sink import AuditUnavailableError, SqliteAuditSink
+from .sink import AuditUnavailableError, OutcomeAuditUnavailable, SqliteAuditSink
 
 __all__ = [
     "GENESIS_HASH",
     "AuditSink",
     "AuditUnavailableError",
     "IntegrityReport",
+    "OutcomeAuditUnavailable",
     "SqliteAuditSink",
     "compute_event_hash",
     "verify_chain",

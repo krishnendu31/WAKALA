@@ -26,7 +26,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
-from app.core.audit import SqliteAuditSink
+from app.core.audit import AuditUnavailableError, OutcomeAuditUnavailable, SqliteAuditSink
 from app.core.authorization import POLICY_VERSION, PolicyContext, PolicyEvaluation, PolicyFunction, authorize, explain
 from app.core.crypto import canonical_json, sha256_hex
 from app.core.identity import authenticate, request_digest
@@ -95,6 +95,10 @@ class ToolDispatcher:
         try:
             result = spec.handler(params, ctx) if spec.needs_context else spec.handler(params)  # type: ignore[call-arg]
             return "executed", result
+        except AuditUnavailableError:
+            # The outcome record failed inside the service transaction, which
+            # therefore rolled back. Propagate: this is not a service error.
+            raise
         except ServiceRefusal as refusal:  # business rule; transaction rolled back, nothing changed
             return "refused_by_service", {"refusal_code": refusal.code}
         except Exception:  # handler failure is reported, never retried or escalated
@@ -146,6 +150,32 @@ class Gateway:
             "known_services": frozenset(s.service_id for s in self._repo.list_services()),
         }
 
+    def resolve_ancestors(
+        self, leaf: DigitalMandate, mandate_source: MandateSource | None = None
+    ) -> tuple[tuple[DigitalMandate, ...], ReasonCode | None]:
+        """Follow parent links through the SERVER-SIDE store (never agent input).
+
+        Returns (parent → root ancestors, resolution error). Bounded and cycle-safe."""
+        source = mandate_source or self._mandates.get
+        ancestors: list[DigitalMandate] = []
+        seen = {leaf.mandate_id}
+        current = leaf
+        while current.parent_mandate_id is not None:
+            if len(ancestors) >= 8:
+                return tuple(ancestors), ReasonCode.DENY_DELEGATION_DEPTH_EXCEEDED
+            if current.parent_mandate_id in seen:
+                return tuple(ancestors), ReasonCode.DENY_DELEGATION_CYCLE
+            try:
+                parent = source(current.parent_mandate_id)
+            except MandateMalformedError:
+                parent = None
+            if parent is None:
+                return tuple(ancestors), ReasonCode.DENY_DELEGATION_CHAIN_INVALID
+            ancestors.append(parent)
+            seen.add(parent.mandate_id)
+            current = parent
+        return tuple(ancestors), None
+
     # --- decision -------------------------------------------------------------------
     def _decide(self, signed: SignedActionRequest, origin: str, mandate_source: MandateSource | None) -> GatewayOutcome:
         start = time.perf_counter()
@@ -173,8 +203,14 @@ class Gateway:
             case = None
             if principal is not None and request.case_id is not None and self._cases is not None:
                 case = self._cases.get(request.case_id)
+            ancestors: tuple[DigitalMandate, ...] = ()
+            chain_error = None
+            if mandate is not None:
+                ancestors, chain_error = self.resolve_ancestors(mandate, mandate_source)
             ctx = PolicyContext(
                 case=case,
+                mandate_ancestors=ancestors,
+                chain_resolution_error=chain_error,
                 now=now,
                 passport=self._repo.get_agent(request.agent_id) if principal is not None else None,
                 tools=self._tools.specs,
@@ -242,22 +278,42 @@ class Gateway:
         if not outcome.decision.allowed:
             return ExecutionOutcome(outcome.decision, outcome.evaluation, False, "denied", None)
         decision = outcome.decision
+        spec = self._tools.get(outcome.request.tool_name)
+        recorder = _OutcomeRecorder(self, outcome, origin) if spec is not None and spec.audit_execution else None
         grant = ExecutionGrant(decision.decision_id, decision.request_digest or "", outcome.request.tool_name)
         exec_ctx = ExecutionContext(
             agent_id=outcome.request.agent_id, request_id=outcome.request.request_id, case_id=outcome.request.case_id,
             decision_id=decision.decision_id, audit_reference=decision.audit_reference, now=outcome.audit_event.timestamp,
+            mandate_id=outcome.request.mandate_id, outcome=recorder,
         )
-        status, result = self._dispatcher.dispatch(grant, outcome.request, exec_ctx)
-        spec = self._tools.get(outcome.request.tool_name)
+        try:
+            status, result = self._dispatcher.dispatch(grant, outcome.request, exec_ctx)
+        except AuditUnavailableError:
+            # Service writes and outcome record were in one transaction: both rolled back.
+            try:
+                self._audit.append(self._execution_draft(outcome, "rolled_back_outcome_not_recorded", None, origin, atomic=False))
+            except AuditUnavailableError:
+                pass  # reconciliation will record "authorized, not executed"
+            raise OutcomeAuditUnavailable("outcome not recorded; operation rolled back", committed=False) from None
         execution_event = None
-        if spec is not None and spec.audit_execution:
-            execution_event = self._audit_execution(outcome, status, result, origin)
+        if recorder is not None:
+            if recorder.event is not None:
+                execution_event = recorder.event  # committed atomically with the service change
+            else:
+                # Refused / failed / no-handler (nothing committed), or a handler that
+                # does not use the transactional recorder (committed, recorded after).
+                committed = status == "executed"
+                try:
+                    execution_event = self._audit.append(self._execution_draft(outcome, status, result, origin, atomic=False))
+                except AuditUnavailableError:
+                    raise OutcomeAuditUnavailable("outcome not recorded", committed=committed) from None
         return ExecutionOutcome(outcome.decision, outcome.evaluation, status == "executed", status, result, execution_event)
 
-    def _audit_execution(self, outcome: GatewayOutcome, status: str, result: dict[str, Scalar] | None, origin: str) -> AuditEvent:
+    def _execution_draft(self, outcome: GatewayOutcome, status: str, result: dict[str, Scalar] | None, origin: str,
+                         *, atomic: bool) -> AuditEvent:
         """Second, informational event: what the protected service actually did."""
         req = outcome.request
-        return self._audit.append(AuditEvent(
+        return AuditEvent(
             event_id=f"EVT-{secrets.token_hex(8).upper()}",
             timestamp=self._clock(),
             actor=req.agent_id,
@@ -277,6 +333,23 @@ class Gateway:
                 "refusal_code": (result or {}).get("refusal_code"),
                 # A digest of the result, never the result itself (it may contain record data).
                 "result_digest": sha256_hex(canonical_json(result)) if result is not None else None,
+                "outcome_recorded_atomically": atomic,
                 "origin": origin,
             },
-        ))
+        )
+
+
+class _OutcomeRecorder:
+    """Lets a service write its mandatory outcome event inside its own DB transaction."""
+
+    def __init__(self, gateway: Gateway, outcome: GatewayOutcome, origin: str) -> None:
+        self._gateway = gateway
+        self._outcome = outcome
+        self._origin = origin
+        self.event: AuditEvent | None = None
+
+    def record(self, conn: Any, status: str, result: dict[str, Scalar]) -> None:
+        if self.event is not None:
+            raise RuntimeError("outcome already recorded")
+        draft = self._gateway._execution_draft(self._outcome, status, result, self._origin, atomic=True)
+        self.event = self._gateway._audit.append_in(conn, draft)

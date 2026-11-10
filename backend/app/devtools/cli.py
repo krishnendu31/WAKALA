@@ -10,6 +10,11 @@ Run from backend/:  python -m app.devtools.cli <command>
     mandates tamper-demo <ID>    show that modifying a signed mandate breaks verification
     agents set-status <AGENT_ID> <active|suspended|revoked|pending_review>
     cases list                   list renewal cases
+    cases revoke-authority <CASE_ID> [reason]   revoke a case's mandates and all delegated children
+    delegations list             list trusted delegation records
+    agents revoke <AGENT_ID> [reason]           agent-wide revocation (persistent)
+    audit reconcile              record outcomes for authorized-but-unrecorded executions
+    bench delegation [N]         measure real authorization latency, direct vs delegated
     cases resume <CASE_ID>       officer resumes a case paused for review (audited)
     audit verify                 verify the audit hash chain
     audit tail [N]               show the last N audit events
@@ -71,8 +76,28 @@ def main(argv: list[str]) -> int:
             for m in issued:
                 print(f"issued {m.mandate_id} for {m.agent_id}, expires {m.expires_at.isoformat()}")
         elif cmd == "mandates" and rest[:1] == ["revoke"] and len(rest) >= 2:
-            ok = env.mandates.revoke(rest[1], " ".join(rest[2:]) or "revoked via dev CLI", env.clock())
-            print("revoked" if ok else "not found or already revoked")
+            from app.services.revocation import revoke_mandate
+            ids = revoke_mandate(env, rest[1], " ".join(rest[2:]) or "revoked via dev CLI")
+            print(f"revoked {len(ids)} mandate(s) incl. delegated descendants: {', '.join(ids) or '-'}")
+        elif cmd == "cases" and rest[:1] == ["revoke-authority"] and len(rest) >= 2:
+            from app.services.revocation import revoke_case_authority
+            ids = revoke_case_authority(env, rest[1], " ".join(rest[2:]) or "revoked via dev CLI")
+            print(f"case {rest[1]} authority revoked; {len(ids)} mandate(s) revoked")
+        elif cmd == "delegations" and rest[:1] == ["list"]:
+            for d in env.mandates.delegations():
+                print(f"{d['child_mandate_id']:<20} <- {d['parent_mandate_id']:<22} {d['from_agent']} -> {d['to_agent']} "
+                      f"{d['task']:<30} depth {d['depth']} case {d['case_id']} revoked={env.mandates.is_revoked(str(d['child_mandate_id']))}")
+        elif cmd == "agents" and rest[:1] == ["revoke"] and len(rest) >= 2:
+            from app.services.revocation import revoke_agent
+            revoke_agent(env, rest[1], " ".join(rest[2:]) or "revoked via dev CLI")
+            print(f"{rest[1]} revoked (persistent across restarts)")
+        elif cmd == "audit" and rest[:1] == ["reconcile"]:
+            from app.services.reconciliation import reconcile_outcomes
+            res = reconcile_outcomes(env)
+            print(f"examined {res.examined} authorized decisions; recorded {len(res.recorded)}: {res.recorded}")
+        elif cmd == "bench" and rest[:1] == ["delegation"]:
+            from app.workflow.benchmark import run_delegation_benchmark
+            print(run_delegation_benchmark(int(rest[1]) if len(rest) > 1 else 200))
         elif cmd == "mandates" and rest[:1] == ["tamper-demo"] and len(rest) == 2:
             m = env.mandates.get(rest[1])
             if m is None:

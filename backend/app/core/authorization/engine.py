@@ -34,7 +34,9 @@ from typing import Literal
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from pydantic import ValidationError
 
-from app.core.execution.tools import FeePaymentParams, ToolSpec
+from app.core.delegation.chain import verify_chain
+from app.core.delegation.tasks import GLOBAL_MAX_DELEGATION_DEPTH, TASK_CATALOG, DelegableTask
+from app.core.execution.tools import CommissionParams, FeePaymentParams, ToolSpec
 from app.core.identity import AuthenticatedPrincipal, VerifiedIdentity
 from app.core.mandates import check_mandate_lifecycle, verify_mandate_integrity
 from app.schemas import ActionRequest, AgentPassport, AuthorizationDecision, DigitalMandate, ReasonCode, TrustedIssuer
@@ -74,6 +76,10 @@ class PolicyContext:
     mandate_malformed: bool = False
     # Phase 2: snapshot of the case named by the signed request (None if absent/unknown).
     case: RenewalCase | None = None
+    # Phase 3: ancestors of the presented mandate, resolved server-side (parent → root).
+    mandate_ancestors: tuple[DigitalMandate, ...] = ()
+    chain_resolution_error: ReasonCode | None = None
+    task_catalog: Mapping[str, DelegableTask] = TASK_CATALOG
 
 
 @dataclass(frozen=True)
@@ -130,6 +136,10 @@ def check_mandate_integrity(req: ActionRequest, mandate: DigitalMandate | None, 
         return codes
     if mandate.agent_id != req.agent_id:
         return [R.DENY_MANDATE_AGENT_MISMATCH]
+    if mandate.parent_mandate_id is not None or ctx.mandate_ancestors or ctx.chain_resolution_error:
+        # Delegated authority: every ancestor and every link must verify.
+        return verify_chain(mandate, ctx.mandate_ancestors, ctx.issuers, ctx.issuer_public_keys, ctx.now,
+                            ctx.revoked_mandate_ids, ctx.chain_resolution_error, ctx.task_catalog)
     return []
 
 
@@ -145,7 +155,11 @@ def check_tool_permission(req: ActionRequest, mandate: DigitalMandate, ctx: Poli
     if spec is None:
         codes.append(R.DENY_UNKNOWN_TOOL)
         return codes
-    if req.tool_name not in mandate.allowed_tools and R.DENY_TOOL_EXPLICITLY_DENIED not in codes:
+    if spec.commission:
+        # Commissioning is authorized by the commission grant, never by allowed_tools.
+        if req.parameters.get("task") not in mandate.commissionable_tasks:
+            codes.append(R.DENY_DELEGATION_NOT_PERMITTED)
+    elif req.tool_name not in mandate.allowed_tools and R.DENY_TOOL_EXPLICITLY_DENIED not in codes:
         codes.append(R.DENY_TOOL_NOT_PERMITTED)
     if spec.service_id != mandate.service_id or mandate.service_id not in ctx.known_services:
         codes.append(R.DENY_SERVICE_SCOPE_VIOLATION)
@@ -195,7 +209,18 @@ def check_case_binding(req: ActionRequest, mandate: DigitalMandate, spec: ToolSp
         or req.request_id != case.request_id
     ):
         codes.append(R.DENY_CASE_SCOPE_VIOLATION)
-    if req.agent_id not in case.assigned_agents or case.mandate_refs.get(req.agent_id) != req.mandate_id:
+    if case.authority_revoked:
+        codes.append(R.DENY_CASE_AUTHORITY_REVOKED)
+    direct = req.agent_id in case.assigned_agents and case.mandate_refs.get(req.agent_id) == req.mandate_id
+    root = ctx.mandate_ancestors[-1] if ctx.mandate_ancestors else None
+    delegated = (
+        mandate.parent_mandate_id is not None and root is not None
+        and root.mandate_id in case.mandate_refs.values() and root.agent_id in case.assigned_agents
+        and case.mandate_refs.get(root.agent_id) == root.mandate_id
+    )
+    if mandate.parent_mandate_id is not None and mandate.case_id != case.case_id:
+        codes.append(R.DENY_DELEGATION_CASE_MISMATCH)
+    if not (direct or delegated):
         codes.append(R.DENY_CASE_AGENT_NOT_ASSIGNED)
     if req.tool_name not in case.authorized_operations:
         codes.append(R.DENY_CASE_OPERATION_NOT_AUTHORIZED)
@@ -216,6 +241,8 @@ def check_action_constraints(req: ActionRequest, mandate: DigitalMandate, ctx: P
         params = spec.params_model.model_validate(req.parameters)
     except ValidationError:
         return [R.DENY_INVALID_PARAMETERS]
+    if spec.commission:
+        return check_commission_request(req, mandate, params, ctx)
     if not spec.monetary:
         return []
     if not isinstance(params, FeePaymentParams):  # monetary tools must use the payment model
@@ -228,6 +255,33 @@ def check_action_constraints(req: ActionRequest, mandate: DigitalMandate, ctx: P
         codes.append(R.DENY_AMOUNT_EXCEEDS_LIMIT)
     if params.recipient not in mandate.recipient_allowlist:
         codes.append(R.DENY_RECIPIENT_NOT_ALLOWLISTED)
+    return codes
+
+
+def check_commission_request(req: ActionRequest, mandate: DigitalMandate, params: object, ctx: PolicyContext) -> list[ReasonCode]:
+    """What a commission may ask for: a catalogued task, a permitted receiver,
+    only that task's operations, within depth, without cycles."""
+    if not isinstance(params, CommissionParams):
+        return [R.DENY_INVALID_PARAMETERS]
+    codes: list[ReasonCode] = []
+    task = ctx.task_catalog.get(params.task)
+    if task is None:
+        return [R.DENY_DELEGATION_NOT_PERMITTED]
+    if params.receiving_agent_id not in task.receivers or params.receiving_agent_id == req.agent_id:
+        codes.append(R.DENY_DELEGATION_NOT_PERMITTED)
+    requested = {op for op in params.requested_operations.split(",") if op}
+    if not requested or not requested <= task.operations:
+        codes.append(R.DENY_DELEGATION_EXPANDS_AUTHORITY)
+    if task.monetary and mandate.amount_limit is None:
+        codes.append(R.DENY_DELEGATION_EXPANDS_AUTHORITY)
+    new_depth = mandate.delegation_depth + 1
+    if new_depth > min(mandate.max_delegation_depth, GLOBAL_MAX_DELEGATION_DEPTH):
+        codes.append(R.DENY_DELEGATION_DEPTH_EXCEEDED)
+    chain_agents = {mandate.agent_id, *(m.agent_id for m in ctx.mandate_ancestors)}
+    if params.receiving_agent_id in chain_agents:
+        codes.append(R.DENY_DELEGATION_CYCLE)
+    if mandate.case_id is None or mandate.case_id != req.case_id:
+        codes.append(R.DENY_DELEGATION_CASE_MISMATCH)
     return codes
 
 
@@ -347,8 +401,16 @@ EXPLANATIONS: dict[ReasonCode, str] = {
     R.DENY_RECIPIENT_NOT_ALLOWLISTED: "The recipient is not on the mandate's allow-list.",
     R.DENY_REQUEST_STALE: "The request timestamp is outside the accepted freshness window.",
     R.DENY_REPLAYED_REQUEST: "This request has already been submitted.",
-    R.DENY_DELEGATION_CHAIN_INVALID: "Delegated requests are not accepted in this phase.",
-    R.DENY_DELEGATION_EXPANDS_AUTHORITY: "The delegation would expand authority.",
+    R.DENY_DELEGATION_CHAIN_INVALID: "The delegation chain is invalid (client-supplied chains are never accepted).",
+    R.DENY_DELEGATION_EXPANDS_AUTHORITY: "The delegation would expand authority beyond what was granted.",
+    R.DENY_DELEGATION_NOT_PERMITTED: "The mandate does not permit commissioning this task from this agent.",
+    R.DENY_DELEGATION_DEPTH_EXCEEDED: "The delegation chain would exceed its permitted depth.",
+    R.DENY_DELEGATION_CYCLE: "The delegation would create a cycle.",
+    R.DENY_DELEGATION_CASE_MISMATCH: "The delegated mandate belongs to a different case.",
+    R.DENY_PARENT_MANDATE_INVALID: "A mandate higher in the delegation chain is not authentic or trusted.",
+    R.DENY_PARENT_MANDATE_EXPIRED: "A mandate higher in the delegation chain has expired.",
+    R.DENY_PARENT_MANDATE_REVOKED: "A mandate higher in the delegation chain has been revoked.",
+    R.DENY_CASE_AUTHORITY_REVOKED: "Authority for this case has been revoked.",
     R.DENY_ENGINE_NOT_CONNECTED: "The enforcement engine is not connected.",
     R.ESCALATE_HUMAN_REVIEW: "The action requires human review.",
 }

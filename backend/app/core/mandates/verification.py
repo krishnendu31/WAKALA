@@ -58,6 +58,11 @@ def check_issuer_authority(mandate: DigitalMandate, issuer: TrustedIssuer) -> li
             mandate.amount_limit.currency != auth.max_amount.currency
             or mandate.amount_limit.amount > auth.max_amount.amount
         )
+    # Commission authority and chain position (Phase 3).
+    exceeded = exceeded or not set(mandate.commissionable_tasks) <= set(auth.commissionable_tasks)
+    exceeded = exceeded or mandate.max_delegation_depth > auth.max_delegation_depth
+    is_child = mandate.parent_mandate_id is not None
+    exceeded = exceeded or (auth.delegation_only != is_child)
     return [R.DENY_ISSUER_AUTHORITY_EXCEEDED] if exceeded else []
 
 

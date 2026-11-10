@@ -47,7 +47,8 @@ class Repository:
         rows = self._db.query("SELECT payload FROM agents WHERE agent_id = ?", (agent_id,))
         return self._with_key_state(AgentPassport.model_validate_json(rows[0]["payload"])) if rows else None
 
-    def set_agent_status(self, agent_id: str, status: AgentStatus) -> AgentPassport:
+    def set_agent_status(self, agent_id: str, status: AgentStatus, reason: str = "status change") -> AgentPassport:
+        """Persistent: recorded as an override that survives the registry reseed on restart."""
         rows = self._db.query("SELECT payload FROM agents WHERE agent_id = ?", (agent_id,))
         if not rows:
             raise KeyError(agent_id)
@@ -55,7 +56,22 @@ class Repository:
         updated = AgentPassport.model_validate({**agent.model_dump(), "status": status})
         with self._db.transaction() as conn:
             conn.execute("UPDATE agents SET payload = ? WHERE agent_id = ?", (updated.model_dump_json(), agent_id))
+            conn.execute(
+                "INSERT INTO agent_status_overrides (agent_id, status, reason, changed_at) VALUES (?, ?, ?, ?) "
+                "ON CONFLICT(agent_id) DO UPDATE SET status=excluded.status, reason=excluded.reason, changed_at=excluded.changed_at",
+                (agent_id, status, reason[:200], datetime.now(timezone.utc).isoformat()),
+            )
         return self._with_key_state(updated)
+
+    def apply_status_overrides(self) -> None:
+        """Re-apply persistent agent status changes after the synthetic registry is reseeded."""
+        for row in self._db.query("SELECT agent_id, status FROM agent_status_overrides"):
+            agent_rows = self._db.query("SELECT payload FROM agents WHERE agent_id = ?", (row["agent_id"],))
+            if agent_rows:
+                agent = AgentPassport.model_validate_json(agent_rows[0]["payload"])
+                updated = AgentPassport.model_validate({**agent.model_dump(), "status": row["status"]})
+                with self._db.transaction() as conn:
+                    conn.execute("UPDATE agents SET payload = ? WHERE agent_id = ?", (updated.model_dump_json(), row["agent_id"]))
 
     # --- environment ------------------------------------------------------------
     def list_citizens(self) -> list[Citizen]:

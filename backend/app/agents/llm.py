@@ -17,18 +17,25 @@ from app.schemas.case import RenewalCase
 from .interface import ToolCall
 
 
-def export_tool_definitions(registry: ToolRegistry, *, case_bound_only: bool = True) -> list[dict[str, Any]]:
-    """JSON-schema tool definitions suitable for common tool-use APIs."""
+def export_tool_definitions(registry: ToolRegistry, *, case_bound_only: bool = True,
+                            include_commission: bool = False) -> list[dict[str, Any]]:
+    """JSON-schema tool definitions suitable for common tool-use APIs.
+
+    Commission tools (delegating to another agent) are a separate category of
+    authority and are only exported when explicitly requested."""
     out = []
     for spec in registry.specs.values():
         if case_bound_only and spec.case_states is None:
+            continue
+        if spec.commission and not include_commission:
             continue
         out.append({
             "name": spec.name,
             "description": spec.description,
             "input_schema": spec.params_model.model_json_schema(),
             "wakala": {"service_id": spec.service_id, "resource_type": spec.resource_type, "access": spec.access,
-                       "target": spec.target, "case_states": sorted(spec.case_states or []), "monetary": spec.monetary},
+                       "target": spec.target, "case_states": sorted(spec.case_states or []), "monetary": spec.monetary,
+                       "commission": spec.commission},
         })
     return out
 

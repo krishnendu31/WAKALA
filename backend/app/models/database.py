@@ -99,6 +99,28 @@ CREATE TABLE IF NOT EXISTS payment_ledger (
     created_at      TEXT NOT NULL,
     decision_id     TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS delegations (
+    child_mandate_id  TEXT PRIMARY KEY,
+    parent_mandate_id TEXT NOT NULL,
+    root_mandate_id   TEXT NOT NULL,
+    case_id           TEXT NOT NULL,
+    from_agent        TEXT NOT NULL,
+    to_agent          TEXT NOT NULL,
+    task              TEXT NOT NULL,
+    depth             INTEGER NOT NULL,
+    issued_at         TEXT NOT NULL,
+    expires_at        TEXT NOT NULL,
+    decision_id       TEXT NOT NULL,
+    decision_event    TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS delegations_parent ON delegations(parent_mandate_id);
+CREATE INDEX IF NOT EXISTS delegations_case ON delegations(case_id);
+CREATE TABLE IF NOT EXISTS agent_status_overrides (
+    agent_id    TEXT PRIMARY KEY,
+    status      TEXT NOT NULL,
+    reason      TEXT NOT NULL,
+    changed_at  TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS audit_events (
     seq         INTEGER PRIMARY KEY,
     event_id    TEXT NOT NULL UNIQUE,

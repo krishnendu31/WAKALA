@@ -56,6 +56,8 @@ class WorkflowRun(StrictModel):
     renewals: list[dict[str, str]]
     audit_events: list[AuditEvent]
     baseline: BaselineComparison | None = None
+    related_cases: list[RenewalCase] = []
+    delegations: list[dict[str, str]] = []
 
 
 class WorkflowScenarioInfo(StrictModel):

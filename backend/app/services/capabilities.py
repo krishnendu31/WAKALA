@@ -9,7 +9,7 @@ from __future__ import annotations
 from app import __version__
 from app.schemas import CapabilityStatus, SystemCapabilities
 
-CURRENT_PHASE = 2
+CURRENT_PHASE = 3
 ENFORCEMENT_ENGINE_CONNECTED = True
 
 _CAPABILITIES: tuple[CapabilityStatus, ...] = (
@@ -45,15 +45,23 @@ _CAPABILITIES: tuple[CapabilityStatus, ...] = (
                      description="Test-only role-based baseline, fully separate from WAKALA, for the wrong-citizen scenario."),
     CapabilityStatus(key="safety_pause", name="Automatic pause after denied high-risk action", status="implemented", phase=2,
                      description="Prototype control pauses a case for review after a denied payment; resume via dev CLI only."),
-    CapabilityStatus(key="non_expanding_delegation", name="Signed cross-agent delegation", status="planned", phase=3,
-                     description="Child mandates delegated agent-to-agent that may only narrow their parent's authority."),
-    CapabilityStatus(key="human_intervention", name="Officer console: approve, resume, revoke", status="planned", phase=3,
-                     description="Authenticated accountable officers act on paused cases and mandates from the console."),
-    CapabilityStatus(key="llm_agent_adapters", name="LLM tool-use agent adapters", status="planned", phase=3,
+    CapabilityStatus(key="non_expanding_delegation", name="Signed, non-expanding mandate chains", status="implemented", phase=3,
+                     description="Gateway-authorized commission → WAKALA-signed child mandate; every link verified server-side and narrowed."),
+    CapabilityStatus(key="commission_authority", name="Commission authority separate from execution", status="implemented", phase=3,
+                     description="An agent may commission a catalogued task without being allowed to execute it itself."),
+    CapabilityStatus(key="selective_revocation", name="Persistent, cascading, selective revocation", status="implemented", phase=3,
+                     description="Mandate- and case-level revocation cascade to delegated children; agent-wide revocation is separate."),
+    CapabilityStatus(key="transactional_outcome_audit", name="Transactional outcome audit + reconciliation", status="implemented", phase=3,
+                     description="Service changes and their outcome event commit together; idempotent reconciliation on startup."),
+    CapabilityStatus(key="authority_graph", name="Live authority-chain graph", status="implemented", phase=3,
+                     description="Graph of issuers, root/child mandates, agents and denied delegation attempts from stored records."),
+    CapabilityStatus(key="human_intervention", name="Officer console: approve, resume, revoke", status="planned", phase=4,
+                     description="Authenticated accountable officers act from the console (today: dev CLI only)."),
+    CapabilityStatus(key="llm_agent_adapters", name="LLM tool-use agent adapters", status="planned", phase=4,
                      description="Model-driven agents submitting through the same signing adapter; interface defined, not implemented."),
-    CapabilityStatus(key="attack_simulation", name="Controlled attack simulation", status="planned", phase=3,
+    CapabilityStatus(key="attack_simulation", name="Agent-driven attack simulation", status="planned", phase=4,
                      description="Prompt injection, forged identity, tampering and escalation scenarios run against the gateway."),
-    CapabilityStatus(key="citizen_receipts", name="Citizen transparency receipts", status="planned", phase=3,
+    CapabilityStatus(key="citizen_receipts", name="Citizen transparency receipts", status="planned", phase=4,
                      description="Plain-language record of which agents acted for a citizen, and under what mandate."),
     CapabilityStatus(key="measured_benchmarks", name="Measured security benchmarks", status="planned", phase=4,
                      description="Decision latency and scenario outcomes measured from real runs."),

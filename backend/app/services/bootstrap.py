@@ -24,6 +24,7 @@ from app.devtools.keystore import DevKeystore, PrivateKeyProvider
 from app.models.database import Database
 
 from app.services.cases import CaseStore
+from app.services.delegation import DELEGATION_ISSUER, DelegationService
 from app.services.government import ProtectedServices
 from app.services.mandate_store import MandateStore
 from app.services.repository import Repository
@@ -49,6 +50,7 @@ class WakalaEnvironment:
     clock: Callable[[], datetime]
     cases: CaseStore
     services: ProtectedServices
+    delegation: DelegationService | None = None
 
     def close(self) -> None:
         self.db.close()
@@ -107,6 +109,7 @@ def bootstrap(
     if reseed or not db.query("SELECT 1 FROM agents LIMIT 1"):
         seed_database(db, dataset)
     repo = Repository(db)
+    repo.apply_status_overrides()  # persistent agent revocations survive the reseed
     keystore = keystore or DevKeystore(settings.dev_keys_dir)
     provision_identities(repo, dataset, keystore)
 
@@ -116,19 +119,33 @@ def bootstrap(
     replay = ReplayGuard(db, retention=skew * 2)
     cases = CaseStore(db)
     services = ProtectedServices(db, dataset.services[0])
+    from app.devtools.issuance import sign_mandate
+
+    delegation_issuer = next(i for i in dataset.issuers if i.issuer_id == DELEGATION_ISSUER)
+    delegation = DelegationService(
+        db,
+        # Development signer for the delegation authority. Production: an HSM/KMS-backed signing service.
+        signer=lambda m: sign_mandate(m, keystore.private_key(delegation_issuer.key_id), delegation_issuer.key_id, m.issued_at),
+        issuers=lambda: {i.issuer_id: i for i in repo.list_issuers()},
+    )
     if tools is None:
         phase1 = build_default_tool_registry(_residency_view(repo), _insurance_view(repo))
-        tools = ToolRegistry([*phase1.specs.values(), *services.tool_specs()])
+        tools = ToolRegistry([*phase1.specs.values(), *services.tool_specs(), delegation.tool_spec()])
     gateway = Gateway(
         repo=repo, mandates=mandates, cases=cases, audit=audit, replay=replay, tools=tools,
         clock=clock, max_request_skew=skew, policy=policy,
     )
-    env = WakalaEnvironment(settings, db, dataset, repo, mandates, audit, replay, tools, gateway, keystore, clock, cases, services)
+    env = WakalaEnvironment(settings, db, dataset, repo, mandates, audit, replay, tools, gateway, keystore, clock, cases, services,
+                            delegation)
     if issue_mandates:
         ensure_dev_mandates(
             gateway, mandates, keystore, {i.issuer_id: i for i in dataset.issuers}, clock(),
             timedelta(minutes=settings.dev_mandate_lifetime_minutes),
         )
+    if issue_mandates:
+        # Startup recovery: record outcomes for any authorized-but-unrecorded executions.
+        from app.services.reconciliation import reconcile_outcomes
+        reconcile_outcomes(env)
     return env
 
 
