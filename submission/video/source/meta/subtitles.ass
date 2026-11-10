@@ -1,0 +1,34 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Sub,Segoe UI,36,&H00FFFFFF,&H00FFFFFF,&H00603E19,&H10603E19,0,0,0,0,100,100,0,0,3,12,0,2,260,260,30,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.60,0:00:03.62,Sub,,0,0,0,,As government services become more autonomous,
+Dialogue: 0,0:00:03.62,0:00:08.35,Sub,,0,0,0,,AI agents can access records, delegate tasks and carry out transactions.
+Dialogue: 0,0:00:08.70,0:00:11.40,Sub,,0,0,0,,But every action must stay within verified authority.
+Dialogue: 0,0:00:13.20,0:00:18.49,Sub,,0,0,0,,Meet Mariam, a fictional citizen. She asks to renew her residency permit.
+Dialogue: 0,0:00:18.84,0:00:21.95,Sub,,0,0,0,,Several AI agents work together on her application,
+Dialogue: 0,0:00:21.95,0:00:25.37,Sub,,0,0,0,,and WAKALA checks every protected action before it runs.
+Dialogue: 0,0:00:26.87,0:00:31.66,Sub,,0,0,0,,Now, in a separate test case, we deliberately trigger a security scenario.
+Dialogue: 0,0:00:32.01,0:00:35.44,Sub,,0,0,0,,The Insurance Agent requests another citizen's record.
+Dialogue: 0,0:00:35.44,0:00:39.44,Sub,,0,0,0,,Its identity is genuine, but this action exceeds its authority.
+Dialogue: 0,0:00:39.79,0:00:43.46,Sub,,0,0,0,,WAKALA blocks the request before any protected data is returned.
+Dialogue: 0,0:00:44.96,0:00:46.92,Sub,,0,0,0,,Blocking the request is only the beginning.
+Dialogue: 0,0:00:47.27,0:00:51.12,Sub,,0,0,0,,An authorized security officer signs in, reviews the incident,
+Dialogue: 0,0:00:51.12,0:00:54.66,Sub,,0,0,0,,and reassigns the legitimate work to a replacement agent.
+Dialogue: 0,0:00:55.01,0:00:56.76,Sub,,0,0,0,,The other agents keep their authority.
+Dialogue: 0,0:00:58.26,0:01:02.20,Sub,,0,0,0,,After the required officer approval, the application continues.
+Dialogue: 0,0:01:02.55,0:01:06.94,Sub,,0,0,0,,Mariam's renewal completes, and another citizen's application is unaffected.
+Dialogue: 0,0:01:08.44,0:01:15.47,Sub,,0,0,0,,In twelve hundred controlled synthetic tests, WAKALA allowed none of the seven hundred and twenty unauthorized operations,
+Dialogue: 0,0:01:15.47,0:01:18.18,Sub,,0,0,0,,and wrongly denied none of the legitimate ones.
+Dialogue: 0,0:01:18.53,0:01:22.35,Sub,,0,0,0,,Repeated recovery tests also completed under the tested conditions.
+Dialogue: 0,0:01:23.85,0:01:26.47,Sub,,0,0,0,,WAKALA is not another government AI assistant.
+Dialogue: 0,0:01:26.82,0:01:30.80,Sub,,0,0,0,,It is the security layer that makes autonomous government services accountable.
+Dialogue: 0,0:01:31.15,0:01:35.61,Sub,,0,0,0,,WAKALA. Autonomous AI. Accountable actions.

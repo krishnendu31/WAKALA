@@ -1,0 +1,267 @@
+{
+ "total": 97.81150099999999,
+ "shots": [
+  {
+   "id": "s1_title",
+   "start": 0.0,
+   "d": 12.903
+  },
+  {
+   "id": "s2a",
+   "start": 12.303,
+   "d": 6.065
+  },
+  {
+   "id": "s2b",
+   "start": 17.768,
+   "d": 8.798
+  },
+  {
+   "id": "s3a",
+   "start": 25.966,
+   "d": 5.769
+  },
+  {
+   "id": "s3b",
+   "start": 31.135,
+   "d": 7.837
+  },
+  {
+   "id": "s3c",
+   "start": 38.372,
+   "d": 6.286
+  },
+  {
+   "id": "s4a",
+   "start": 44.058,
+   "d": 3.671
+  },
+  {
+   "id": "s4b",
+   "start": 47.129,
+   "d": 4.012
+  },
+  {
+   "id": "s4c",
+   "start": 50.541,
+   "d": 4.012
+  },
+  {
+   "id": "s4d",
+   "start": 53.952,
+   "d": 4.012
+  },
+  {
+   "id": "s5a",
+   "start": 57.364,
+   "d": 3.685
+  },
+  {
+   "id": "s5b",
+   "start": 60.449,
+   "d": 4.302
+  },
+  {
+   "id": "s5c",
+   "start": 64.151,
+   "d": 3.993
+  },
+  {
+   "id": "s6a",
+   "start": 67.544,
+   "d": 6.764
+  },
+  {
+   "id": "s6b",
+   "start": 73.708,
+   "d": 9.846
+  },
+  {
+   "id": "s7_close",
+   "start": 82.954,
+   "d": 14.857
+  }
+ ],
+ "narration": [
+  {
+   "file": "s1_1.wav",
+   "start": 0.6
+  },
+  {
+   "file": "s1_2.wav",
+   "start": 8.696
+  },
+  {
+   "file": "s2_1.wav",
+   "start": 13.203
+  },
+  {
+   "file": "s2_2.wav",
+   "start": 18.843
+  },
+  {
+   "file": "s3_1.wav",
+   "start": 26.866
+  },
+  {
+   "file": "s3_2.wav",
+   "start": 32.01
+  },
+  {
+   "file": "s3_3.wav",
+   "start": 39.793
+  },
+  {
+   "file": "s4_1.wav",
+   "start": 44.958
+  },
+  {
+   "file": "s4_2.wav",
+   "start": 47.27
+  },
+  {
+   "file": "s4_3.wav",
+   "start": 55.011
+  },
+  {
+   "file": "s5_1.wav",
+   "start": 58.264
+  },
+  {
+   "file": "s5_2.wav",
+   "start": 62.547
+  },
+  {
+   "file": "s6_1.wav",
+   "start": 68.444
+  },
+  {
+   "file": "s6_2.wav",
+   "start": 78.527
+  },
+  {
+   "file": "s7_1.wav",
+   "start": 83.854
+  },
+  {
+   "file": "s7_2.wav",
+   "start": 86.821
+  },
+  {
+   "file": "s7_3.wav",
+   "start": 91.149
+  }
+ ],
+ "subtitles": [
+  {
+   "start": 0.6,
+   "end": 3.62,
+   "text": "As government services become more autonomous,"
+  },
+  {
+   "start": 3.62,
+   "end": 8.346,
+   "text": "AI agents can access records, delegate tasks and carry out transactions."
+  },
+  {
+   "start": 8.696,
+   "end": 11.403,
+   "text": "But every action must stay within verified authority."
+  },
+  {
+   "start": 13.203,
+   "end": 18.493,
+   "text": "Meet Mariam, a fictional citizen. She asks to renew her residency permit."
+  },
+  {
+   "start": 18.843,
+   "end": 21.952,
+   "text": "Several AI agents work together on her application,"
+  },
+  {
+   "start": 21.952,
+   "end": 25.366,
+   "text": "and WAKALA checks every protected action before it runs."
+  },
+  {
+   "start": 26.866,
+   "end": 31.66,
+   "text": "Now, in a separate test case, we deliberately trigger a security scenario."
+  },
+  {
+   "start": 32.01,
+   "end": 35.441,
+   "text": "The Insurance Agent requests another citizen's record."
+  },
+  {
+   "start": 35.441,
+   "end": 39.443,
+   "text": "Its identity is genuine, but this action exceeds its authority."
+  },
+  {
+   "start": 39.793,
+   "end": 43.458,
+   "text": "WAKALA blocks the request before any protected data is returned."
+  },
+  {
+   "start": 44.958,
+   "end": 46.92,
+   "text": "Blocking the request is only the beginning."
+  },
+  {
+   "start": 47.27,
+   "end": 51.12,
+   "text": "An authorized security officer signs in, reviews the incident,"
+  },
+  {
+   "start": 51.12,
+   "end": 54.661,
+   "text": "and reassigns the legitimate work to a replacement agent."
+  },
+  {
+   "start": 55.011,
+   "end": 56.764,
+   "text": "The other agents keep their authority."
+  },
+  {
+   "start": 58.264,
+   "end": 62.197,
+   "text": "After the required officer approval, the application continues."
+  },
+  {
+   "start": 62.547,
+   "end": 66.944,
+   "text": "Mariam's renewal completes, and another citizen's application is unaffected."
+  },
+  {
+   "start": 68.444,
+   "end": 75.471,
+   "text": "In twelve hundred controlled synthetic tests, WAKALA allowed none of the seven hundred and twenty unauthorized operations,"
+  },
+  {
+   "start": 75.471,
+   "end": 78.177,
+   "text": "and wrongly denied none of the legitimate ones."
+  },
+  {
+   "start": 78.527,
+   "end": 82.354,
+   "text": "Repeated recovery tests also completed under the tested conditions."
+  },
+  {
+   "start": 83.854,
+   "end": 86.471,
+   "text": "WAKALA is not another government AI assistant."
+  },
+  {
+   "start": 86.821,
+   "end": 90.799,
+   "text": "It is the security layer that makes autonomous government services accountable."
+  },
+  {
+   "start": 91.149,
+   "end": 95.612,
+   "text": "WAKALA. Autonomous AI. Accountable actions."
+  }
+ ]
+}

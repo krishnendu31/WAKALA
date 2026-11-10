@@ -1,0 +1,64 @@
+{
+  "voice_note": "Local Windows text-to-speech (no online service). A human voice recording is recommended for the final presentation.",
+  "scenes": [
+    {
+      "id": "s1", "title": "The challenge",
+      "headline": "AI agents can now act on behalf of citizens. But who verifies their authority?",
+      "lines": [
+        "As government services become more autonomous, AI agents can access records, delegate tasks and carry out transactions.",
+        "But every action must stay within verified authority."
+      ]
+    },
+    {
+      "id": "s2", "title": "Normal government service",
+      "headline": "Authorized actions completed",
+      "lines": [
+        "Meet Mariam, a fictional citizen. She asks to renew her residency permit.",
+        "Several AI agents work together on her application, and WAKALA checks every protected action before it runs."
+      ]
+    },
+    {
+      "id": "s3", "title": "The unauthorized action",
+      "headline": "Unauthorized access blocked",
+      "lines": [
+        "Now, in a separate test case, we deliberately trigger a security scenario.",
+        "The Insurance Agent requests another citizen's record. Its identity is genuine, but this action exceeds its authority.",
+        "WAKALA blocks the request before any protected data is returned."
+      ]
+    },
+    {
+      "id": "s4", "title": "Accountable human intervention",
+      "headline": "An authorized officer replaces only the agent that overstepped",
+      "lines": [
+        "Blocking the request is only the beginning.",
+        "An authorized security officer signs in, reviews the incident, and reassigns the legitimate work to a replacement agent.",
+        "The other agents keep their authority."
+      ]
+    },
+    {
+      "id": "s5", "title": "Safe service recovery",
+      "headline": "Legitimate service recovered",
+      "lines": [
+        "After the required officer approval, the application continues.",
+        "Mariam's renewal completes, and another citizen's application is unaffected."
+      ]
+    },
+    {
+      "id": "s6", "title": "Measured evidence",
+      "headline": "Synthetic prototype benchmark",
+      "lines": [
+        "In twelve hundred controlled synthetic tests, WAKALA allowed none of the seven hundred and twenty unauthorized operations, and wrongly denied none of the legitimate ones.",
+        "Repeated recovery tests also completed under the tested conditions."
+      ]
+    },
+    {
+      "id": "s7", "title": "Closing",
+      "headline": "WAKALA — Autonomous AI. Accountable Actions.",
+      "lines": [
+        "WAKALA is not another government AI assistant.",
+        "It is the security layer that makes autonomous government services accountable.",
+        "WAKALA. Autonomous AI. Accountable actions."
+      ]
+    }
+  ]
+}

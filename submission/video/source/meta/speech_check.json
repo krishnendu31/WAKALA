@@ -1,0 +1,121 @@
+﻿[
+    {
+        "clip":  "s1_1",
+        "expected_words":  17,
+        "matched":  15,
+        "ratio":  0.88,
+        "heard":  "As governments services become more autonomous a IE agents can access records delegate tasks and carry out transactions"
+    },
+    {
+        "clip":  "s1_2",
+        "expected_words":  8,
+        "matched":  8,
+        "ratio":  1,
+        "heard":  "But every action must stay within verified authority"
+    },
+    {
+        "clip":  "s2_1",
+        "expected_words":  12,
+        "matched":  10,
+        "ratio":  0.83,
+        "heard":  "B to Merriam a fictional citizen she asks to renew her residency permit"
+    },
+    {
+        "clip":  "s2_2",
+        "expected_words":  17,
+        "matched":  13,
+        "ratio":  0.76,
+        "heard":  "Several AIA genes work together on her application log college checks every protected action before it runs"
+    },
+    {
+        "clip":  "s3_1",
+        "expected_words":  12,
+        "matched":  11,
+        "ratio":  0.92,
+        "heard":  "Now in a separate test case deliberately trigger a security scenario"
+    },
+    {
+        "clip":  "s3_2",
+        "expected_words":  17,
+        "matched":  14,
+        "ratio":  0.82,
+        "heard":  "The insurance agent requests and other citizens record side entity is genuine but this action exceeds its authority"
+    },
+    {
+        "clip":  "s3_3",
+        "expected_words":  10,
+        "matched":  9,
+        "ratio":  0.9,
+        "heard":  "Block all of blocks the request before any protected data is returned"
+    },
+    {
+        "clip":  "s4_1",
+        "expected_words":  7,
+        "matched":  7,
+        "ratio":  1,
+        "heard":  "Blocking the request is only the beginning"
+    },
+    {
+        "clip":  "s4_2",
+        "expected_words":  18,
+        "matched":  17,
+        "ratio":  0.94,
+        "heard":  "An authorized security officer signs in reviews the incident reassigns the legitimate work to a replacement agent"
+    },
+    {
+        "clip":  "s4_3",
+        "expected_words":  6,
+        "matched":  6,
+        "ratio":  1,
+        "heard":  "The other agents keep their authority"
+    },
+    {
+        "clip":  "s5_1",
+        "expected_words":  8,
+        "matched":  8,
+        "ratio":  1,
+        "heard":  "After the required officer approval application continues"
+    },
+    {
+        "clip":  "s5_2",
+        "expected_words":  9,
+        "matched":  7,
+        "ratio":  0.78,
+        "heard":  "Gary IMS renewal completes and another citizens application is unaffected"
+    },
+    {
+        "clip":  "s6_1",
+        "expected_words":  25,
+        "matched":  16,
+        "ratio":  0.64,
+        "heard":  "In 1200 controlled synthetic tests are callable out none of the 720 unauthorized operations wrongly denied none of the legitimate ones"
+    },
+    {
+        "clip":  "s6_2",
+        "expected_words":  9,
+        "matched":  9,
+        "ratio":  1,
+        "heard":  "Repeated recovery tests also completed under the tested conditions"
+    },
+    {
+        "clip":  "s7_1",
+        "expected_words":  7,
+        "matched":  5,
+        "ratio":  0.71,
+        "heard":  "Block all it is not another gov\u0027t Ai assistant"
+    },
+    {
+        "clip":  "s7_2",
+        "expected_words":  11,
+        "matched":  11,
+        "ratio":  1,
+        "heard":  "It is the security layer that makes autonomous government services accountable"
+    },
+    {
+        "clip":  "s7_3",
+        "expected_words":  5,
+        "matched":  4,
+        "ratio":  0.8,
+        "heard":  "Block all a autonomous Ai accountable actions"
+    }
+]

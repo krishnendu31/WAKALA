@@ -1,0 +1,87 @@
+1
+00:00:00,600 --> 00:00:03,620
+As government services become more autonomous,
+
+2
+00:00:03,620 --> 00:00:08,346
+AI agents can access records, delegate tasks and carry out transactions.
+
+3
+00:00:08,696 --> 00:00:11,403
+But every action must stay within verified authority.
+
+4
+00:00:13,203 --> 00:00:18,493
+Meet Mariam, a fictional citizen. She asks to renew her residency permit.
+
+5
+00:00:18,843 --> 00:00:21,952
+Several AI agents work together on her application,
+
+6
+00:00:21,952 --> 00:00:25,366
+and WAKALA checks every protected action before it runs.
+
+7
+00:00:26,866 --> 00:00:31,660
+Now, in a separate test case, we deliberately trigger a security scenario.
+
+8
+00:00:32,010 --> 00:00:35,441
+The Insurance Agent requests another citizen's record.
+
+9
+00:00:35,441 --> 00:00:39,443
+Its identity is genuine, but this action exceeds its authority.
+
+10
+00:00:39,793 --> 00:00:43,458
+WAKALA blocks the request before any protected data is returned.
+
+11
+00:00:44,958 --> 00:00:46,920
+Blocking the request is only the beginning.
+
+12
+00:00:47,270 --> 00:00:51,120
+An authorized security officer signs in, reviews the incident,
+
+13
+00:00:51,120 --> 00:00:54,661
+and reassigns the legitimate work to a replacement agent.
+
+14
+00:00:55,011 --> 00:00:56,764
+The other agents keep their authority.
+
+15
+00:00:58,264 --> 00:01:02,197
+After the required officer approval, the application continues.
+
+16
+00:01:02,547 --> 00:01:06,944
+Mariam's renewal completes, and another citizen's application is unaffected.
+
+17
+00:01:08,444 --> 00:01:15,471
+In twelve hundred controlled synthetic tests, WAKALA allowed none of the seven hundred and twenty unauthorized operations,
+
+18
+00:01:15,471 --> 00:01:18,177
+and wrongly denied none of the legitimate ones.
+
+19
+00:01:18,527 --> 00:01:22,354
+Repeated recovery tests also completed under the tested conditions.
+
+20
+00:01:23,854 --> 00:01:26,471
+WAKALA is not another government AI assistant.
+
+21
+00:01:26,821 --> 00:01:30,799
+It is the security layer that makes autonomous government services accountable.
+
+22
+00:01:31,149 --> 00:01:35,612
+WAKALA. Autonomous AI. Accountable actions.

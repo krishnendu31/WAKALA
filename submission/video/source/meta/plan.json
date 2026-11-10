@@ -1,0 +1,486 @@
+{
+ "shots": [
+  {
+   "id": "s1_title",
+   "stage": {
+    "kind": "title",
+    "head": "AI agents can now act on behalf of citizens. But who verifies their authority?"
+   },
+   "scene": "s1",
+   "d": 12.902646
+  },
+  {
+   "id": "s2a",
+   "stage": {
+    "kind": "app",
+    "img": "capture/02a_normal_start.png",
+    "css": {
+     "w": 1440,
+     "h": 810
+    },
+    "crop": {
+     "x": 100,
+     "y": 150,
+     "w": 1240
+    },
+    "focus": [
+     {
+      "x": 120,
+      "y": 254,
+      "w": 590,
+      "h": 314.75,
+      "tone": "",
+      "pad": 10
+     }
+    ],
+    "chip": "Normal service",
+    "head": "Mariam asks the AI assistant to renew her residency permit",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s2",
+   "d": 6.065258399999999
+  },
+  {
+   "id": "s2b",
+   "stage": {
+    "kind": "app",
+    "img": "capture/02b_normal_done.png",
+    "css": {
+     "w": 1440,
+     "h": 1073
+    },
+    "crop": {
+     "x": 70,
+     "y": 200,
+     "w": 1300
+    },
+    "focus": [
+     {
+      "x": 730,
+      "y": 254,
+      "w": 590,
+      "h": 684.25,
+      "tone": "",
+      "pad": 10
+     }
+    ],
+    "chip": "Normal service",
+    "head": "Authorized actions completed \u2014 6 agent actions checked and allowed",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s2",
+   "d": 8.7978876
+  },
+  {
+   "id": "s3a",
+   "stage": {
+    "kind": "app",
+    "img": "capture/03a_attack_ready.png",
+    "css": {
+     "w": 1440,
+     "h": 810
+    },
+    "crop": {
+     "x": 100,
+     "y": 150,
+     "w": 1240
+    },
+    "focus": [
+     {
+      "x": 120,
+      "y": 254,
+      "w": 1200,
+      "h": 201.75,
+      "tone": "deny",
+      "pad": 10
+     }
+    ],
+    "chip": "Separate test case",
+    "head": "A deliberately triggered security scenario",
+    "tone": "deny",
+    "headTone": ""
+   },
+   "scene": "s3",
+   "d": 5.769267714285713
+  },
+  {
+   "id": "s3b",
+   "stage": {
+    "kind": "app",
+    "img": "capture/03b_blocked.png",
+    "css": {
+     "w": 1440,
+     "h": 945
+    },
+    "crop": {
+     "x": 100,
+     "y": 170,
+     "w": 1240
+    },
+    "focus": [
+     {
+      "x": 120,
+      "y": 254,
+      "w": 1200,
+      "h": 515,
+      "tone": "deny",
+      "pad": 6
+     }
+    ],
+    "chip": "Gateway decision",
+    "head": "UNAUTHORIZED ACCESS BLOCKED",
+    "tone": "deny",
+    "headTone": "deny"
+   },
+   "scene": "s3",
+   "d": 7.836974799999998
+  },
+  {
+   "id": "s3c",
+   "stage": {
+    "kind": "app",
+    "img": "capture/03b_blocked.png",
+    "css": {
+     "w": 1440,
+     "h": 945
+    },
+    "crop": {
+     "x": 120,
+     "y": 260,
+     "w": 1200
+    },
+    "focus": [
+     {
+      "x": 146,
+      "y": 438,
+      "w": 1148,
+      "h": 143.5,
+      "tone": "navy",
+      "pad": 10
+     }
+    ],
+    "chip": "Gateway decision",
+    "head": "Authorized for Mariam's case, not another citizen \u00b7 no protected data returned",
+    "tone": "deny",
+    "headTone": ""
+   },
+   "scene": "s3",
+   "d": 6.286194485714284
+  },
+  {
+   "id": "s4a",
+   "stage": {
+    "kind": "app",
+    "img": "capture/04a_officer_signin.png",
+    "css": {
+     "w": 1440,
+     "h": 812
+    },
+    "crop": {
+     "x": 100,
+     "y": 150,
+     "w": 1240
+    },
+    "focus": [
+     {
+      "x": 631.65625,
+      "y": 254,
+      "w": 688.34375,
+      "h": 423.5,
+      "tone": "navy",
+      "pad": 10
+     }
+    ],
+    "chip": "Security officer",
+    "head": "Security review required \u2014 an authorized officer signs in",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s4",
+   "d": 3.6706299230769233
+  },
+  {
+   "id": "s4b",
+   "stage": {
+    "kind": "app",
+    "img": "capture/04b_incident.png",
+    "css": {
+     "w": 1440,
+     "h": 1537
+    },
+    "crop": {
+     "x": 600,
+     "y": 300,
+     "w": 800
+    },
+    "focus": [
+     {
+      "x": 652.65625,
+      "y": 381.25,
+      "w": 646.34375,
+      "h": 151,
+      "tone": "deny",
+      "pad": 10
+     }
+    ],
+    "chip": "Security officer",
+    "head": "The officer reviews the incident",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s4",
+   "d": 4.011811025641026
+  },
+  {
+   "id": "s4c",
+   "stage": {
+    "kind": "app",
+    "img": "capture/04b_incident.png",
+    "css": {
+     "w": 1440,
+     "h": 1537
+    },
+    "crop": {
+     "x": 580,
+     "y": 910,
+     "w": 860
+    },
+    "focus": [
+     {
+      "x": 652.65625,
+      "y": 937,
+      "w": 646.34375,
+      "h": 444.6875,
+      "tone": "navy",
+      "pad": 4
+     }
+    ],
+    "chip": "Security officer",
+    "head": "Authority chain checked: only the delegated mandate was suspended",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s4",
+   "d": 4.011811025641026
+  },
+  {
+   "id": "s4d",
+   "stage": {
+    "kind": "app",
+    "img": "capture/04c_reassigned.png",
+    "css": {
+     "w": 1440,
+     "h": 1184
+    },
+    "crop": {
+     "x": 600,
+     "y": 560,
+     "w": 800
+    },
+    "focus": [
+     {
+      "x": 652.65625,
+      "y": 664.25,
+      "w": 646.34375,
+      "h": 127.75,
+      "tone": "",
+      "pad": 10
+     }
+    ],
+    "chip": "Security officer",
+    "head": "Legitimate work reassigned to the standby Insurance Agent",
+    "tone": "navy",
+    "headTone": ""
+   },
+   "scene": "s4",
+   "d": 4.011811025641026
+  },
+  {
+   "id": "s5a",
+   "stage": {
+    "kind": "app",
+    "img": "capture/05a_held.png",
+    "css": {
+     "w": 1440,
+     "h": 1193
+    },
+    "crop": {
+     "x": 600,
+     "y": 330,
+     "w": 800
+    },
+    "focus": [
+     {
+      "x": 652.65625,
+      "y": 459.75,
+      "w": 646.34375,
+      "h": 167,
+      "tone": "warn",
+      "pad": 10
+     }
+    ],
+    "chip": "Safe recovery",
+    "head": "The sensitive step waits for officer approval",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s5",
+   "d": 3.6848042424242426
+  },
+  {
+   "id": "s5b",
+   "stage": {
+    "kind": "app",
+    "img": "capture/05b_recovered.png",
+    "css": {
+     "w": 1440,
+     "h": 1250
+    },
+    "crop": {
+     "x": 0,
+     "y": 300,
+     "w": 1440
+    },
+    "focus": [
+     {
+      "x": 120,
+      "y": 254,
+      "w": 491.65625,
+      "h": 703.5,
+      "tone": "",
+      "pad": 10
+     },
+     {
+      "x": 121,
+      "y": 979,
+      "w": 490,
+      "h": 137,
+      "tone": "navy",
+      "pad": 10
+     }
+    ],
+    "chip": "Safe recovery",
+    "head": "Mariam's renewal completed \u2014 recovered after a security review",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s5",
+   "d": 4.3017650909090905
+  },
+  {
+   "id": "s5c",
+   "stage": {
+    "kind": "app",
+    "img": "capture/05c_results.png",
+    "css": {
+     "w": 1440,
+     "h": 994
+    },
+    "crop": {
+     "x": 100,
+     "y": 150,
+     "w": 1240
+    },
+    "focus": [
+     {
+      "x": 120,
+      "y": 254,
+      "w": 1200,
+      "h": 170,
+      "tone": "",
+      "pad": 10
+     }
+    ],
+    "chip": "Results",
+    "head": "Unauthorized action blocked \u00b7 Legitimate service recovered \u00b7 Unrelated citizen unaffected",
+    "tone": "",
+    "headTone": ""
+   },
+   "scene": "s5",
+   "d": 3.993284666666667
+  },
+  {
+   "id": "s6a",
+   "stage": {
+    "kind": "app",
+    "img": "capture/06_evidence.png",
+    "css": {
+     "w": 1729,
+     "h": 6357
+    },
+    "crop": {
+     "x": 280,
+     "y": 300,
+     "w": 1150
+    },
+    "focus": [
+     {
+      "x": 308,
+      "y": 572.375,
+      "w": 1092,
+      "h": 263.5,
+      "tone": "",
+      "pad": 6
+     }
+    ],
+    "chip": "Security Evidence",
+    "head": "The real Security Evidence page \u2014 synthetic benchmark",
+    "tone": "gold",
+    "headTone": ""
+   },
+   "scene": "s6",
+   "d": 6.7639916
+  },
+  {
+   "id": "s6b",
+   "stage": {
+    "kind": "evidence",
+    "head": "What the synthetic tests showed",
+    "source": "evidence/phase5/summary.json \u00b7 evidence/phase7/recovery_repeatability.json",
+    "tiles": [
+     {
+      "big": "1,200",
+      "text": "synthetic authorization requests",
+      "tone": "navy"
+     },
+     {
+      "big": "0 / 720",
+      "text": "unauthorized operations executed under full WAKALA",
+      "small": "intentionally weak baseline: 624 / 720"
+     },
+     {
+      "big": "0 / 480",
+      "text": "legitimate requests wrongly denied"
+     },
+     {
+      "big": "2/20 \u2192 20/20",
+      "text": "shared-environment recovery, before \u2192 after the fix",
+      "small": "5 repeated runs, all 20/20"
+     },
+     {
+      "big": "50 / 50",
+      "text": "extended synthetic recovery test"
+     },
+     {
+      "big": "Synthetic",
+      "text": "fixed-seed benchmark on one developer machine",
+      "small": "not production government data",
+      "tone": "navy"
+     }
+    ]
+   },
+   "scene": "s6",
+   "d": 9.8459874
+  },
+  {
+   "id": "s7_close",
+   "stage": {
+    "kind": "closing"
+   },
+   "scene": "s7",
+   "d": 14.857375999999999
+  }
+ ]
+}
