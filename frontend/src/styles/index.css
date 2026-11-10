@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource/ibm-plex-sans-arabic/400.css";
+@import "@fontsource/ibm-plex-sans-arabic/500.css";
+@import "@fontsource/ibm-plex-sans-arabic/600.css";
+
+/*
+ * WAKALA design tokens.
+ * Midnight surfaces, teal for trusted operations, amber for warnings,
+ * rose-red reserved for confirmed security denials, slate-violet for "planned".
+ */
+@theme {
+  --font-sans: "Inter Variable", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-arabic: "IBM Plex Sans Arabic", "Inter Variable", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Code", monospace;
+
+  --color-ink-950: #050a15;
+  --color-ink-900: #070d1a;
+  --color-ink-850: #0a1222;
+  --color-ink-800: #0d172b;
+  --color-ink-750: #111d35;
+  --color-ink-700: #16243f;
+  --color-line: #1b2a46;
+  --color-line-strong: #263a5e;
+
+  --color-fg: #e7edf7;
+  --color-fg-muted: #9aa9c3;
+  --color-fg-subtle: #64748f;
+
+  --color-trust: #2dd4bf;
+  --color-trust-strong: #14b8a6;
+  --color-trust-soft: #2dd4bf1f;
+  --color-cyan: #38bdf8;
+  --color-warn: #fbbf24;
+  --color-warn-soft: #fbbf241a;
+  --color-deny: #f43f5e;
+  --color-deny-soft: #f43f5e1a;
+  --color-plan: #a5b4fc;
+  --color-plan-soft: #a5b4fc17;
+
+  --radius-card: 14px;
+  --shadow-card: 0 1px 0 0 #ffffff08 inset, 0 12px 32px -16px #00000099;
+
+  --animate-fade-in: fade-in 240ms ease-out both;
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+@layer base {
+  html { color-scheme: dark; }
+  body {
+    @apply bg-ink-900 text-fg font-sans antialiased;
+    font-feature-settings: "cv11", "ss01", "ss03";
+    background-image:
+      radial-gradient(1200px 600px at 85% -10%, #0f2a3a55, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #12203d66, transparent 60%);
+    background-attachment: fixed;
+  }
+  ::selection { background: #2dd4bf40; }
+  :focus-visible { outline: 2px solid var(--color-trust); outline-offset: 2px; border-radius: 6px; }
+  [lang="ar"] { font-family: var(--font-arabic); }
+  * { scrollbar-width: thin; scrollbar-color: #263a5e transparent; }
+}
+
+@layer components {
+  .card {
+    @apply rounded-[var(--radius-card)] border border-line bg-ink-850/80 shadow-[var(--shadow-card)] backdrop-blur-sm;
+  }
+  .card-header { @apply flex items-start justify-between gap-4 border-b border-line px-5 py-4; }
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-fg-subtle; }
+  .mono { @apply font-mono text-[12.5px]; }
+  .kbd { @apply rounded-md border border-line bg-ink-800 px-1.5 py-0.5 font-mono text-[11px] text-fg-muted; }
+}
+
+/* React Flow — align with theme */
+.react-flow { --xy-background-color: transparent; }
+.react-flow__attribution { display: none; }
+.react-flow__edge-path { stroke: #2a3f66; }
+.react-flow__controls { box-shadow: none; }
+.react-flow__controls-button { background: #0d172b; border-color: #1b2a46; color: #9aa9c3; fill: #9aa9c3; }
+.react-flow__controls-button:hover { background: #16243f; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+}

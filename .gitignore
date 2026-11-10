@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.pytest_tmp/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local data (SQLite files if WAKALA_DB_PATH points to disk)
+*.db
+*.sqlite3
+backend/var/
+
+# Development signing keys (Ed25519 private keys) - never commit
+backend/.dev_keys/
+.dev_keys/
+
+# Node / Vite
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+.vite/
+
+# Environment & secrets — never commit real values
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

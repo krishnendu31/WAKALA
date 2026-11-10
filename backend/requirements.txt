@@ -1,0 +1,9 @@
+# WAKALA backend — pinned for reproducible local builds (Python 3.11+)
+fastapi==0.115.12
+uvicorn==0.34.2
+pydantic==2.11.4
+cryptography==44.0.3   # Ed25519 mandate signatures (Phase 1)
+
+# Test tooling
+pytest==8.3.5
+httpx==0.28.1          # required by fastapi.testclient

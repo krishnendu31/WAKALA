@@ -1,0 +1,50 @@
+{
+  "_notice": "SYNTHETIC DATA — entirely fictional people. Any resemblance to real persons is coincidental. Account references are non-functional test identifiers.",
+  "citizens": [
+    {
+      "citizen_ref": "C-1001",
+      "full_name": "Mariam Al Hashimi",
+      "full_name_ar": "مريم الهاشمي",
+      "residency": { "permit_ref": "SYNTH-RP-100101", "status": "expiring_soon", "expiry_date": "2026-12-15", "emirate": "Abu Dhabi" },
+      "insurance": { "policy_ref": "SYNTH-INS-200101", "provider": "Synthetic Health Cover Co. (demo)", "status": "valid", "valid_until": "2027-06-30" },
+      "service_attributes": { "sponsor_type": "employer", "renewal_eligible": true, "outstanding_fines": { "amount": "0.00", "currency": "AED" }, "preferred_language": "ar" },
+      "account_ref": "SYNTH-ACCT-C1001"
+    },
+    {
+      "citizen_ref": "C-1002",
+      "full_name": "Omar Al Mansoori",
+      "full_name_ar": "عمر المنصوري",
+      "residency": { "permit_ref": "SYNTH-RP-100201", "status": "active", "expiry_date": "2027-09-01", "emirate": "Dubai" },
+      "insurance": { "policy_ref": "SYNTH-INS-200201", "provider": "Synthetic Health Cover Co. (demo)", "status": "valid", "valid_until": "2027-09-01" },
+      "service_attributes": { "sponsor_type": "family", "renewal_eligible": false, "outstanding_fines": { "amount": "0.00", "currency": "AED" }, "preferred_language": "ar" },
+      "account_ref": "SYNTH-ACCT-C1002"
+    },
+    {
+      "citizen_ref": "C-1003",
+      "full_name": "Fatima Rahman",
+      "full_name_ar": "فاطمة رحمن",
+      "residency": { "permit_ref": "SYNTH-RP-100301", "status": "expired", "expiry_date": "2026-10-20", "emirate": "Sharjah" },
+      "insurance": { "policy_ref": "SYNTH-INS-200301", "provider": "Demo Mutual Insurance (synthetic)", "status": "expired", "valid_until": "2026-10-01" },
+      "service_attributes": { "sponsor_type": "employer", "renewal_eligible": false, "outstanding_fines": { "amount": "250.00", "currency": "AED" }, "preferred_language": "en" },
+      "account_ref": "SYNTH-ACCT-C1003"
+    },
+    {
+      "citizen_ref": "C-1004",
+      "full_name": "Rajesh Nair",
+      "full_name_ar": "راجيش ناير",
+      "residency": { "permit_ref": "SYNTH-RP-100401", "status": "expiring_soon", "expiry_date": "2026-12-31", "emirate": "Dubai" },
+      "insurance": { "policy_ref": "SYNTH-INS-200401", "provider": "Demo Mutual Insurance (synthetic)", "status": "none", "valid_until": null },
+      "service_attributes": { "sponsor_type": "employer", "renewal_eligible": false, "outstanding_fines": { "amount": "0.00", "currency": "AED" }, "preferred_language": "en" },
+      "account_ref": "SYNTH-ACCT-C1004"
+    },
+    {
+      "citizen_ref": "C-1005",
+      "full_name": "Elena Petrova",
+      "full_name_ar": "إيلينا بتروفا",
+      "residency": { "permit_ref": "SYNTH-RP-100501", "status": "active", "expiry_date": "2028-03-14", "emirate": "Ras Al Khaimah" },
+      "insurance": { "policy_ref": "SYNTH-INS-200501", "provider": "Synthetic Health Cover Co. (demo)", "status": "valid", "valid_until": "2027-03-14" },
+      "service_attributes": { "sponsor_type": "investor", "renewal_eligible": false, "outstanding_fines": { "amount": "0.00", "currency": "AED" }, "preferred_language": "en" },
+      "account_ref": "SYNTH-ACCT-C1005"
+    }
+  ]
+}

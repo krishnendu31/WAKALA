@@ -1,0 +1,27 @@
+{
+  "_notice": "SYNTHETIC DATA — fictional service, fee and payment destination. Not connected to any banking or payment system.",
+  "services": [
+    {
+      "service_id": "residency_renewal",
+      "name": "Residency Renewal (simulated)",
+      "name_ar": "تجديد الإقامة (محاكاة)",
+      "operating_entity": "Fictional Residency Services Authority (demo)",
+      "fee": {
+        "amount": "500.00",
+        "currency": "AED"
+      },
+      "official_payment_destination": "SYNTH-GOV-TREASURY-0001",
+      "tools": [
+        "residency.read_status",
+        "residency.prepare_renewal",
+        "insurance.verify_eligibility",
+        "payment.request_fee_payment",
+        "residency.register_renewal_case",
+        "residency.check_eligibility",
+        "insurance.verify_case_eligibility",
+        "payment.collect_renewal_fee",
+        "residency.complete_renewal"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+# Normalise line endings in the repository (LF), regardless of editor/OS.
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.woff2 binary

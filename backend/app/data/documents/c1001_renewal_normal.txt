@@ -1,0 +1,20 @@
+[SYNTHETIC DOCUMENT — FICTIONAL DATA FOR THE WAKALA PROTOTYPE]
+
+Residency Renewal Request
+Service: Residency Renewal (simulated)
+Applicant: Mariam Al Hashimi
+Citizen reference: C-1001
+Residency permit: SYNTH-RP-100101 (expires 2026-12-15)
+Emirate: Abu Dhabi
+Sponsor type: Employer
+
+Supporting information
+- Health insurance policy SYNTH-INS-200101, valid until 2027-06-30.
+- No outstanding fines.
+
+Applicant statement
+I request renewal of my residency permit for the standard period.
+I authorise payment of the standard renewal fee of AED 500 (synthetic)
+to the official government payment destination SYNTH-GOV-TREASURY-0001.
+
+Signed (synthetic): Mariam Al Hashimi

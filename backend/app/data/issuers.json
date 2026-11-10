@@ -1,0 +1,76 @@
+{
+  "_notice": "SYNTHETIC DATA — fictional mandate issuers. Each issuer may only grant the authority listed here. Public keys are provisioned at startup from the development keystore; no key material is stored in this file.",
+  "issuers": [
+    {
+      "issuer_id": "ISS-RESIDENCY-AUTH",
+      "name": "Fictional Residency Services Authority (demo) — mandate desk",
+      "status": "active",
+      "key_id": "KEY-ISS-RESIDENCY-AUTH",
+      "authority": {
+        "services": [
+          "residency_renewal"
+        ],
+        "agents": [
+          "AGT-RES-001"
+        ],
+        "tools": [
+          "residency.read_status",
+          "residency.prepare_renewal",
+          "residency.register_renewal_case",
+          "residency.check_eligibility",
+          "residency.complete_renewal"
+        ],
+        "max_amount": null,
+        "recipients": [],
+        "max_lifetime_hours": 12
+      }
+    },
+    {
+      "issuer_id": "ISS-INSURANCE-REG",
+      "name": "Fictional Health Insurance Registry (demo) — mandate desk",
+      "status": "active",
+      "key_id": "KEY-ISS-INSURANCE-REG",
+      "authority": {
+        "services": [
+          "residency_renewal"
+        ],
+        "agents": [
+          "AGT-INS-001"
+        ],
+        "tools": [
+          "insurance.verify_eligibility",
+          "insurance.verify_case_eligibility"
+        ],
+        "max_amount": null,
+        "recipients": [],
+        "max_lifetime_hours": 12
+      }
+    },
+    {
+      "issuer_id": "ISS-PAYMENTS-OFFICE",
+      "name": "Fictional Government Payments Office (demo) — mandate desk",
+      "status": "active",
+      "key_id": "KEY-ISS-PAYMENTS-OFFICE",
+      "authority": {
+        "services": [
+          "residency_renewal"
+        ],
+        "agents": [
+          "AGT-PAY-001"
+        ],
+        "tools": [
+          "payment.request_fee_payment",
+          "payment.collect_renewal_fee"
+        ],
+        "max_amount": {
+          "amount": "500.00",
+          "currency": "AED"
+        },
+        "recipients": [
+          "SYNTH-GOV-TREASURY-0001"
+        ],
+        "max_lifetime_hours": 2
+      }
+    }
+  ]
+}

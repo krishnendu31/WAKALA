@@ -1,0 +1,59 @@
+{
+  "_notice": "SYNTHETIC DATA — fictional agents for the WAKALA prototype. No real entity, officer or system is represented.",
+  "agents": [
+    {
+      "agent_id": "AGT-RES-001",
+      "name": "Residency Agent",
+      "name_ar": "وكيل الإقامة",
+      "description": "Reads an applicant's residency status, prepares renewal applications and may request narrowly scoped verification tasks from other agents.",
+      "owner_entity": "Fictional Residency Services Authority (demo)",
+      "accountable_officer": { "name": "Khalid Al Noor", "title": "Digital Services Officer", "officer_id": "OFF-0101" },
+      "platform": "WAKALA demo agent runtime (local)",
+      "risk_level": "medium",
+      "status": "active",
+      "identity_key_reference": { "key_id": "KEY-AGT-RES-001", "algorithm": "Ed25519", "provisioning_status": "not_provisioned", "public_key_fingerprint": null },
+      "declared_tools": ["residency.read_status", "residency.prepare_renewal", "delegation.request_verification", "delegation.request_payment"],
+      "restrictions": [
+        "May act only for the citizen named in its active mandate.",
+        "Cannot initiate payments directly; may only request them from the Payment Agent.",
+        "Cannot grant another agent more authority than it holds."
+      ]
+    },
+    {
+      "agent_id": "AGT-INS-001",
+      "name": "Insurance Agent",
+      "name_ar": "وكيل التأمين",
+      "description": "Verifies whether the applicant holds valid health insurance cover for the renewal request it was delegated.",
+      "owner_entity": "Fictional Health Insurance Registry (demo)",
+      "accountable_officer": { "name": "Noura Al Falasi", "title": "Insurance Verification Lead", "officer_id": "OFF-0202" },
+      "platform": "WAKALA demo agent runtime (local)",
+      "risk_level": "low",
+      "status": "active",
+      "identity_key_reference": { "key_id": "KEY-AGT-INS-001", "algorithm": "Ed25519", "provisioning_status": "not_provisioned", "public_key_fingerprint": null },
+      "declared_tools": ["insurance.verify_eligibility"],
+      "restrictions": [
+        "Cannot access citizen records unrelated to the delegated request.",
+        "Cannot initiate or request payments.",
+        "Read-only access to insurance status."
+      ]
+    },
+    {
+      "agent_id": "AGT-PAY-001",
+      "name": "Payment Agent",
+      "name_ar": "وكيل الدفع",
+      "description": "Requests payment of an authorized renewal fee to the official (fictional) government payment destination.",
+      "owner_entity": "Fictional Government Payments Office (demo)",
+      "accountable_officer": { "name": "Saeed Al Ketbi", "title": "Payments Control Officer", "officer_id": "OFF-0303" },
+      "platform": "WAKALA demo agent runtime (local)",
+      "risk_level": "high",
+      "status": "active",
+      "identity_key_reference": { "key_id": "KEY-AGT-PAY-001", "algorithm": "Ed25519", "provisioning_status": "not_provisioned", "public_key_fingerprint": null },
+      "declared_tools": ["payment.request_fee_payment"],
+      "restrictions": [
+        "May only pay to the official fictional destination SYNTH-GOV-TREASURY-0001.",
+        "Cannot change payment destinations.",
+        "Cannot initiate arbitrary transfers or exceed the mandated fee amount."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "wakala-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "WAKALA | وكالة — security operations console (Phase 0 prototype shell)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "5.2.5",
+    "@fontsource-variable/jetbrains-mono": "5.2.5",
+    "@fontsource/ibm-plex-sans-arabic": "5.2.5",
+    "@xyflow/react": "12.6.0",
+    "clsx": "2.1.1",
+    "lucide-react": "0.503.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.30.0",
+    "recharts": "2.15.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.1.4",
+    "@types/node": "22.15.3",
+    "@types/react": "18.3.20",
+    "@types/react-dom": "18.3.6",
+    "@vitejs/plugin-react": "4.4.1",
+    "tailwindcss": "4.1.4",
+    "typescript": "5.8.3",
+    "vite": "6.3.3"
+  }
+}
