@@ -1,0 +1,151 @@
+{
+ "total": 60.0,
+ "narration": [
+  {
+   "file": "s1_1.wav",
+   "start": 0.8,
+   "length": 3.855
+  },
+  {
+   "file": "s1_2.wav",
+   "start": 5.005,
+   "length": 3.685
+  },
+  {
+   "file": "s2_1.wav",
+   "start": 11.2,
+   "length": 4.514
+  },
+  {
+   "file": "s3_1.wav",
+   "start": 20.05,
+   "length": 6.992
+  },
+  {
+   "file": "s3b_1.wav",
+   "start": 27.65,
+   "length": 4.491
+  },
+  {
+   "file": "s4_1.wav",
+   "start": 32.6,
+   "length": 1.711
+  },
+  {
+   "file": "s4_2.wav",
+   "start": 34.661,
+   "length": 4.609
+  },
+  {
+   "file": "s5_1.wav",
+   "start": 40.7,
+   "length": 7.158
+  },
+  {
+   "file": "s6_1.wav",
+   "start": 50.2,
+   "length": 3.133
+  },
+  {
+   "file": "s7_1.wav",
+   "start": 55.45,
+   "length": 4.462
+  }
+ ],
+ "subtitles": [
+  {
+   "start": 0.8,
+   "end": 4.655,
+   "text": "Imagine government services where AI agents don't just respond."
+  },
+  {
+   "start": 5.005,
+   "end": 8.69,
+   "text": "They act, collaborate, and complete tasks for citizens."
+  },
+  {
+   "start": 11.2,
+   "end": 15.714,
+   "text": "But even a trusted agent can attempt an action it was never authorized to perform."
+  },
+  {
+   "start": 20.05,
+   "end": 24.064,
+   "text": "WAKALA verifies who the agent is, what authority it was given,"
+  },
+  {
+   "start": 24.064,
+   "end": 27.042,
+   "text": "and whether this specific action is permitted."
+  },
+  {
+   "start": 27.65,
+   "end": 32.141,
+   "text": "If it exceeds that authority, WAKALA stops it, before execution."
+  },
+  {
+   "start": 32.6,
+   "end": 34.311,
+   "text": "And this isn't just a concept."
+  },
+  {
+   "start": 34.661,
+   "end": 39.27,
+   "text": "Our working prototype enforces that decision through a real authorization gateway."
+  },
+  {
+   "start": 40.7,
+   "end": 43.704,
+   "text": "An authorized officer can contain the incident,"
+  },
+  {
+   "start": 43.704,
+   "end": 47.858,
+   "text": "restore valid authority, and let the legitimate service continue."
+  },
+  {
+   "start": 50.2,
+   "end": 53.333,
+   "text": "Security, without unnecessary disruption."
+  },
+  {
+   "start": 55.45,
+   "end": 59.912,
+   "text": "WAKALA. Autonomous AI. Accountable actions."
+  }
+ ],
+ "scenes": {
+  "1 Autonomous government": [
+   0,
+   10
+  ],
+  "2 The unexpected request": [
+   10,
+   20
+  ],
+  "3 The moment before": [
+   20,
+   32
+  ],
+  "4 Real prototype: proof": [
+   32,
+   40
+  ],
+  "5 Accountable recovery": [
+   40,
+   49
+  ],
+  "6 Real prototype: recovery": [
+   49,
+   55
+  ],
+  "7 Reveal": [
+   55,
+   60
+  ]
+ },
+ "real_footage_seconds": {
+  "proof (31.6\u201340.6 incl. fades)": 9.0,
+  "recovery proof (48.9\u201355.4 incl. fades)": 6.5
+ }
+}

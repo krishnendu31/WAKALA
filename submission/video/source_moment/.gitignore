@@ -1,0 +1,7 @@
+# Regenerable intermediates (python score.py; tts.ps1; render_film.js x6; build_moment.py)
+build/
+tts/
+tts_trim/
+prev/
+prev2/
+__pycache__/

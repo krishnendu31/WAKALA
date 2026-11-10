@@ -22,7 +22,8 @@ WAKALA is an independent authorization gateway for government AI agents. It prov
 | 7 | `06_Judge_QA.md` · `pdf/06_Judge_QA.pdf` | 20 prepared answers |
 | 8 | `video/WAKALA_Final_Demo_1080p.mp4` · `video/WAKALA_Final_Demo_Silent.mp4` | 1:38 demo video of one real run (narrated with a local synthetic voice + subtitles; silent version for live narration). Script, storyboard, SRT and validation in `video/` |
 | 9 | `video/WAKALA_60s_Final.mp4` · `video/WAKALA_60s_Silent.mp4` | Exactly 60 s film of ten real features (one demo session; synthetic voice + subtitles; silent version). Narration, storyboard, SRT and verification in `video/` |
-| 10 | `video/WAKALA_Cinematic_60s.mp4` · `video/WAKALA_Cinematic_60s_Silent.mp4` | 60 s cinematic explainer: labelled conceptual illustrations plus genuine prototype footage of the blocked decision and recovery. Storyboard and SRT in `video/` |
+| 10 | `video/WAKALA_Cinematic_60s.mp4` · `video/WAKALA_Cinematic_60s_Silent.mp4` | 60 s cinematic explainer: labelled conceptual illustrations plus genuine prototype footage of the blocked decision and recovery. Storyboard (`WAKALA_Cinematic_Explainer_Storyboard.md`) and SRT in `video/` |
+| 11 | `video/WAKALA_The_Moment_Before_60s.mp4` · `video/WAKALA_The_Moment_Before_Silent.mp4` | **The Moment Before** — 60 s cinematic film: original motion graphics + original score, with genuine prototype proof of the block and the recovery. Narration, storyboard, asset prompts and production report in `video/` |
 | — | `screenshots/` | 10 genuine captures of the running prototype (`CAPTURE_LOG.json` records the run) |
 | — | `source/` | Deck and document build scripts and the shared print stylesheet |
 

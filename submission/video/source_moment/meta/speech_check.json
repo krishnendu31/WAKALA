@@ -1,0 +1,72 @@
+﻿[
+    {
+        "clip":  "s1_1",
+        "expected_words":  9,
+        "matched":  8,
+        "ratio":  0.89,
+        "heard":  "Imagine governments services where Ai agents don\u0027t just respond"
+    },
+    {
+        "clip":  "s1_2",
+        "expected_words":  8,
+        "matched":  7,
+        "ratio":  0.88,
+        "heard":  "They acted collaborate and complete tasks for citizens"
+    },
+    {
+        "clip":  "s2_1",
+        "expected_words":  15,
+        "matched":  14,
+        "ratio":  0.93,
+        "heard":  "But even a trusted agent can attempt in action it was never authorized to perform"
+    },
+    {
+        "clip":  "s3_1",
+        "expected_words":  18,
+        "matched":  16,
+        "ratio":  0.89,
+        "heard":  "Block all of the revise who the agent is what authority it was given and whether this specific action is permitted"
+    },
+    {
+        "clip":  "s3b_1",
+        "expected_words":  10,
+        "matched":  9,
+        "ratio":  0.9,
+        "heard":  "If it exceeds that authority a call a stops it before execution"
+    },
+    {
+        "clip":  "s4_1",
+        "expected_words":  6,
+        "matched":  6,
+        "ratio":  1,
+        "heard":  "And this isn\u0027t just a concept"
+    },
+    {
+        "clip":  "s4_2",
+        "expected_words":  11,
+        "matched":  11,
+        "ratio":  1,
+        "heard":  "Our working prototype enforces that decision through a real authorization gateway"
+    },
+    {
+        "clip":  "s5_1",
+        "expected_words":  16,
+        "matched":  15,
+        "ratio":  0.94,
+        "heard":  "An authorized officer can contain the incident were valid authority and let the legitimate service continue"
+    },
+    {
+        "clip":  "s6_1",
+        "expected_words":  4,
+        "matched":  4,
+        "ratio":  1,
+        "heard":  "Security without unnecessary disruption"
+    },
+    {
+        "clip":  "s7_1",
+        "expected_words":  5,
+        "matched":  4,
+        "ratio":  0.8,
+        "heard":  "Block all a autonomous Ai accountable actions"
+    }
+]

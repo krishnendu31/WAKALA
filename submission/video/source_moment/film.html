@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>WAKALA — The Moment Before</title>
+<style>html,body{margin:0;background:#000;width:1920px;height:1080px;overflow:hidden}canvas{display:block}</style></head>
+<body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+/* WAKALA — THE MOMENT BEFORE. Original 2.5D motion graphics, drawn deterministically: window.draw(T) renders frame T (seconds).
+   Conceptual scenes carry a "CONCEPTUAL VISUALIZATION" tag; the two proof scenes draw GENUINE prototype captures
+   (../source60/capture) and carry "REAL PROTOTYPE — SYNTHETIC DATA". Nothing here imitates WAKALA's UI. */
+const W = 1920, H = 1080;
+const cv = document.getElementById("c"), X = cv.getContext("2d");
+const mk = () => { const c = document.createElement("canvas"); c.width = W; c.height = H; return c; };
+const LA = mk(), LB = mk();
+const COL = { navy: "#193E60", midnight: "#070F22", deep: "#0A1733", gold: "#D9B26B", goldDeep: "#B48A55", teal: "#2FB3A3", emerald: "#1E9C7E",
+              blue: "#5AA9FF", pearl: "#F4F1EA", red: "#E5484D", amber: "#F2A33A", ink: "#1D3040" };
+// ---------- utilities
+let seed = 7;
+const rnd = () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const cl = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const sm = (x) => { x = cl(x); return x * x * (3 - 2 * x); };
+const span = (T, a, b) => sm((T - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+const mixC = (h1, h2, k) => { const a = parseInt(h1.slice(1), 16), b = parseInt(h2.slice(1), 16);
+  const r = Math.round(lerp(a >> 16, b >> 16, k)), g = Math.round(lerp((a >> 8) & 255, (b >> 8) & 255, k)), bl = Math.round(lerp(a & 255, b & 255, k));
+  return "#" + ((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1); };
+function txt(c, s, x, y, o = {}) {
+  c.save(); c.font = `${o.w || 600} ${o.size || 28}px "Segoe UI", "Segoe UI Variable", Arial`; c.fillStyle = o.color || COL.pearl;
+  c.textAlign = o.align || "left"; c.textBaseline = o.base || "alphabetic"; c.globalAlpha *= o.a ?? 1;
+  if (o.ls) c.letterSpacing = o.ls + "px";
+  if (o.glow) { c.shadowColor = o.glow; c.shadowBlur = o.blur || 18; }
+  c.fillText(s, x, y); c.restore();
+}
+const bez = (P, p) => { const u = 1 - p; return [u*u*u*P[0][0] + 3*u*u*p*P[1][0] + 3*u*p*p*P[2][0] + p*p*p*P[3][0], u*u*u*P[0][1] + 3*u*u*p*P[1][1] + 3*u*p*p*P[2][1] + p*p*p*P[3][1]]; };
+const tang = (P, p) => { const a = bez(P, Math.max(0, p - 0.002)), b = bez(P, Math.min(1, p + 0.002)); return Math.atan2(b[1] - a[1], b[0] - a[0]); };
+function strokeBez(c, P, from, to, color, width, glow, alpha = 1, dash) {
+  c.save(); c.globalAlpha *= alpha; c.strokeStyle = color; c.lineWidth = width; c.lineCap = "round";
+  if (glow) { c.shadowColor = color; c.shadowBlur = glow; }
+  if (dash) c.setLineDash(dash);
+  c.beginPath(); const n = 60;
+  for (let i = 0; i <= n; i++) { const p = lerp(from, to, i / n); const q = bez(P, p); i ? c.lineTo(q[0], q[1]) : c.moveTo(q[0], q[1]); }
+  c.stroke(); c.restore();
+}
+function dot(c, x, y, r, color, glow = 20, a = 1) { c.save(); c.globalAlpha *= a; c.fillStyle = color; c.shadowColor = color; c.shadowBlur = glow; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.restore(); }
+function pulses(c, P, T, speed, color, n = 3, r = 6, a = 1, upto = 1) {
+  for (let k = 0; k < n; k++) { const p = ((T * speed + k / n) % 1) * upto; const q = bez(P, p); dot(c, q[0], q[1], r, color, 22, a * Math.sin(Math.PI * p / upto)); }
+}
+function vignette(c, k = 0.55) { const g = c.createRadialGradient(W/2, H/2, H*0.35, W/2, H/2, H*0.95); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, `rgba(0,0,0,${k})`); c.fillStyle = g; c.fillRect(0, 0, W, H); }
+const grain = (() => { const g = document.createElement("canvas"); g.width = g.height = 256; const gc = g.getContext("2d"); const im = gc.createImageData(256, 256);
+  for (let i = 0; i < im.data.length; i += 4) { const v = Math.random() * 255; im.data[i] = im.data[i+1] = im.data[i+2] = v; im.data[i+3] = 255; } gc.putImageData(im, 0, 0); return g; })();
+function addGrain(c, T, a = 0.035) { c.save(); c.globalAlpha = a; c.globalCompositeOperation = "overlay"; const ox = (T * 997) % 256, oy = (T * 613) % 256;
+  for (let x = -256; x < W + 256; x += 256) for (let y = -256; y < H + 256; y += 256) c.drawImage(grain, x - ox, y - oy); c.restore(); }
+function tag(c, s, a = 1) { txt(c, s, 64, 78, { size: 17, w: 600, ls: 4, color: COL.pearl, a: 0.6 * a }); c.save(); c.globalAlpha = 0.6 * a; c.fillStyle = COL.gold; c.fillRect(64, 90, 46, 2); c.restore(); }
+
+// ---------- assets: genuine prototype captures
+const IMG = {};
+let pending = 0;
+for (const [k, f] of [["block", "../source60/capture/g05_blocked.png"], ["rec", "../source60/capture/g10_recovered.png"]]) {
+  pending++; const im = new Image(); im.onload = () => { pending--; if (!pending) window.ready = true; }; im.src = f; IMG[k] = im;
+}
+const PXS = 4 / 3; // captures: 1440-wide CSS layout at 4/3 device scale
+
+// ---------- CITY (procedural, UAE-inspired contemporary skyline; not a specific real skyline)
+seed = 11;
+const LAYERS = [0.28, 0.55, 1.0].map((par, li) => {
+  const arr = []; let x = -900;
+  while (x < 2900) {
+    const w = (li === 2 ? 70 : li === 1 ? 52 : 40) + rnd() * (li === 2 ? 90 : 60);
+    const h = (li === 2 ? 150 : li === 1 ? 120 : 80) + Math.pow(rnd(), 1.7) * (li === 2 ? 380 : li === 1 ? 300 : 210);
+    const type = rnd(); arr.push({ x, w, h, type, s: rnd() * 1000 }); x += w + (li === 2 ? 26 : 14) + rnd() * 40;
+  }
+  if (li === 2) arr.push({ x: 1160, w: 70, h: 760, type: 0.97, s: 3 }); // one stepped supertall (generic), the city's anchor
+  return { par, arr, li };
+});
+const ARCS = (() => { seed = 41; const a = []; const near = LAYERS[1].arr.filter((b) => b.h > 260);
+  for (let i = 0; i < 9; i++) { const b1 = near[Math.floor(rnd() * near.length)], b2 = near[Math.floor(rnd() * near.length)]; if (Math.abs(b1.x - b2.x) > 260) a.push([b1, b2, rnd()]); } return a; })();
+
+function cityFrame(c, T, mode) {
+  // camera: slow lateral travel + push-in + rise; "end" mode pulls back across the lit city
+  const z = mode === "end" ? lerp(1.22, 1.0, span(T, 0, 3.2)) : 1.0 + 0.06 * T / 10 + 0.32 * span(T, 6.8, 10.4);
+  const camX = mode === "end" ? 160 - 30 * T : -60 + 26 * T, camY = mode === "end" ? 0 : -14 * span(T, 0, 10) - 120 * span(T, 7, 10.4);
+  const hz = 735;
+  // sky
+  const sky = c.createLinearGradient(0, 0, 0, hz);
+  sky.addColorStop(0, "#081430"); sky.addColorStop(0.45, "#1B3560"); sky.addColorStop(0.78, "#7A6A7E"); sky.addColorStop(0.93, "#E2A867"); sky.addColorStop(1, "#F6D29A");
+  c.fillStyle = sky; c.fillRect(0, 0, W, H);
+  const sunY = mode === "end" ? 640 : lerp(760, 640, span(T, 0, 10)), sunX = 1180 - camX * 0.12;
+  let g = c.createRadialGradient(sunX, sunY, 0, sunX, sunY, 520); g.addColorStop(0, "rgba(255,236,190,0.95)"); g.addColorStop(0.08, "rgba(255,214,150,0.75)"); g.addColorStop(0.35, "rgba(240,160,90,0.18)"); g.addColorStop(1, "rgba(240,160,90,0)");
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  // drifting cloud bands
+  for (let i = 0; i < 5; i++) { const y = 180 + i * 90, x = ((i * 530 - T * (8 + i * 3)) % 2600) - 300;
+    g = c.createLinearGradient(x, 0, x + 900, 0); g.addColorStop(0, "rgba(255,220,180,0)"); g.addColorStop(0.5, `rgba(255,220,190,${0.05 + 0.02 * i})`); g.addColorStop(1, "rgba(255,220,180,0)");
+    c.fillStyle = g; c.fillRect(x, y, 900, 26 + i * 6); }
+  c.save(); c.translate(W / 2, hz); c.scale(z, z); c.translate(-W / 2, -hz + camY);
+  // water
+  g = c.createLinearGradient(0, hz, 0, H + 200); g.addColorStop(0, "#C99B6A"); g.addColorStop(0.08, "#4A4A62"); g.addColorStop(1, "#0A1530");
+  c.fillStyle = g; c.fillRect(-400, hz, W + 800, 700);
+  const tones = [["#5B5F7C", "#8A7C88"], ["#2C3A5C", "#4C5170"], ["#101C38", "#1E2A48"]];
+  for (const L of LAYERS) {
+    const off = -camX * L.par;
+    for (const b of L.arr) {
+      const x = b.x + off, top = hz - b.h;
+      if (x > W + 300 || x + b.w < -300) continue;
+      const [base, lit] = tones[L.li];
+      const bg = c.createLinearGradient(x, 0, x + b.w, 0); bg.addColorStop(0, lit); bg.addColorStop(0.35, base); bg.addColorStop(1, base);
+      c.fillStyle = bg; c.beginPath();
+      if (b.type > 0.95) { // stepped supertall with spire
+        const steps = 6; c.moveTo(x, hz);
+        for (let s = 0; s < steps; s++) { const ww = b.w * (1 - s / steps) * 0.5, hh = top + (b.h * 0.86) * (1 - (s + 1) / steps); c.lineTo(x + b.w / 2 - ww, hh); c.lineTo(x + b.w / 2 - ww * 0.7, hh); }
+        c.lineTo(x + b.w / 2 - 2, top - 120); c.lineTo(x + b.w / 2 + 2, top - 120);
+        for (let s = steps - 1; s >= 0; s--) { const ww = b.w * (1 - s / steps) * 0.5, hh = top + (b.h * 0.86) * (1 - (s + 1) / steps); c.lineTo(x + b.w / 2 + ww * 0.7, hh); c.lineTo(x + b.w / 2 + ww, hh); }
+        c.lineTo(x + b.w, hz);
+      } else if (b.type > 0.78) { c.moveTo(x, hz); c.lineTo(x, top + 40); c.lineTo(x + b.w / 2, top - 30); c.lineTo(x + b.w, top + 40); c.lineTo(x + b.w, hz); }
+      else if (b.type > 0.6) { c.moveTo(x, hz); c.lineTo(x, top); c.quadraticCurveTo(x + b.w * 0.5, top - 50, x + b.w, top + 10); c.lineTo(x + b.w, hz); }
+      else { c.rect(x, top, b.w, b.h); }
+      c.fill();
+      if (L.li > 0) { // lit windows
+        c.fillStyle = L.li === 2 ? "rgba(255,214,150,0.55)" : "rgba(255,214,150,0.35)";
+        let s = b.s; for (let yy = top + 18; yy < hz - 10; yy += 16) for (let xx = x + 8; xx < x + b.w - 8; xx += 12) { s = (s * 9301 + 49297) % 233280; if (s / 233280 > 0.86) c.fillRect(xx, yy, 4, 6); }
+      }
+      // reflection
+      c.save(); c.globalAlpha = 0.16; c.fillStyle = base; c.fillRect(x, hz, b.w, b.h * 0.55); c.restore();
+    }
+    if (L.li === 1) { // luminous service paths between towers
+      ARCS.forEach(([b1, b2, r], i) => {
+        const x1 = b1.x + b1.w / 2 + off, x2 = b2.x + b2.w / 2 + off, y1 = hz - b1.h, y2 = hz - b2.h;
+        const P = [[x1, y1], [x1, y1 - 160 - 120 * r], [x2, y2 - 160 - 120 * r], [x2, y2]];
+        const draw = mode === "end" ? 1 : span(T, 1.2 + i * 0.45, 3.2 + i * 0.45);
+        const colr = i % 3 === 0 ? COL.gold : i % 3 === 1 ? COL.teal : COL.blue;
+        if (draw > 0) { strokeBez(c, P, 0, draw, colr, 2.4, 16, 0.85); if (draw > 0.98) pulses(c, P, T + i, 0.33, "#FFF4D6", 2, 4.5, 0.9); dot(c, x1, y1, 5, colr, 16, draw); dot(c, x2, y2, 5, colr, 16, draw); }
+      });
+    }
+  }
+  // water shimmer
+  c.globalAlpha = 1;
+  for (let i = 0; i < 40; i++) { const yy = hz + 6 + i * 9 + (i % 3), xx = ((i * 271 + T * 30) % 2400) - 200; c.fillStyle = `rgba(255,220,170,${0.10 - i * 0.002})`; c.fillRect(xx, yy, 160 + (i % 5) * 60, 2); }
+  c.restore();
+  // haze + motes
+  g = c.createLinearGradient(0, hz - 260, 0, hz + 40); g.addColorStop(0, "rgba(246,210,154,0)"); g.addColorStop(1, "rgba(246,210,154,0.28)"); c.fillStyle = g; c.fillRect(0, hz - 260, W, 300);
+  seed = 5; for (let i = 0; i < 70; i++) { const x = (rnd() * W + T * (6 + rnd() * 14)) % W, y = rnd() * H * 0.8; dot(c, x, y, 1 + rnd() * 1.8, "#FFE7BF", 8, 0.25 + 0.3 * Math.sin(T + i)); }
+  vignette(c, 0.5);
+}
+
+// ---------- NETWORK WORLD (abstract, the citizen's request)
+const NODE = { M: [330, 560], R: [760, 300], I: [820, 590], P: [760, 860], IR: [1400, 470], RS: [1330, 190], TR: [1330, 930], OR: [1660, 840], I2: [930, 735] };
+const PATH = {
+  MI: [NODE.M, [520, 560], [640, 590], NODE.I], MR: [NODE.M, [500, 470], [600, 300], NODE.R], MP: [NODE.M, [500, 660], [600, 860], NODE.P],
+  IIR: [NODE.I, [1020, 590], [1200, 470], NODE.IR], RRS: [NODE.R, [1000, 300], [1150, 190], NODE.RS], PTR: [NODE.P, [1000, 860], [1150, 930], NODE.TR],
+  IOR: [NODE.I, [1040, 640], [1350, 840], NODE.OR], MI2: [NODE.M, [540, 640], [720, 735], NODE.I2], I2IR: [NODE.I2, [1150, 735], [1230, 470], NODE.IR],
+};
+seed = 99;
+const BG = Array.from({ length: 7 }, (_, i) => { const y0 = 80 + rnd() * 920, y1 = 80 + rnd() * 920; return { P: [[-200, y0], [500, y0 + (rnd() - 0.5) * 300], [1400, y1 + (rnd() - 0.5) * 300], [2150, y1]], d: 0.35 + rnd() * 0.5, sp: 0.06 + rnd() * 0.08, c: rnd() > 0.5 ? COL.blue : COL.emerald }; });
+const DUST = Array.from({ length: 220 }, () => ({ x: rnd() * 2400 - 240, y: rnd() * 1300 - 110, z: 0.2 + rnd() * 0.9, r: 0.6 + rnd() * 2.2, ph: rnd() * 6 }));
+const BRANCH_STOP = 0.93; // where the authorization boundary sits on the I→OR branch
+
+function agentNode(c, [x, y], label, o = {}) {
+  const col = o.col || COL.teal, a = o.a ?? 1, s = o.s ?? 1;
+  c.save(); c.globalAlpha *= a; c.translate(x, y); c.scale(s, s);
+  const g = c.createRadialGradient(0, 0, 0, 0, 0, 90); g.addColorStop(0, hexA(col, 0.35)); g.addColorStop(1, hexA(col, 0)); c.fillStyle = g; c.beginPath(); c.arc(0, 0, 90, 0, 7); c.fill();
+  c.strokeStyle = col; c.lineWidth = 3; c.shadowColor = col; c.shadowBlur = 18; c.beginPath();
+  for (let i = 0; i < 6; i++) { const an = Math.PI / 6 + i * Math.PI / 3; i ? c.lineTo(38 * Math.cos(an), 38 * Math.sin(an)) : c.moveTo(38 * Math.cos(an), 38 * Math.sin(an)); } c.closePath(); c.stroke();
+  c.fillStyle = hexA(col, 0.25); c.fill();
+  c.beginPath(); c.arc(0, 0, 9, 0, 7); c.fillStyle = "#EAFBF7"; c.fill();
+  const ob = (o.T || 0) * 1.6; c.beginPath(); c.arc(54 * Math.cos(ob), 54 * Math.sin(ob) * 0.45, 3.5, 0, 7); c.fillStyle = col; c.fill();
+  c.restore();
+  if (label) txt(c, label, x, y + (o.above ? -70 : 76) * s, { size: o.above ? 19 : 17, w: 700, ls: 3, align: "center", color: o.lc || "#CFE3F2", a: a * (o.la ?? 0.85) });
+}
+function recordNode(c, [x, y], title, sub, o = {}) {
+  const col = o.col || COL.pearl, a = o.a ?? 1;
+  c.save(); c.globalAlpha *= a; c.translate(x, y);
+  const g = c.createRadialGradient(0, 0, 0, 0, 0, 120); g.addColorStop(0, hexA(o.glowc || "#CFE6FF", 0.30)); g.addColorStop(1, "rgba(0,0,0,0)"); c.fillStyle = g; c.beginPath(); c.arc(0, 0, 120, 0, 7); c.fill();
+  c.rotate(Math.PI / 4); c.strokeStyle = col; c.lineWidth = 2.5; c.shadowColor = o.glowc || "#CFE6FF"; c.shadowBlur = 22;
+  c.strokeRect(-34, -34, 68, 68); c.globalAlpha *= 0.5; c.strokeRect(-22, -22, 44, 44); c.restore();
+  if (o.lock) { c.save(); c.globalAlpha *= a; c.strokeStyle = col; c.lineWidth = 3; c.beginPath(); c.arc(x, y - 6, 9, Math.PI, 0); c.stroke(); c.fillStyle = col; c.fillRect(x - 12, y - 6, 24, 18); c.restore(); }
+  if (title) txt(c, title, x, y + 82, { size: 17, w: 700, ls: 3, align: "center", color: "#E9F1FA", a: a * 0.9 });
+  if (sub) txt(c, sub, x, y + 106, { size: 15, w: 500, ls: 1, align: "center", color: "#9FB6CC", a: a * 0.8 });
+}
+function citizen(c, [x, y], a, T) {
+  c.save(); c.globalAlpha *= a;
+  const g = c.createRadialGradient(x, y, 0, x, y, 170); g.addColorStop(0, "rgba(244,241,234,0.30)"); g.addColorStop(1, "rgba(244,241,234,0)"); c.fillStyle = g; c.beginPath(); c.arc(x, y, 170, 0, 7); c.fill();
+  c.translate(x, y); c.fillStyle = "rgba(244,241,234,0.10)"; c.strokeStyle = "rgba(244,241,234,0.85)"; c.lineWidth = 2; c.shadowColor = "#F4F1EA"; c.shadowBlur = 24;
+  c.beginPath(); c.roundRect(-110, -46, 220, 92, 46); c.fill(); c.stroke();
+  c.shadowBlur = 0; c.fillStyle = COL.pearl; c.beginPath(); c.arc(-62, -10, 13, 0, 7); c.fill(); c.beginPath(); c.ellipse(-62, 22, 22, 13, 0, Math.PI, 0); c.fill();
+  c.restore();
+  txt(c, "MARIAM", x - 28, y - 4, { size: 20, w: 700, ls: 4, color: COL.pearl, a });
+  txt(c, "residency renewal", x - 28, y + 22, { size: 15, w: 500, color: "#C9D6E4", a: a * 0.9 });
+}
+function netBackground(c, T, td, cam, dim = 0) {
+  const g = c.createRadialGradient(W * 0.55, H * 0.45, 0, W * 0.55, H * 0.45, W * 0.75);
+  g.addColorStop(0, mixC("#13284F", "#0A1530", dim)); g.addColorStop(1, mixC("#050A18", "#03060E", dim)); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  // perspective floor lines (depth, not a circuit board)
+  c.save(); c.globalAlpha = 0.10 * (1 - dim * 0.6); c.strokeStyle = "#5AA9FF"; c.lineWidth = 1;
+  const vy = 430, ox = -cam.x * 0.15;
+  for (let i = -18; i <= 18; i++) { c.beginPath(); c.moveTo(W / 2 + ox + i * 12, vy); c.lineTo(W / 2 + ox + i * 260, H + 40); c.stroke(); }
+  for (let k = 0; k < 9; k++) { const yy = vy + Math.pow((k + ((T * 0.12 * td) % 1)) / 9, 2.2) * (H - vy + 40); c.beginPath(); c.moveTo(0, yy); c.lineTo(W, yy); c.stroke(); }
+  c.restore();
+  for (const d of DUST) { const x = ((d.x - cam.x * d.z * 0.35 + T * 10 * td * d.z) % 2400 + 2400) % 2400 - 240, y = d.y - cam.y * d.z * 0.35; dot(c, x, y, d.r * d.z, "#BFD9FF", 10, (0.15 + 0.35 * d.z) * (0.6 + 0.4 * Math.sin(d.ph + T)) * (1 - dim * 0.5)); }
+}
+function boundary(c, P, T, build, state, flash) {
+  // the authorization boundary: a geometric plane, perpendicular to the request, assembled from interlocking hexagons
+  const q = bez(P, BRANCH_STOP), th = tang(P, BRANCH_STOP);
+  c.save(); c.translate(q[0], q[1]); c.rotate(th);
+  const ry = 230 * sm(build), rx = 46;
+  const halo = c.createRadialGradient(0, 0, 0, 0, 0, 300); halo.addColorStop(0, hexA(state === "red" ? COL.red : COL.teal, 0.20 * build)); halo.addColorStop(1, "rgba(0,0,0,0)");
+  c.fillStyle = halo; c.fillRect(-300, -300, 600, 600);
+  c.beginPath(); c.ellipse(0, 0, rx, Math.max(1, ry), 0, 0, 7); c.save(); c.clip();
+  c.strokeStyle = hexA(COL.gold, 0.55); c.lineWidth = 1.6; const sh = (T * 6) % 34;
+  for (let yy = -260; yy < 260; yy += 30) for (let xx = -60; xx < 60; xx += 34) {
+    const k = cl(build * 1.6 - Math.abs(yy) / 300); if (k <= 0) continue;
+    c.globalAlpha = k; c.beginPath(); for (let i = 0; i < 6; i++) { const an = i * Math.PI / 3; const px = xx + ((yy / 30) % 2 ? 17 : 0) + 12 * Math.cos(an) * 0.45, py = yy + sh + 12 * Math.sin(an); i ? c.lineTo(px, py) : c.moveTo(px, py); } c.closePath(); c.stroke();
+  }
+  c.restore(); c.globalAlpha = 1;
+  const rim = state === "red" ? COL.red : COL.gold;
+  c.strokeStyle = rim; c.lineWidth = 4; c.shadowColor = rim; c.shadowBlur = 26 + 30 * flash;
+  c.beginPath(); c.ellipse(0, 0, rx, Math.max(1, ry), 0, 0, 7); c.stroke();
+  c.lineWidth = 1.5; c.globalAlpha = 0.6; c.beginPath(); c.ellipse(0, 0, rx * 0.7, Math.max(1, ry * 0.86), 0, 0, 7); c.stroke();
+  if (flash > 0) for (let r = 0; r < 3; r++) { const k = cl(flash * 1.2 - r * 0.2); c.globalAlpha = (1 - k) * 0.8; c.strokeStyle = COL.red; c.lineWidth = 3; c.beginPath(); c.ellipse(0, 0, rx + 120 * k, ry + 160 * k, 0, 0, 7); c.stroke(); }
+  c.restore();
+  return q;
+}
+function netCamera(T) {
+  // world-space camera for the network scenes
+  if (T < 13) return { x: 980, y: 560, z: lerp(0.86, 1.0, span(T, 9.2, 13)) };
+  const b = bez(PATH.IOR, BRANCH_STOP);
+  if (T < 20) { const k = span(T, 13, 20); return { x: lerp(980, b[0] + 40, k), y: lerp(560, b[1] - 70, k), z: lerp(1.0, 1.42, k) }; }
+  if (T < 28.3) { const k = span(T, 20, 27.4); return { x: lerp(b[0] + 40, b[0] + 150, k), y: lerp(b[1] - 70, b[1] - 40, k), z: lerp(1.42, 1.72, k) }; }
+  const k = span(T, 28.3, 31.2);
+  return { x: lerp(b[0] + 150, 1060, k), y: lerp(b[1] - 40, 600, k), z: lerp(1.72, 1.02, k) };
+}
+function headP(T) { // progress of the unauthorized request along I→OR (slows dramatically in "the moment before")
+  if (T < 13) return 0;
+  if (T < 20) return lerp(0, 0.80, span(T, 13, 20));
+  if (T < 27.45) return lerp(0.80, BRANCH_STOP - 0.012, (T - 20) / 7.45);
+  return BRANCH_STOP - 0.012;
+}
+function netFrame(c, T) {
+  const td = T > 20.2 && T < 27.6 ? 0.16 : 1;           // time dilation for the slow-motion moment
+  const cam = netCamera(T), dim = span(T, 20, 21.5) * (1 - span(T, 27.6, 29.5)) * 0.85;
+  netBackground(c, T, td, cam, dim);
+  c.save(); c.translate(W / 2, H / 2); c.scale(cam.z, cam.z); c.translate(-cam.x, -cam.y);
+  // other citizens' transactions keep moving throughout
+  for (const b of BG) { strokeBez(c, b.P, 0, 1, b.c, 1.6, 10, 0.18 * b.d); pulses(c, b.P, T, b.sp, b.c, 3, 4, 0.6 * b.d); }
+  const intro = span(T, 9.4, 11.0);
+  citizen(c, NODE.M, intro, T);
+  const agentsIn = (i) => span(T, 9.6 + i * 0.35, 10.6 + i * 0.35);
+  // authorized flows (blue) — they never stop, even in slow motion
+  [[PATH.MR, 0], [PATH.MI, 1], [PATH.MP, 2]].forEach(([P, i]) => { strokeBez(c, P, 0, agentsIn(i), COL.blue, 2.2, 14, 0.7 * (1 - dim * 0.3)); if (agentsIn(i) > 0.99) pulses(c, P, T, 0.32, "#CFE6FF", 2, 5, 0.9); });
+  [[PATH.RRS, 0], [PATH.IIR, 1], [PATH.PTR, 2]].forEach(([P, i]) => { const k = span(T, 10.4 + i * 0.3, 11.6 + i * 0.3); strokeBez(c, P, 0, k, COL.blue, 2.2, 14, 0.75); if (k > 0.99) pulses(c, P, T + i, 0.30, "#CFE6FF", 2, 5, 0.95); });
+  agentNode(c, NODE.R, "RESIDENCY AGENT", { a: agentsIn(0) * (1 - dim * 0.5), T });
+  agentNode(c, NODE.P, "PAYMENT AGENT", { a: agentsIn(2) * (1 - dim * 0.5), T });
+  recordNode(c, NODE.RS, "RESIDENCY SERVICE", "", { a: span(T, 10.6, 11.6) * (1 - dim * 0.5) });
+  recordNode(c, NODE.TR, "TREASURY", "synthetic", { a: span(T, 11, 12) * (1 - dim * 0.5) });
+  recordNode(c, NODE.IR, "MARIAM'S INSURANCE", "authorized", { a: span(T, 10.8, 11.8), glowc: "#9CCBFF" });
+  // the other citizen's protected record
+  const orA = span(T, 12.6, 14);
+  recordNode(c, NODE.OR, "ANOTHER CITIZEN", "protected record", { a: orA, lock: true, glowc: T > 16 ? "#FFB4A8" : "#CFE6FF" });
+  // unauthorized branch: blue → amber → red, followed by the camera
+  const hp = headP(T);
+  const colr = T < 15.5 ? mixC("#5AA9FF", COL.amber, span(T, 13.5, 15.5)) : mixC(COL.amber, COL.red, span(T, 15.5, 17.5));
+  if (hp > 0) {
+    const blocked = T >= 27.45;
+    strokeBez(c, PATH.IOR, 0, hp, blocked ? "#8E2A2E" : colr, 3, blocked ? 6 : 22, blocked ? 0.75 : 0.95, [14, 10]);
+    const h = bez(PATH.IOR, hp);
+    if (!blocked) { dot(c, h[0], h[1], 11, colr, 40); dot(c, h[0], h[1], 4, "#FFF", 10); }
+    else { // the request stops and dissipates against the boundary
+      const k = span(T, 27.45, 28.8); seed = 3;
+      for (let i = 0; i < 26; i++) { const an = rnd() * 6.28, d = 10 + rnd() * 90 * k; dot(c, h[0] + Math.cos(an) * d - 30 * k, h[1] + Math.sin(an) * d, 2.5 * (1 - k) + 0.5, COL.red, 14, 1 - k); }
+    }
+  }
+  // the three checks travel the request path in "the moment before"
+  if (T > 20.6) {
+    const checks = [[0.875, 21.7], [0.895, 23.3], [0.915, 24.9]];
+    checks.forEach(([p, at], i) => {
+      const k = span(T, at, at + 0.6); if (k <= 0) return;
+      const q = bez(PATH.IOR, p), th = tang(PATH.IOR, p), col = i < 2 ? COL.teal : COL.red;
+      c.save(); c.translate(q[0], q[1]); c.rotate(th); c.strokeStyle = col; c.lineWidth = 3; c.shadowColor = col; c.shadowBlur = 20; c.globalAlpha = k * (T > 29.5 ? 0.4 : 1);
+      c.beginPath(); c.ellipse(0, 0, 12, 70 * k, 0, 0, 7); c.stroke(); c.restore();
+    });
+  }
+  const build = span(T, 20.4, 22.0), flash = T >= 27.45 ? span(T, 27.45, 28.6) : 0;
+  let bq = null;
+  if (build > 0) bq = boundary(c, PATH.IOR, T, build, T > 24.9 ? "red" : "gold", flash);
+  agentNode(c, NODE.I, "INSURANCE AGENT", { a: agentsIn(1), T, col: T > 14 && T < 27.45 ? mixC(COL.teal, COL.amber, 0.35) : COL.teal });
+  c.restore();
+  // screen-space labels for the checks
+  if (bq && T > 21.4) {
+    const sx = (bq[0] - cam.x) * cam.z + W / 2, sy = (bq[1] - cam.y) * cam.z + H / 2;
+    const rows = [["IDENTITY VERIFIED", 21.7, COL.teal, "✓"], ["AUTHORITY CHECKED", 23.3, COL.teal, "✓"], ["CASE MISMATCH", 24.9, COL.red, "✕"]];
+    const fadeOut = 1 - span(T, 28.6, 29.4);
+    rows.forEach(([s, at, col, mark], i) => {
+      const k = span(T, at, at + 0.5); if (k <= 0) return;
+      const x = Math.min(sx + 140, W - 600), y = Math.max(170, sy - 200) + i * 74;
+      c.save(); c.globalAlpha = k * fadeOut; c.strokeStyle = col; c.lineWidth = 2; c.shadowColor = col; c.shadowBlur = 16;
+      c.beginPath(); c.arc(x + 20, y - 11, 19, 0, 7); c.stroke(); c.restore();
+      txt(c, mark, x + 20, y - 3, { size: 22, w: 700, align: "center", color: col, a: k * fadeOut });
+      txt(c, s, x + 58 + 20 * (1 - k), y, { size: 34, w: 600, ls: 6, color: i < 2 ? "#DDF6F2" : "#FFD2CC", a: k * fadeOut, glow: col, blur: 14 });
+    });
+    if (T > 25.6) txt(c, "AUTHORIZATION BOUNDARY", sx, sy + 300 * cam.z * 0.62, { size: 16, w: 600, ls: 5, align: "center", color: COL.gold, a: span(T, 25.6, 26.4) * (1 - span(T, 28.6, 29.4)) });
+  }
+  // WAKALA reveal
+  const rv = span(T, 29.0, 30.2) * (1 - span(T, 31.6, 32.3));
+  if (rv > 0) {
+    c.save(); c.globalAlpha = rv * 0.55; c.fillStyle = "#020610"; c.fillRect(0, 0, W, H); c.restore();
+    const g = X.createLinearGradient(W / 2 - 420, 0, W / 2 + 420, 0); g.addColorStop(0, "#F4F1EA"); g.addColorStop(0.5, "#F7E3B5"); g.addColorStop(1, "#F4F1EA");
+    txt(c, "WAKALA", W / 2, 520, { size: 150, w: 600, ls: 44 * (0.6 + 0.4 * rv), align: "center", color: g, a: rv, glow: "rgba(217,178,107,0.6)", blur: 40 });
+    txt(c, "وكالة", W / 2, 610, { size: 54, w: 600, align: "center", color: COL.gold, a: rv });
+    c.save(); c.globalAlpha = rv; c.fillStyle = COL.gold; c.fillRect(W / 2 - 60 * rv, 650, 120 * rv, 2); c.restore();
+  }
+  vignette(c, 0.55 + dim * 0.25);
+  tag(c, "CONCEPTUAL VISUALIZATION", 1 - rv);
+}
+
+// ---------- RECOVERY (same world, accountable human intervention)
+function officer(c, T, a) {
+  // an operations room seen through a soft mask: window light, city bokeh, a silhouetted officer lit by the console
+  c.save(); c.globalAlpha = a;
+  const cx = 300, cy = 560;
+  const m = c.createRadialGradient(cx, cy, 150, cx, cy, 420); m.addColorStop(0, "rgba(6,14,30,1)"); m.addColorStop(0.75, "rgba(6,14,30,0.94)"); m.addColorStop(1, "rgba(6,14,30,0)");
+  c.fillStyle = m; c.fillRect(cx - 560, cy - 560, 1120, 1120);
+  seed = 21; for (let i = 0; i < 26; i++) { const x = cx - 340 + rnd() * 560, y = cy - 300 + rnd() * 300; dot(c, x + Math.sin(T * 0.3 + i) * 4, y, 6 + rnd() * 16, rnd() > 0.5 ? "#F2C77E" : "#7FB6FF", 30, 0.10 + rnd() * 0.12); }
+  c.strokeStyle = "rgba(217,178,107,0.18)"; c.lineWidth = 2; for (let i = 0; i < 4; i++) { c.beginPath(); c.moveTo(cx - 360 + i * 170, cy - 330); c.lineTo(cx - 360 + i * 170, cy + 40); c.stroke(); }
+  // console glow
+  const cg = c.createRadialGradient(cx + 150, cy + 120, 0, cx + 150, cy + 120, 260); cg.addColorStop(0, "rgba(90,169,255,0.35)"); cg.addColorStop(1, "rgba(90,169,255,0)"); c.fillStyle = cg; c.fillRect(cx - 200, cy - 200, 700, 600);
+  // silhouette (profile, facing right)
+  c.fillStyle = "#050A16"; c.beginPath();
+  c.moveTo(cx - 170, cy + 330); c.bezierCurveTo(cx - 170, cy + 160, cx - 120, cy + 90, cx - 40, cy + 70);
+  c.bezierCurveTo(cx - 60, cy + 40, cx - 70, cy - 10, cx - 60, cy - 60); c.bezierCurveTo(cx - 50, cy - 130, cx + 30, cy - 150, cx + 60, cy - 100);
+  c.bezierCurveTo(cx + 80, cy - 70, cx + 78, cy - 40, cx + 90, cy - 20); c.lineTo(cx + 74, cy - 6); c.bezierCurveTo(cx + 78, cy + 20, cx + 60, cy + 40, cx + 34, cy + 44);
+  c.bezierCurveTo(cx + 30, cy + 70, cx + 60, cy + 80, cx + 110, cy + 110); c.bezierCurveTo(cx + 170, cy + 150, cx + 190, cy + 240, cx + 190, cy + 330); c.closePath(); c.fill();
+  c.strokeStyle = "rgba(242,199,126,0.85)"; c.lineWidth = 2.5; c.shadowColor = "#F2C77E"; c.shadowBlur = 16; c.beginPath();
+  c.moveTo(cx + 60, cy - 100); c.bezierCurveTo(cx + 80, cy - 70, cx + 78, cy - 40, cx + 90, cy - 20); c.lineTo(cx + 74, cy - 6); c.bezierCurveTo(cx + 78, cy + 20, cx + 60, cy + 40, cx + 34, cy + 44); c.stroke();
+  c.restore();
+  txt(c, "AUTHORIZED OFFICER", cx - 40, cy + 380, { size: 18, w: 700, ls: 5, align: "center", color: COL.gold, a: a * 0.95 });
+  txt(c, "signed in · accountable", cx - 40, cy + 408, { size: 16, w: 500, align: "center", color: "#B9C7D8", a: a * 0.8 });
+}
+function recoverFrame(c, Tg) {
+  const T = Tg;
+  const cam = { x: lerp(900, 990, span(T, 40, 49.6)), y: lerp(640, 600, span(T, 40, 49.6)), z: lerp(1.10, 1.20, span(T, 40, 49.6)) };
+  netBackground(c, T, 1, cam, 0);
+  c.save(); c.translate(W / 2, H / 2); c.scale(cam.z, cam.z); c.translate(-cam.x, -cam.y);
+  for (const b of BG) { strokeBez(c, b.P, 0, 1, b.c, 1.6, 10, (0.18 + 0.12 * span(T, 45.5, 48)) * b.d); pulses(c, b.P, T, b.sp, b.c, 3, 4, 0.7 * b.d); }
+  citizen(c, NODE.M, 1, T);
+  [[PATH.MR], [PATH.MP], [PATH.RRS], [PATH.PTR]].forEach(([P], i) => { strokeBez(c, P, 0, 1, COL.blue, 2.2, 14, 0.7); pulses(c, P, T + i, 0.32, "#CFE6FF", 2, 5, 0.9); });
+  agentNode(c, NODE.R, "RESIDENCY AGENT", { T }); agentNode(c, NODE.P, "PAYMENT AGENT", { T });
+  recordNode(c, NODE.RS, "RESIDENCY SERVICE", ""); recordNode(c, NODE.TR, "TREASURY", "synthetic");
+  recordNode(c, NODE.OR, "ANOTHER CITIZEN", "protected record", { lock: true, a: 0.85 });
+  // the isolated, contained authority
+  strokeBez(c, PATH.IOR, 0, BRANCH_STOP - 0.012, "#7A2629", 3, 4, 0.6, [14, 10]);
+  strokeBez(c, PATH.MI, 0, 1, COL.blue, 2, 0, 0.25 * (1 - span(T, 41, 43)));
+  strokeBez(c, PATH.IIR, 0, 1, COL.blue, 2, 0, 0.25 * (1 - span(T, 41, 43)));
+  const q = bez(PATH.IOR, 0.12), th = tang(PATH.IOR, 0.12);
+  c.save(); c.translate(q[0], q[1]); c.rotate(th); c.strokeStyle = COL.gold; c.lineWidth = 3; c.shadowColor = COL.gold; c.shadowBlur = 18; c.globalAlpha = 0.9;
+  c.beginPath(); c.ellipse(0, 0, 18, 70, 0, 0, 7); c.stroke(); c.restore();
+  agentNode(c, NODE.I, "AUTHORITY CONTAINED", { T, col: "#6F7F92", a: 0.8, la: 1, above: true, lc: "#F2D9A6" });
+  // replacement agent and its new valid connection
+  const sig = span(T, 42.3, 43.9), i2 = span(T, 43.4, 44.4), link = span(T, 44.2, 45.8);
+  agentNode(c, NODE.I2, "REPLACEMENT AGENT", { T, col: COL.emerald, a: i2, s: lerp(0.6, 1.05, i2) });
+  if (link > 0) { strokeBez(c, PATH.MI2, 0, link, COL.emerald, 3, 22, 0.95); strokeBez(c, PATH.I2IR, 0, link, COL.emerald, 3.2, 26, 0.95); }
+  if (link > 0.99) { pulses(c, PATH.MI2, T, 0.36, "#D7FFF2", 3, 6, 1); pulses(c, PATH.I2IR, T + 0.4, 0.36, "#D7FFF2", 3, 6.5, 1); }
+  recordNode(c, NODE.IR, "MARIAM'S INSURANCE", link > 0.99 ? "service resumed" : "waiting", { glowc: link > 0.99 ? "#7FF0C9" : "#9CCBFF" });
+  // rising gold motes = the service moving again
+  if (T > 45.5) { seed = 8; for (let i = 0; i < 60; i++) { const k = ((T - 45.5) * 0.25 + rnd()) % 1; const P = PATH.I2IR; const p = rnd(); const b = bez(P, p); dot(c, b[0] + (rnd() - 0.5) * 120, b[1] - k * 220, 1.6 + rnd() * 2, COL.gold, 12, (1 - k) * 0.6 * span(T, 45.5, 46.5)); } }
+  c.restore();
+  // officer signature stroke (screen space → replacement agent)
+  const offA = span(T, 40.3, 41.6) * (1 - span(T, 48.4, 49.4));
+  officer(c, T, offA);
+  if (sig > 0) {
+    const tx = (NODE.I2[0] - cam.x) * cam.z + W / 2, ty = (NODE.I2[1] - cam.y) * cam.z + H / 2;
+    const P = [[420, 470], [640, 330], [tx - 60, ty - 230], [tx, ty]];
+    strokeBez(c, P, 0, sig, COL.gold, 3, 24, 0.95 * (1 - span(T, 46.5, 47.5)));
+    const h = bez(P, sig); if (sig < 1) dot(c, h[0], h[1], 7, "#FFF1CF", 26);
+  }
+  vignette(c, 0.55);
+  tag(c, "CONCEPTUAL VISUALIZATION");
+}
+
+// ---------- PROOF scenes: genuine prototype captures, framed
+function framedImage(c, im, crop, cx, cy, dw, a, rim) {
+  const [sx, sy, sw, sh] = crop.map((v) => v * PXS);
+  const dh = dw * sh / sw;
+  c.save(); c.globalAlpha = a; c.translate(cx, cy);
+  c.shadowColor = rim; c.shadowBlur = 60; c.fillStyle = "#0B1426"; c.beginPath(); c.roundRect(-dw / 2 - 10, -dh / 2 - 10, dw + 20, dh + 20, 22); c.fill();
+  c.shadowBlur = 0; c.save(); c.beginPath(); c.roundRect(-dw / 2, -dh / 2, dw, dh, 14); c.clip(); c.drawImage(im, sx, sy, sw, sh, -dw / 2, -dh / 2, dw, dh); c.restore();
+  c.strokeStyle = hexA(COL.gold, 0.7); c.lineWidth = 1.5; c.beginPath(); c.roundRect(-dw / 2 - 10, -dh / 2 - 10, dw + 20, dh + 20, 22); c.stroke();
+  c.restore();
+  return dh;
+}
+function proofBg(c, T, tint) {
+  const g = c.createRadialGradient(W / 2, H * 0.45, 0, W / 2, H * 0.45, W * 0.7); g.addColorStop(0, tint); g.addColorStop(1, "#03070F"); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  for (const d of DUST.slice(0, 90)) dot(c, (d.x + T * 6 * d.z) % W, d.y % H, d.r * d.z, "#BFD9FF", 8, 0.12 * d.z);
+}
+function proofLabel(c, a) {
+  c.save(); c.globalAlpha = a; c.fillStyle = "rgba(217,178,107,0.14)"; c.strokeStyle = "rgba(217,178,107,0.7)"; c.lineWidth = 1.5;
+  c.beginPath(); c.roundRect(W / 2 - 250, 58, 500, 46, 23); c.fill(); c.stroke(); c.restore();
+  txt(c, "REAL PROTOTYPE — SYNTHETIC DATA", W / 2, 89, { size: 20, w: 700, ls: 5, align: "center", color: "#F2D9A6", a });
+}
+function proofFrame(c, T) {
+  proofBg(c, T, "#2A1018");
+  const t = T - 31.6;
+  const kA = 1 - span(T, 35.9, 36.6), kB = span(T, 35.9, 36.6);
+  if (kA > 0) framedImage(c, IMG.block, [112, 246, 1216, 531], W / 2 + lerp(14, -14, span(T, 31.6, 36.6)), 520, lerp(1440, 1520, span(T, 31.6, 36.6)), kA, "rgba(229,72,77,0.55)");
+  if (kB > 0) framedImage(c, IMG.block, [130, 262, 1180, 330], W / 2, 520, lerp(1700, 1780, span(T, 36, 40.6)), kB, "rgba(229,72,77,0.55)");
+  proofLabel(c, span(T, 31.9, 32.6));
+  vignette(c, 0.45); addGrain(c, T, 0.02);
+}
+function proof2Frame(c, T) {
+  proofBg(c, T, "#0E2A2A");
+  const up = lerp(18, -18, span(T, 48.9, 55.4)), a = span(T, 48.9, 49.6);
+  const dh = framedImage(c, IMG.rec, [120, 254, 492, 704], 560, 470 + up, 452, a, "rgba(30,156,126,0.55)");
+  framedImage(c, IMG.rec, [121, 979, 490, 137], 560, 470 + up + dh / 2 + 92, 452, a, "rgba(30,156,126,0.55)");
+  const words = [["BLOCKED.", COL.red, 49.7], ["RECOVERED.", "#3FD6A6", 50.5], ["ACCOUNTABLE.", COL.gold, 51.3]];
+  words.forEach(([s, col, at], i) => { const k = span(T, at, at + 0.7); txt(c, s, 1010 + 40 * (1 - k), 400 + i * 120, { size: 92, w: 700, ls: 6, color: col, a: k, glow: hexA(col, 0.45), blur: 26 }); });
+  txt(c, "Mariam's case: completed after review", 1016, 800, { size: 26, w: 500, color: "#CFE3EE", a: span(T, 52.2, 53) });
+  txt(c, "Unrelated case: completed", 1016, 840, { size: 26, w: 500, color: "#CFE3EE", a: span(T, 52.6, 53.4) });
+  proofLabel(c, span(T, 49.0, 49.8));
+  vignette(c, 0.45); addGrain(c, T, 0.02);
+}
+
+// ---------- LOGO
+function shieldMark(c, x, y, s, k) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  c.fillStyle = "#0E4D48"; c.beginPath(); c.roundRect(-16, -16, 32, 32, 9); c.fill();
+  c.lineJoin = "round"; c.lineCap = "round"; c.lineWidth = 1.6;
+  c.strokeStyle = "#FFFFFF"; c.setLineDash([60]); c.lineDashOffset = 60 * (1 - k);
+  c.beginPath(); c.moveTo(0, -10); c.lineTo(-8, -6.8); c.lineTo(-8, -0.9); c.bezierCurveTo(-8, 3.9, -4.6, 7.7, 0, 9); c.bezierCurveTo(4.6, 7.7, 8, 3.9, 8, -0.9); c.lineTo(8, -6.8); c.closePath(); c.stroke();
+  c.strokeStyle = "#D9B77E"; c.setLineDash([16]); c.lineDashOffset = 16 * (1 - span(k, 0.5, 1));
+  c.beginPath(); c.moveTo(-3.8, -0.6); c.lineTo(-1.1, 2.1); c.lineTo(3.9, -3.3); c.stroke();
+  c.restore();
+}
+function logoFrame(c, T) {
+  const g = c.createRadialGradient(W / 2, H * 0.42, 0, W / 2, H * 0.42, W * 0.7); g.addColorStop(0, "#FBF9F4"); g.addColorStop(1, "#ECE7DC"); c.fillStyle = g; c.fillRect(0, 0, W, H);
+  const k = span(T, 57.2, 58.4);
+  shieldMark(c, W / 2 - 330, 410, 5.2, k);
+  txt(c, "WAKALA", W / 2 - 220, 452, { size: 118, w: 700, ls: 16, color: "#193E60", a: span(T, 57.4, 58.2) });
+  txt(c, "|", W / 2 + 395, 445, { size: 90, w: 300, color: "#C9D1D0", a: span(T, 57.6, 58.3) });
+  txt(c, "وكالة", W / 2 + 435, 448, { size: 92, w: 600, color: "#B48A55", a: span(T, 57.7, 58.4) });
+  txt(c, "Autonomous AI.", W / 2, 590, { size: 58, w: 600, align: "center", color: "#193E60", a: span(T, 58.0, 58.7) });
+  txt(c, "Accountable Actions.", W / 2, 668, { size: 58, w: 600, align: "center", color: "#0E4D48", a: span(T, 58.3, 59.0) });
+  c.save(); c.globalAlpha = span(T, 58.3, 59); c.fillStyle = "#B48A55"; c.fillRect(W / 2 - 50, 712, 100, 3); c.restore();
+  txt(c, "Conceptual visualization + working synthetic-data prototype · No real government integration", W / 2, 960, { size: 22, w: 500, align: "center", color: "#687783", a: span(T, 58.5, 59.2) });
+}
+
+// ---------- timeline compositor
+const SCENES = [
+  { a: 0.0, b: 10.4, fi: 0, fo: 1.2, f: (c, T) => cityFrame(c, T, "start") },
+  { a: 9.2, b: 32.4, fi: 1.2, fo: 0.8, f: netFrame },
+  { a: 31.6, b: 40.6, fi: 0.8, fo: 0.6, f: proofFrame },
+  { a: 40.0, b: 49.6, fi: 0.6, fo: 0.7, f: recoverFrame },
+  { a: 48.9, b: 55.4, fi: 0.7, fo: 0.8, f: proof2Frame },
+  { a: 54.6, b: 58.0, fi: 0.8, fo: 1.0, f: (c, T) => { cityFrame(c, T - 54.6, "end"); tag(c, "CONCEPTUAL VISUALIZATION"); } },
+  { a: 57.0, b: 60.5, fi: 1.0, fo: 0, f: logoFrame },
+];
+window.draw = (T) => {
+  X.globalAlpha = 1; X.fillStyle = "#000"; X.fillRect(0, 0, W, H);
+  let first = true;
+  for (const s of SCENES) {
+    if (T < s.a || T >= s.b) continue;
+    const ain = s.fi ? cl((T - s.a) / s.fi) : 1, aout = s.fo ? cl((s.b - T) / s.fo) : 1, a = sm(Math.min(ain, aout));
+    const L = first ? LA : LB, lc = L.getContext("2d");
+    lc.save(); lc.globalAlpha = 1; lc.setTransform(1, 0, 0, 1, 0, 0); lc.clearRect(0, 0, W, H); s.f(lc, T); lc.restore();
+    X.save(); X.globalAlpha = first ? a : a; X.drawImage(L, 0, 0); X.restore();
+    first = false;
+  }
+  if (T < 0.6) { X.save(); X.globalAlpha = 1 - T / 0.6; X.fillStyle = "#000"; X.fillRect(0, 0, W, H); X.restore(); }
+  addGrain(X, T, 0.025);
+};
+if (!pending) window.ready = true;
+</script></body></html>

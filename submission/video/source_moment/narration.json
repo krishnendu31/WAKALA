@@ -1,0 +1,71 @@
+{
+ "voice_note": "Local Windows text-to-speech (Microsoft Zira), warmed with EQ and a light room reverb. No online service. A professional human voice is recommended.",
+ "scenes": [
+  {
+   "id": "s1",
+   "start": 0.8,
+   "rate": -1,
+   "lines": [
+    "Imagine government services where AI agents don't just respond.",
+    "They act, collaborate, and complete tasks for citizens."
+   ]
+  },
+  {
+   "id": "s2",
+   "start": 11.2,
+   "rate": -1,
+   "lines": [
+    "But even a trusted agent can attempt an action it was never authorized to perform."
+   ]
+  },
+  {
+   "id": "s3",
+   "start": 20.05,
+   "rate": -1,
+   "lines": [
+    "WAKALA verifies who the agent is, what authority it was given, and whether this specific action is permitted."
+   ]
+  },
+  {
+   "id": "s3b",
+   "start": 27.65,
+   "rate": 0,
+   "lines": [
+    "If it exceeds that authority, WAKALA stops it, before execution."
+   ]
+  },
+  {
+   "id": "s4",
+   "start": 32.6,
+   "rate": -1,
+   "lines": [
+    "And this isn't just a concept.",
+    "Our working prototype enforces that decision through a real authorization gateway."
+   ]
+  },
+  {
+   "id": "s5",
+   "start": 40.7,
+   "rate": -1,
+   "lines": [
+    "An authorized officer can contain the incident, restore valid authority, and let the legitimate service continue."
+   ]
+  },
+  {
+   "id": "s6",
+   "start": 50.2,
+   "rate": -1,
+   "lines": [
+    "Security, without unnecessary disruption."
+   ]
+  },
+  {
+   "id": "s7",
+   "start": 55.45,
+   "rate": 0,
+   "lines": [
+    "WAKALA. Autonomous AI. Accountable actions."
+   ]
+  }
+ ]
+}

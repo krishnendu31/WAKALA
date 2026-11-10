@@ -1,0 +1,47 @@
+1
+00:00:00,800 --> 00:00:04,655
+Imagine government services where AI agents don't just respond.
+
+2
+00:00:05,005 --> 00:00:08,690
+They act, collaborate, and complete tasks for citizens.
+
+3
+00:00:11,200 --> 00:00:15,714
+But even a trusted agent can attempt an action it was never authorized to perform.
+
+4
+00:00:20,050 --> 00:00:24,064
+WAKALA verifies who the agent is, what authority it was given,
+
+5
+00:00:24,064 --> 00:00:27,042
+and whether this specific action is permitted.
+
+6
+00:00:27,650 --> 00:00:32,141
+If it exceeds that authority, WAKALA stops it, before execution.
+
+7
+00:00:32,600 --> 00:00:34,311
+And this isn't just a concept.
+
+8
+00:00:34,661 --> 00:00:39,270
+Our working prototype enforces that decision through a real authorization gateway.
+
+9
+00:00:40,700 --> 00:00:43,704
+An authorized officer can contain the incident,
+
+10
+00:00:43,704 --> 00:00:47,858
+restore valid authority, and let the legitimate service continue.
+
+11
+00:00:50,200 --> 00:00:53,333
+Security, without unnecessary disruption.
+
+12
+00:00:55,450 --> 00:00:59,912
+WAKALA. Autonomous AI. Accountable actions.
