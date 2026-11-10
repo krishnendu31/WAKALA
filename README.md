@@ -62,7 +62,11 @@ cd backend
 .venv\Scripts\python -m app.devtools.cli officers set-password OFF-0101
 ```
 
-Open http://localhost:5173/portal and use **Open Security Operations side by side**. Then run the presenter scenes:
+Open http://localhost:5173/ and click **Start Guided Demo**. The guided demo (`/demo`) walks first-time visitors through five steps:
+normal service, unauthorized access, officer intervention, safe recovery, and results and evidence, using the same APIs as the console.
+The full console is under **Advanced tools** (Command Center is at `/command-center`).
+
+The original presenter flow is still available: open http://localhost:5173/portal and use **Open Security Operations side by side**. Then run the presenter scenes:
 1. **Normal service** — the request completes through six gateway-allowed signed steps, with delegated insurance and an
    AED 500 synthetic fee.
 2. **Cross-citizen incident** — "Blocked: this AI agent was authorized to check insurance for Mariam, not another

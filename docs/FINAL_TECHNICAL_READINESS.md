@@ -160,7 +160,8 @@ cd backend
 .venv\Scripts\python -m app.devtools.cli officers set-password OFF-0900
 ```
 
-Then open http://localhost:5173/portal, click **New demo session**, and follow the presenter panel. Use **Open Security
+Then open http://localhost:5173/ and click **Start Guided Demo** (see *Phase 8 usability update* below). For the console flow, open
+http://localhost:5173/portal, click **New demo session**, and follow the presenter panel. Use **Open Security
 Operations side by side**: sign in as OFF-0101 for recovery, or OFF-0900 for the Revocation tab.
 
 **Known default state:**
@@ -176,3 +177,18 @@ Reproduce the evidence:
 cd backend
 .venv\Scripts\python -m app.evaluation.recovery_repeat
 ```
+
+## Phase 8 usability update (frontend only)
+
+Commit `2e637cf` on `phase-8-usability`. No backend, authorization, signing, audit or benchmark code changed.
+
+- `/` is now a **welcome page** ("Start Guided Demo", "Explore Security Console"). The Command Center moved to `/command-center`.
+  An unknown route now falls back to the welcome page, not the Command Center as stated in §1.
+- `/demo` is a **guided demo** in five steps. It uses the existing portal and officer APIs, and the officer steps require a real
+  officer session and follow the backend order (review → reassign → resume → continue → approve → resolve → continue).
+- Verification: frontend typecheck and production build pass; backend **493 passed**. The full guided flow ran end-to-end in
+  headless Edge at 1366×768 through the real officer sign-in form (twice), ending with Mariam's case COMPLETED and recovered,
+  the incident resolved, the unrelated case COMPLETED and the audit chain valid. A wrong officer password was refused.
+  17 routes plus an unknown route load without page errors. There is no horizontal overflow at 1366×768 or 1920×1080.
+- Not tested with real first-time users; the usability goals are design targets, not measured results.
+
