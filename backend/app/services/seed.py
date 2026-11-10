@@ -18,6 +18,7 @@ from pydantic import BaseModel
 
 from app.models.database import SEED_TABLES, Database
 from app.schemas import AgentPassport, Citizen, DocumentFixture, GovernmentService, Scenario, TrustedIssuer
+from app.schemas.assurance import Officer
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -34,6 +35,8 @@ class SyntheticDataset:
     documents: list[DocumentFixture]
     scenarios: list[Scenario]
     issuers: list[TrustedIssuer]
+    standby_agents: list[AgentPassport] = None  # type: ignore[assignment]
+    officers: list[Officer] = None  # type: ignore[assignment]
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -68,6 +71,10 @@ def load_dataset(data_dir: Path = DATA_DIR) -> SyntheticDataset:
             )
         scenarios = [Scenario.model_validate(s) for s in scenario_file["scenarios"]]
         issuers = [TrustedIssuer.model_validate(i) for i in _read_json(data_dir / "issuers.json")["issuers"]]
+        standby = [AgentPassport.model_validate(a) for a in _read_json(data_dir / "standby_agents.json")["agents"]] \
+            if (data_dir / "standby_agents.json").exists() else []
+        officers = [Officer.model_validate(o) for o in _read_json(data_dir / "officers.json")["officers"]] \
+            if (data_dir / "officers.json").exists() else []
     except SeedError:
         raise
     except (KeyError, FileNotFoundError, ValueError) as exc:
@@ -79,6 +86,8 @@ def load_dataset(data_dir: Path = DATA_DIR) -> SyntheticDataset:
     _assert_unique(documents, "document_id", "document")
     _assert_unique(scenarios, "scenario_id", "scenario")
     _assert_unique(issuers, "issuer_id", "issuer")
+    _assert_unique([*agents, *standby], "agent_id", "agent")
+    _assert_unique(officers, "officer_id", "officer")
 
     # Referential integrity between fixtures.
     citizen_refs = {c.citizen_ref for c in citizens}
@@ -95,7 +104,7 @@ def load_dataset(data_dir: Path = DATA_DIR) -> SyntheticDataset:
         if sc.document_id not in document_ids:
             raise SeedError(f"scenario {sc.scenario_id} references unknown document {sc.document_id}")
 
-    agent_ids = {a.agent_id for a in agents}
+    agent_ids = {a.agent_id for a in [*agents, *standby]}
     service_tools = {t for s in services for t in s.tools}
     for iss in issuers:
         auth = iss.authority
@@ -105,11 +114,11 @@ def load_dataset(data_dir: Path = DATA_DIR) -> SyntheticDataset:
             raise SeedError(f"issuer {iss.issuer_id} references unknown services")
         if not set(auth.tools) <= service_tools:
             raise SeedError(f"issuer {iss.issuer_id} references tools outside its services")
-    key_ids = [a.identity_key_reference.key_id for a in agents] + [i.key_id for i in issuers]
+    key_ids = [a.identity_key_reference.key_id for a in [*agents, *standby]] + [i.key_id for i in issuers]
     if len(set(key_ids)) != len(key_ids):
         raise SeedError("key identifiers must be unique across agents and issuers")
 
-    return SyntheticDataset(agents, citizens, services, documents, scenarios, issuers)
+    return SyntheticDataset(agents, citizens, services, documents, scenarios, issuers, standby, officers)
 
 
 def seed_database(db: Database, dataset: SyntheticDataset) -> None:
@@ -120,6 +129,8 @@ def seed_database(db: Database, dataset: SyntheticDataset) -> None:
         "documents": [(d.document_id, d.model_dump_json()) for d in dataset.documents],
         "scenarios": [(s.scenario_id, s.model_dump_json()) for s in dataset.scenarios],
         "issuers": [(i.issuer_id, i.model_dump_json()) for i in dataset.issuers],
+        "standby_agents": [(a.agent_id, a.model_dump_json()) for a in (dataset.standby_agents or [])],
+        "officers": [(o.officer_id, o.model_dump_json()) for o in (dataset.officers or [])],
     }
     with db.transaction() as conn:
         for table in SEED_TABLES:

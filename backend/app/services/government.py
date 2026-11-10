@@ -48,6 +48,12 @@ class ProtectedServices:
         case = CaseStore.load_in(conn, params.case_id)
         if case is None or ctx.case_id != case.case_id:
             raise ServiceRefusal("CASE_NOT_FOUND")
+        if ctx.mandate_id is not None:
+            # Revocation or suspension committed between authorization and execution.
+            m = conn.execute("SELECT revoked FROM mandates WHERE mandate_id = ?", (ctx.mandate_id,)).fetchone()
+            s = conn.execute("SELECT active FROM mandate_suspensions WHERE mandate_id = ?", (ctx.mandate_id,)).fetchone()
+            if m is None or m["revoked"] or (s is not None and s["active"]):
+                raise ServiceRefusal("AUTHORITY_WITHDRAWN")
         if case.citizen_ref != params.citizen_ref or case.authority_revoked:
             raise ServiceRefusal("CASE_SCOPE_MISMATCH")
         if ctx.agent_id not in case.assigned_agents and not self._holds_delegation(conn, case.case_id, ctx):

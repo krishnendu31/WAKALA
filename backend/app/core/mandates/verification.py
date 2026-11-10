@@ -66,9 +66,12 @@ def check_issuer_authority(mandate: DigitalMandate, issuer: TrustedIssuer) -> li
     return [R.DENY_ISSUER_AUTHORITY_EXCEEDED] if exceeded else []
 
 
-def check_mandate_lifecycle(mandate: DigitalMandate, now: datetime, revoked_ids: frozenset[str]) -> list[ReasonCode]:
+def check_mandate_lifecycle(mandate: DigitalMandate, now: datetime, revoked_ids: frozenset[str],
+                            suspended_ids: frozenset[str] = frozenset()) -> list[ReasonCode]:
     if mandate.status != "active" or mandate.mandate_id in revoked_ids:
         return [R.DENY_MANDATE_REVOKED]
+    if mandate.mandate_id in suspended_ids:
+        return [R.DENY_MANDATE_SUSPENDED]
     if now < mandate.issued_at:
         return [R.DENY_MANDATE_NOT_YET_VALID]
     if now >= mandate.expires_at:

@@ -48,3 +48,41 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
   }
   return (await res.json()) as T;
 }
+
+// --- Officer console (Phase 4) -------------------------------------------------
+// The session token lives only in memory and sessionStorage for this tab. The
+// frontend holds NO credentials; the backend derives the officer from the token.
+const TOKEN_KEY = "wakala.officer.token";
+let officerToken: string | null = (() => {
+  try {
+    return sessionStorage.getItem(TOKEN_KEY);
+  } catch {
+    return null;
+  }
+})();
+
+export function setOfficerToken(token: string | null): void {
+  officerToken = token;
+  try {
+    if (token) sessionStorage.setItem(TOKEN_KEY, token);
+    else sessionStorage.removeItem(TOKEN_KEY);
+  } catch {
+    /* storage unavailable: keep in memory only */
+  }
+}
+
+export function hasOfficerToken(): boolean {
+  return officerToken !== null;
+}
+
+export async function officerRequest<T>(path: string, method: "GET" | "POST" | "DELETE" = "GET", body?: unknown): Promise<T> {
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (officerToken) headers.Authorization = `Bearer ${officerToken}`;
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  try {
+    return await request<T>(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 401) setOfficerToken(null);
+    throw e;
+  }
+}

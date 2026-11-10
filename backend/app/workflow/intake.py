@@ -84,7 +84,8 @@ def _case_mandate(agent_id: str, case_id: str, citizen: str, request_id: str, no
     return body
 
 
-def open_case(env: WakalaEnvironment, citizen_ref: str, model: AuthorityModel = "direct") -> RenewalCase:
+def open_case(env: WakalaEnvironment, citizen_ref: str, model: AuthorityModel = "direct",
+              incident_policy: Literal["monitor", "contain"] = "monitor") -> RenewalCase:
     if env.repo.get_citizen(citizen_ref) is None:
         raise IntakeRefused("unknown citizen")
     operations_table = DELEGATED_OPERATIONS if model == "delegated" else AGENT_OPERATIONS
@@ -107,6 +108,7 @@ def open_case(env: WakalaEnvironment, citizen_ref: str, model: AuthorityModel = 
         authorized_purpose="Renew the applicant's synthetic residency permit", request_id=request_id,
         state=CaseState.CREATED, assigned_agents=list(operations_table), mandate_refs=refs,
         authorized_operations=operations, created_at=now, expires_at=expires, authority_model=model,
+        incident_policy=incident_policy,
         history=[
             CaseEvent(at=now, actor="OFF-0101", kind="case_opened", detail=f"Renewal application accepted for {citizen_ref}"),
             CaseEvent(at=now, actor="OFF-0101", kind="mandates_issued",

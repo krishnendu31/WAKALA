@@ -1,5 +1,49 @@
 # WAKALA Demo Scenarios
 
+## Phase 4: Safe recovery (console → **Security Operations**)
+
+Start the backend with `run_dev.py` and print the officer credentials:
+
+```bash
+cd backend
+.venv\Scripts\python -m app.devtools.cli officers credentials
+```
+
+**Scenario H: safe recovery after a cross-citizen access attempt**
+
+1. **Sign in** as `OFF-0101` (case officer, Fictional Residency Services Authority).
+2. **Recovery → Start safe-recovery scenario.** This sets up the two cases, then the cross-citizen attempt:
+   1. Two `contain` cases are opened: Mariam (C-1001) and Omar (C-1002).
+   2. The Residency Agent commissions the insurance check on both, and Omar's check is allowed (legitimate service).
+   3. On Mariam's case, the Insurance Agent (AGT-INS-001) requests citizen C-1003's record and is **denied**
+      (`DENY_CASE_SCOPE_VIOLATION`).
+3. **Incidents.** A high-severity `CROSS_CITIZEN_ACCESS` incident appears. The investigation shows:
+   - the citizen's request;
+   - the gateway evidence event;
+   - the chain verified now (the child mandate **SUSPENDED**, roots still AUTHORIZED);
+   - completed actions and the remaining requirements (insurance, fee);
+   - the responses applied (suspend the affected mandate, pause the case, hold sensitive operations, no agent-wide
+     action).
+4. **Selective intervention.** Mark under review, **Reassign insurance check → AGT-INS-002** (standby), then
+   **Resume case**. Only the one child mandate and Mariam's case are affected.
+5. **Recovery → Continue CASE-… (C-1001).** The commission to AGT-INS-002 is a sensitive operation on a case with an
+   active incident, so it is **held**. Nothing executes yet.
+6. **Approvals → Approve & re-authorize.** The stored signed request passes the current checks
+   (`ALLOW_WITHIN_MANDATE`) and executes once.
+7. **Incidents → Resolve incident**, then **Continue** again. AGT-INS-002 verifies insurance, the Payment Agent
+   collects the fee and the Residency Agent completes the renewal. Each is a signed request through the gateway.
+   The overview shows Mariam's case as **RECOVERED** (COMPLETED, 3/3).
+8. **Continue Omar's case.** The fee and completion are allowed with no hold: another citizen's service was never
+   affected.
+
+Then try:
+- **Oversight comparison.** The same synthetic workload runs in an isolated environment. A is a **hypothetical**
+  manual-review process (not verified current UAE government practice); B is WAKALA with exception-only review. The
+  per-review time is an assumption applied to both. No staffing or approval-rate claims are made.
+- **Officer audit.** Every officer action and automated response, hash-chained.
+- **Role check.** Sign in as `OFF-0950` (auditor): the evidence is visible, but no intervention buttons appear, and the
+  API refuses the actions (403).
+
 ## Phase 3: Delegated authority (console → **Delegation Network**)
 
 | Scenario | What happens | Measured outcome (tests reproduce it) |

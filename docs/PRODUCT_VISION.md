@@ -62,8 +62,8 @@ if the agent is fooled, the gateway refuses, the refusal is audited, and Mariam'
 | 1 | Ed25519 identity, signed mandates, default-deny gateway, protected execution, hash-chained audit *(complete — development prototype)* |
 | 2 | Protected synthetic government services, case-specific authority, simulated agent adapters *(complete — development prototype)* |
 | 3 | Signed, non-expanding mandate chains; selective revocation; transactional outcome audit *(complete — development prototype)* |
-| 4 | Officer console, LLM adapters, adversarial runs, citizen receipts |
-| 4b | Measured benchmarks from real runs |
+| 4 | Deterministic assurance rules, graduated response, authenticated officer console, human approval, safe recovery *(complete — development prototype)* |
+| 5 | LLM adapters, adversarial runs, citizen receipts, measured benchmarks from real runs *(not started)* |
 
 ## Principles
 

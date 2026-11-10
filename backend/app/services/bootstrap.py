@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 from datetime import datetime, timedelta, timezone
 
 from app.core.audit import SqliteAuditSink
@@ -51,6 +52,9 @@ class WakalaEnvironment:
     cases: CaseStore
     services: ProtectedServices
     delegation: DelegationService | None = None
+    assurance: Any = None
+    approvals: Any = None
+    officers: Any = None
 
     def close(self) -> None:
         self.db.close()
@@ -87,7 +91,7 @@ def _insurance_view(repo: Repository) -> Callable[[str], dict | None]:
 
 
 def provision_identities(repo: Repository, dataset: SyntheticDataset, keystore: PrivateKeyProvider) -> None:
-    for agent in dataset.agents:
+    for agent in [*dataset.agents, *(dataset.standby_agents or [])]:
         key_id = agent.identity_key_reference.key_id
         repo.register_public_key(key_id, "agent", agent.agent_id, keystore.private_key(key_id).public_key())
     for issuer in dataset.issuers:
@@ -142,6 +146,20 @@ def bootstrap(
             gateway, mandates, keystore, {i.issuer_id: i for i in dataset.issuers}, clock(),
             timedelta(minutes=settings.dev_mandate_lifetime_minutes),
         )
+    # Phase 4: continuous assurance, human approval and officer authentication.
+    from app.services.approvals import ApprovalStore
+    from app.services.assurance import AssuranceService
+    from app.services.officers import OfficerAuth
+
+    env.assurance = AssuranceService(env)
+    env.approvals = ApprovalStore(db)
+    gateway.observers.append(env.assurance.observe)
+    gateway.approval_gate = env.assurance.approval_required
+    gateway.approvals = env.approvals
+    gateway.suspended_ids = env.assurance.suspensions.active_ids
+    env.officers = OfficerAuth(db, clock, getattr(keystore, "officer_password", None))
+    env.officers.provision()
+    env.approvals.expire_due(clock())  # pending approvals never survive past their TTL, including across restarts
     if issue_mandates:
         # Startup recovery: record outcomes for any authorized-but-unrecorded executions.
         from app.services.reconciliation import reconcile_outcomes

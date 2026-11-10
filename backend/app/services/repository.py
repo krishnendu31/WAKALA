@@ -43,19 +43,32 @@ class Repository:
         rows = self._db.query("SELECT payload FROM agents ORDER BY rowid")
         return [self._with_key_state(AgentPassport.model_validate_json(r["payload"])) for r in rows]
 
+    def _agent_row(self, agent_id: str) -> tuple[str, str] | None:
+        """(table, payload) — primary roster first, then the standby pool."""
+        for table in ("agents", "standby_agents"):
+            rows = self._db.query(f"SELECT payload FROM {table} WHERE agent_id = ?", (agent_id,))
+            if rows:
+                return table, rows[0]["payload"]
+        return None
+
     def get_agent(self, agent_id: str) -> AgentPassport | None:
-        rows = self._db.query("SELECT payload FROM agents WHERE agent_id = ?", (agent_id,))
-        return self._with_key_state(AgentPassport.model_validate_json(rows[0]["payload"])) if rows else None
+        row = self._agent_row(agent_id)
+        return self._with_key_state(AgentPassport.model_validate_json(row[1])) if row else None
+
+    def list_standby_agents(self) -> list[AgentPassport]:
+        rows = self._db.query("SELECT payload FROM standby_agents ORDER BY rowid")
+        return [self._with_key_state(AgentPassport.model_validate_json(r["payload"])) for r in rows]
 
     def set_agent_status(self, agent_id: str, status: AgentStatus, reason: str = "status change") -> AgentPassport:
         """Persistent: recorded as an override that survives the registry reseed on restart."""
-        rows = self._db.query("SELECT payload FROM agents WHERE agent_id = ?", (agent_id,))
-        if not rows:
+        row = self._agent_row(agent_id)
+        if row is None:
             raise KeyError(agent_id)
-        agent = AgentPassport.model_validate_json(rows[0]["payload"])
+        table, payload = row
+        agent = AgentPassport.model_validate_json(payload)
         updated = AgentPassport.model_validate({**agent.model_dump(), "status": status})
         with self._db.transaction() as conn:
-            conn.execute("UPDATE agents SET payload = ? WHERE agent_id = ?", (updated.model_dump_json(), agent_id))
+            conn.execute(f"UPDATE {table} SET payload = ? WHERE agent_id = ?", (updated.model_dump_json(), agent_id))
             conn.execute(
                 "INSERT INTO agent_status_overrides (agent_id, status, reason, changed_at) VALUES (?, ?, ?, ?) "
                 "ON CONFLICT(agent_id) DO UPDATE SET status=excluded.status, reason=excluded.reason, changed_at=excluded.changed_at",
@@ -66,12 +79,13 @@ class Repository:
     def apply_status_overrides(self) -> None:
         """Re-apply persistent agent status changes after the synthetic registry is reseeded."""
         for row in self._db.query("SELECT agent_id, status FROM agent_status_overrides"):
-            agent_rows = self._db.query("SELECT payload FROM agents WHERE agent_id = ?", (row["agent_id"],))
-            if agent_rows:
-                agent = AgentPassport.model_validate_json(agent_rows[0]["payload"])
+            found = self._agent_row(row["agent_id"])
+            if found:
+                table, payload = found
+                agent = AgentPassport.model_validate_json(payload)
                 updated = AgentPassport.model_validate({**agent.model_dump(), "status": row["status"]})
                 with self._db.transaction() as conn:
-                    conn.execute("UPDATE agents SET payload = ? WHERE agent_id = ?", (updated.model_dump_json(), row["agent_id"]))
+                    conn.execute(f"UPDATE {table} SET payload = ? WHERE agent_id = ?", (updated.model_dump_json(), row["agent_id"]))
 
     # --- environment ------------------------------------------------------------
     def list_citizens(self) -> list[Citizen]:
@@ -134,10 +148,10 @@ class Repository:
 
     def get_agent_key(self, agent_id: str) -> RegisteredKey | None:
         """The key the *registry* binds to this agent (passport key_id), if registered."""
-        rows = self._db.query("SELECT payload FROM agents WHERE agent_id = ?", (agent_id,))
-        if not rows:
+        row = self._agent_row(agent_id)
+        if row is None:
             return None
-        key_id = AgentPassport.model_validate_json(rows[0]["payload"]).identity_key_reference.key_id
+        key_id = AgentPassport.model_validate_json(row[1]).identity_key_reference.key_id
         key = self.get_key(key_id)
         if key is None or key.owner_type != "agent" or key.owner_id != agent_id:
             return None

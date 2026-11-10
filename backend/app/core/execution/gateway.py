@@ -120,6 +120,12 @@ class Gateway:
         max_request_skew: timedelta,
         policy: PolicyFunction = authorize,
     ) -> None:
+        # Phase 4 hooks (wired by bootstrap). Observers run after a decision is audited
+        # and can never change it; the approval gate can only turn ALLOW into "held".
+        self.observers: list[Callable[[AuditEvent, ActionRequest], Any]] = []
+        self.approval_gate: Callable[[ActionRequest, datetime], str | None] | None = None
+        self.approvals: Any = None
+        self.suspended_ids: Callable[[], frozenset[str]] = lambda: frozenset()
         self._repo = repo
         self._mandates = mandates
         self._cases = cases
@@ -147,6 +153,7 @@ class Gateway:
             "issuers": issuers,
             "issuer_public_keys": issuer_keys,
             "revoked_mandate_ids": self._mandates.revoked_ids(),
+            "suspended_mandate_ids": self.suspended_ids(),
             "known_services": frozenset(s.service_id for s in self._repo.list_services()),
         }
 
@@ -177,7 +184,8 @@ class Gateway:
         return tuple(ancestors), None
 
     # --- decision -------------------------------------------------------------------
-    def _decide(self, signed: SignedActionRequest, origin: str, mandate_source: MandateSource | None) -> GatewayOutcome:
+    def _decide(self, signed: SignedActionRequest, origin: str, mandate_source: MandateSource | None,
+                approved: Any = None, hold: bool = False) -> GatewayOutcome:
         start = time.perf_counter()
         request = signed.request
         now = self._clock()
@@ -189,7 +197,9 @@ class Gateway:
             auth = authenticate(signed, self._repo.get_agent_key)
             principal = auth.principal
             replayed = False
-            if principal is not None:
+            if approved is not None and approved.request_digest != digest:
+                raise RuntimeError("approved request digest mismatch")
+            if principal is not None and approved is None:
                 # Only authenticated requests consume a nonce: an attacker
                 # cannot burn another agent's nonces without its key.
                 replayed = self._replay.check_and_record(principal.agent_id, request.nonce, now)
@@ -218,6 +228,7 @@ class Gateway:
                 replay_detected=replayed,
                 authentication_failure=auth.failure,
                 mandate_malformed=malformed,
+                approved_reauthorization=approved is not None,
                 **self.policy_snapshot(now),
             )
             evaluation = self._policy(request, principal, mandate, ctx)
@@ -228,6 +239,15 @@ class Gateway:
 
         allowed = evaluation.allowed is True and evaluation.reason_codes == (ReasonCode.ALLOW_WITHIN_MANDATE,)
         codes = evaluation.reason_codes if allowed else tuple(c for c in evaluation.reason_codes if c is not ReasonCode.ALLOW_WITHIN_MANDATE) or (ReasonCode.DENY_DEFAULT,)
+        hold_for: str | None = None
+        if allowed and approved is None and self.approval_gate is not None:
+            try:
+                hold_for = self.approval_gate(request, now)
+            except Exception:  # noqa: BLE001 — if the gate cannot be evaluated, do not execute
+                logger.exception("approval gate failed; denying")
+                allowed, codes = False, (ReasonCode.DENY_POLICY_EVALUATION_ERROR,)
+            if hold_for is not None:
+                allowed, codes = False, (ReasonCode.ESCALATE_HUMAN_REVIEW,)
         latency_ms = (time.perf_counter() - start) * 1000
         decision = AuthorizationDecision(
             decision_id=decision_id,
@@ -245,7 +265,7 @@ class Gateway:
             timestamp=now,
             actor=principal.agent_id if principal else "UNAUTHENTICATED",
             action=request.tool_name,
-            decision="allowed" if allowed else "denied",
+            decision="allowed" if allowed else ("escalated" if hold_for is not None else "denied"),
             request_id=request.request_id,
             related_mandate=request.mandate_id,
             authenticated=principal is not None,
@@ -265,8 +285,18 @@ class Gateway:
                 "target_resource": request.target_resource,
                 "case_id": request.case_id,
                 "origin": origin,
+                "approval_reauthorization": approved.approval_id if approved is not None else None,
             },
         ))
+        if hold_for is not None and hold and self.approvals is not None:
+            pending = self.approvals.create(signed, digest, "Sensitive operation on a case with an active incident",
+                                            hold_for, event.event_id, now)
+            decision = decision.model_copy(update={"pending_approval_id": pending.approval_id})
+        for observer in self.observers:
+            try:
+                observer(event, request)
+            except Exception:  # noqa: BLE001 — observers can never change a decision
+                logger.exception("decision observer failed")
         return GatewayOutcome(decision, evaluation, request, event)
 
     def authorize(self, signed: SignedActionRequest, *, origin: str = "api", mandate_source: MandateSource | None = None) -> GatewayOutcome:
@@ -274,7 +304,42 @@ class Gateway:
         return self._decide(signed, origin, mandate_source)
 
     def execute(self, signed: SignedActionRequest, *, origin: str = "api", mandate_source: MandateSource | None = None) -> ExecutionOutcome:
-        outcome = self._decide(signed, origin, mandate_source)  # raises if audit fails -> nothing executes
+        outcome = self._decide(signed, origin, mandate_source, hold=True)  # raises if audit fails -> nothing executes
+        return self._dispatch_if_allowed(outcome, origin)
+
+    def execute_approved(self, approval_id: str, officer_id: str, note: str = "") -> tuple[Any, ExecutionOutcome | None]:
+        """Execute a held request ONLY after full re-authorization against current state."""
+        now = self._clock()
+        if self.approvals is None:
+            raise RuntimeError("approvals not configured")
+        found = self.approvals.get(approval_id)
+        if found is None:
+            raise KeyError(approval_id)
+        approval, signed = found
+        if approval.status == "pending" and now >= approval.expires_at:
+            self.approvals.transition(approval_id, "pending", {"status": "expired"})
+            return self.approvals.get(approval_id)[0], None
+        claimed = self.approvals.transition(approval_id, "pending", {
+            "status": "executing", "decided_by": officer_id, "decided_at": now, "decision_note": note[:500] or None})
+        if claimed is None:  # already decided, executing, expired or rejected — never twice
+            return approval, None
+        try:
+            outcome = self._decide(signed, f"officer_approval:{officer_id}", None, approved=claimed)
+            result = self._dispatch_if_allowed(outcome, f"officer_approval:{officer_id}")
+        except Exception:
+            self.approvals.transition(approval_id, "executing", {"status": "approved_denied",
+                                                                   "reauthorization_codes": ["DENY_POLICY_EVALUATION_ERROR"]})
+            raise
+        final = self.approvals.transition(approval_id, "executing", {
+            "status": "approved_executed" if result.executed else "approved_denied",
+            "reauthorization_decision_id": result.decision.decision_id,
+            "reauthorization_codes": [c.value for c in result.decision.reason_codes],
+            "execution_status": result.status})
+        return final, result
+
+    def _dispatch_if_allowed(self, outcome: GatewayOutcome, origin: str) -> ExecutionOutcome:
+        if outcome.decision.pending_approval_id is not None or ReasonCode.ESCALATE_HUMAN_REVIEW in outcome.decision.reason_codes:
+            return ExecutionOutcome(outcome.decision, outcome.evaluation, False, "pending_approval", None)
         if not outcome.decision.allowed:
             return ExecutionOutcome(outcome.decision, outcome.evaluation, False, "denied", None)
         decision = outcome.decision

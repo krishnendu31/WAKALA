@@ -41,6 +41,12 @@ class DelegableTask:
     resources: tuple[ResourceTemplate, ...]
     max_lifetime: timedelta
     monetary: bool = False
+    # Receivers used unless an officer reassigns the task for a specific case.
+    default_receivers: frozenset[str] = frozenset()
+
+    def receivers_for(self, assignments: dict[str, str] | None) -> frozenset[str]:
+        assigned = (assignments or {}).get(self.task_id)
+        return frozenset({assigned}) if assigned else (self.default_receivers or self.receivers)
 
 
 TASK_CATALOG = MappingProxyType({
@@ -48,10 +54,11 @@ TASK_CATALOG = MappingProxyType({
         task_id="insurance_eligibility_check",
         title="Verify insurance eligibility for the case citizen",
         operations=frozenset({"insurance.verify_case_eligibility"}),
-        receivers=frozenset({"AGT-INS-001"}),
+        receivers=frozenset({"AGT-INS-001", "AGT-INS-002"}),
         receiving_issuer="ISS-INSURANCE-REG",
         resources=(ResourceTemplate("insurance_record", "read", "citizen_ref"),),
         max_lifetime=timedelta(minutes=30),
+        default_receivers=frozenset({"AGT-INS-001"}),  # AGT-INS-002 is standby: officer reassignment only
     ),
     "renewal_fee_collection": DelegableTask(
         task_id="renewal_fee_collection",

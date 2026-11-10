@@ -96,6 +96,34 @@ def list_delegations(env: Env) -> list[dict[str, Any]]:
     return [{k: str(v) for k, v in d.items()} for d in env.mandates.delegations()]
 
 
+@router.post("/recovery/{case_id}/continue", response_model=WorkflowRun, dependencies=[Depends(require_dev_access)])
+def continue_recovery(case_id: CaseIdPath, env: Env) -> WorkflowRun:
+    """Advance a case with the next legitimate SIGNED agent requests through the gateway.
+    Never changes state directly; stops at any denial or pending approval."""
+    from app.workflow.recovery import continue_case
+    if env.cases.get(case_id) is None:
+        raise HTTPException(status_code=404, detail={"code": "CASE_NOT_FOUND", "message": "No such case."})
+    try:
+        return continue_case(env, case_id)
+    except AuditUnavailableError as exc:
+        from app.api.gateway import audit_failure
+        raise audit_failure(exc) from None
+
+
+class OversightBody(StrictModel):
+    clean_cases: int = Field(default=4, ge=1, le=20)
+    violating_cases: int = Field(default=1, ge=0, le=10)
+    minutes_per_review: float = Field(default=2.0, gt=0, le=120)
+
+
+@router.post("/oversight-comparison", response_model=dict[str, Any], dependencies=[Depends(require_dev_access)])
+def oversight_comparison(body: Annotated[OversightBody | None, Body()] = None) -> dict[str, Any]:
+    """Runs on an ISOLATED in-memory environment; never touches the live database."""
+    from app.workflow.oversight import run_oversight_comparison
+    b = body or OversightBody()
+    return run_oversight_comparison(b.clean_cases, b.violating_cases, b.minutes_per_review)
+
+
 @router.get("/ledger", response_model=list[dict[str, str]])
 def synthetic_ledger(env: Env) -> list[dict[str, str]]:
     return env.services.ledger()

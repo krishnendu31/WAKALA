@@ -121,6 +121,60 @@ CREATE TABLE IF NOT EXISTS agent_status_overrides (
     reason      TEXT NOT NULL,
     changed_at  TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS standby_agents (
+    agent_id    TEXT PRIMARY KEY,
+    payload     TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS mandate_suspensions (
+    mandate_id   TEXT PRIMARY KEY,
+    active       INTEGER NOT NULL,
+    suspended_at TEXT NOT NULL,
+    reason       TEXT NOT NULL,
+    incident_id  TEXT,
+    actor        TEXT NOT NULL,
+    lifted_at    TEXT,
+    lifted_by    TEXT
+);
+CREATE TABLE IF NOT EXISTS incidents (
+    incident_id TEXT PRIMARY KEY,
+    dedupe_key  TEXT NOT NULL,
+    status      TEXT NOT NULL,
+    severity    TEXT NOT NULL,
+    case_id     TEXT,
+    last_seen   TEXT NOT NULL,
+    version     INTEGER NOT NULL,
+    payload     TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS incidents_dedupe ON incidents(dedupe_key, status);
+CREATE TABLE IF NOT EXISTS pending_approvals (
+    approval_id TEXT PRIMARY KEY,
+    status      TEXT NOT NULL,
+    case_id     TEXT,
+    payload     TEXT NOT NULL,
+    signed_request TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS officers (
+    officer_id  TEXT PRIMARY KEY,
+    payload     TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS officer_credentials (
+    officer_id  TEXT PRIMARY KEY,
+    salt        TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    updated_at  TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS officer_sessions (
+    token_hash  TEXT PRIMARY KEY,
+    officer_id  TEXT NOT NULL,
+    created_at  REAL NOT NULL,
+    last_seen   REAL NOT NULL,
+    expires_at  REAL NOT NULL,
+    revoked     INTEGER NOT NULL DEFAULT 0
+);
+CREATE TABLE IF NOT EXISTS officer_login_failures (
+    officer_id  TEXT NOT NULL,
+    at          REAL NOT NULL
+);
 CREATE TABLE IF NOT EXISTS audit_events (
     seq         INTEGER PRIMARY KEY,
     event_id    TEXT NOT NULL UNIQUE,
@@ -128,9 +182,12 @@ CREATE TABLE IF NOT EXISTS audit_events (
     event_hash  TEXT NOT NULL,
     payload     TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS audit_actor ON audit_events(json_extract(payload, '$.actor'));
+CREATE INDEX IF NOT EXISTS audit_claimed ON audit_events(json_extract(payload, '$.claimed_agent_id'));
+CREATE INDEX IF NOT EXISTS audit_case ON audit_events(json_extract(payload, '$.evidence_metadata.case_id'));
 """
 
-SEED_TABLES = ("agents", "citizens", "services", "documents", "scenarios", "issuers")
+SEED_TABLES = ("agents", "citizens", "services", "documents", "scenarios", "issuers", "standby_agents", "officers")
 
 
 class Database:

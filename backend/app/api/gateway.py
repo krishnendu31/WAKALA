@@ -48,6 +48,8 @@ def execute_action(body: SignedActionRequest, env: Env):  # type: ignore[no-unty
         raise audit_failure(exc) from None
     resp = ExecutionResponse(decision=outcome.decision, executed=outcome.executed,
                              execution_status=outcome.status, result=outcome.result)
+    if outcome.status == "pending_approval":
+        return JSONResponse(status_code=202, content=resp.model_dump(mode="json"))  # held: nothing executed
     if not outcome.decision.allowed:
         return JSONResponse(status_code=403, content=resp.model_dump(mode="json"))
     return resp

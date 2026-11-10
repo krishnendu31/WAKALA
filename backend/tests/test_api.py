@@ -77,7 +77,7 @@ def test_audit_events_are_honestly_empty(client):
 def test_capabilities_are_honest(client):
     body = client.get("/api/system/capabilities").json()
     caps = {c["key"]: c for c in body["capabilities"]}
-    assert body["current_phase"] == 3
+    assert body["current_phase"] == 4
     assert body["enforcement_engine_connected"] is True
     assert body["external_llm_dependency"] is False
     assert body["developer_demo_enabled"] is False
@@ -85,7 +85,8 @@ def test_capabilities_are_honest(client):
                         "mock_government_services", "case_bound_authority"):
         assert caps[implemented]["status"] == "implemented"
     assert caps["non_expanding_delegation"]["status"] == "implemented"
-    for planned in ("human_intervention", "attack_simulation", "measured_benchmarks", "llm_agent_adapters"):
+    assert caps["human_intervention"]["status"] == "implemented"
+    for planned in ("attack_simulation", "measured_benchmarks", "llm_agent_adapters"):
         assert caps[planned]["status"] == "planned"
     assert body["implemented_count"] + body["planned_count"] == len(caps)
 

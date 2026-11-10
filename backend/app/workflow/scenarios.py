@@ -58,6 +58,10 @@ WORKFLOW_SCENARIOS: tuple[ScenarioDef, ...] = (
     ScenarioDef("delegation_attacks", "F · Delegation attack suite",
                 "Ten delegation checks (valid use, wrong citizen, payment, broader child, forged signature, expired parent, "
                 "revoked parent, cross-case reuse, cycle/depth, selective revocation), each against the real gateway."),
+    ScenarioDef("safe_recovery", "H · Incident, human review and safe recovery",
+                "Mariam's delegated case: the Insurance Agent requests another citizen's record, WAKALA denies it and opens "
+                "an incident, suspends only that child mandate and pauses the case. An authenticated officer reviews and "
+                "recovers it in the Security Operations console; Omar's case continues meanwhile."),
     ScenarioDef("selective_revocation", "G · Selective revocation",
                 "Two independent delegated cases. Revoking one case's authority cascades to its child mandate only; the "
                 "other case continues."),
@@ -72,7 +76,8 @@ class WorkflowRunner:
         self.origin = f"workflow:{scenario}"
         self.transport = InProcessGatewayTransport(env.gateway)
         self.agents: dict[str, SigningAgentAdapter] = {}
-        for agent_id in ("AGT-RES-001", "AGT-INS-001", "AGT-PAY-001"):
+        standby = [a.agent_id for a in env.repo.list_standby_agents()] if hasattr(env.repo, "list_standby_agents") else []
+        for agent_id in ("AGT-RES-001", "AGT-INS-001", "AGT-PAY-001", *standby):
             passport = env.repo.get_agent(agent_id)
             if passport is None:
                 raise RuntimeError(f"agent {agent_id} not registered")
@@ -169,6 +174,9 @@ def _verify_prereqs(r: WorkflowRunner, case: RenewalCase) -> RenewalCase:
 def run_workflow(env: WakalaEnvironment, key: str, citizen_ref: str = "C-1001") -> WorkflowRun:
     if key not in SCENARIO_KEYS:
         raise KeyError(key)
+    if key == "safe_recovery":
+        from .recovery import setup_recovery
+        return setup_recovery(env)
     if key in {"delegated_renewal", "delegation_attacks", "selective_revocation"}:
         from .delegation_scenarios import run_delegation_scenario
         return run_delegation_scenario(env, key, citizen_ref if SCENARIO_KEYS[key].citizen_selectable else "C-1001")

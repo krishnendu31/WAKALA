@@ -17,7 +17,7 @@ enforces authority outside the agent, at the boundary of every protected tool.
 | | |
 |---|---|
 | Competition | UAE Hackathon 2026 — Challenge #27, *Secure Agentic AI for Government Services* (UAE Cyber Security Council) |
-| Status | **Phase 3: secure mandate chains.** Signed, non-expanding agent-to-agent delegation on top of Phase 2's protected services and Phase 1's security engine. Selective, persistent revocation. Transactional outcome audit. **Development prototype — not production-ready or certified. Agents are simulated; keys are development keys; single process.** |
+| Status | **Phase 4: continuous assurance, human intervention and safe recovery** on top of Phase 3's signed mandate chains, Phase 2's protected services and Phase 1's security engine. **Development prototype — not production-ready or certified. Agents are simulated; keys are development keys; single process.** |
 | Data | **100% synthetic.** No real people, entities, accounts or government systems. |
 
 The "digital power of attorney" framing is a conceptual analogy. WAKALA mandates are technical authorization artefacts and
@@ -25,7 +25,7 @@ are **not** legally recognised powers of attorney.
 
 ---
 
-## Current capabilities (Phase 3)
+## Current capabilities (Phase 4)
 
 `GET /api/system/capabilities` is the source of truth for this list, and the console renders it directly.
 
@@ -53,8 +53,14 @@ are **not** legally recognised powers of attorney.
 | **Selective, cascading, persistent revocation** (mandate, case, agent-wide) | ✅ Phase 3 |
 | **Transactional outcome audit** + idempotent reconciliation (repairs the Phase 2 gap) | ✅ Phase 3 |
 | **Live authority-chain graph** (Delegation Network) | ✅ Phase 3 |
-| Authenticated officer console, LLM tool-use adapters, agent-driven attacks, citizen receipts | ⏳ Phase 4 |
-| Benchmarks | ⏳ Phase 4 |
+| **Deterministic behavioural rules** (6 explicit, configurable rules with thresholds, windows and severities; *not* machine learning) over every audited decision | ✅ Phase 4 |
+| **Graduated response**: ALLOW · DENY · REQUIRE_HUMAN_APPROVAL · SUSPEND_MANDATE · REVOKE_MANDATE · ESCALATE_INCIDENT, each with a reason code; never agent-wide automatically | ✅ Phase 4 |
+| **Human approval gate**: held requests never execute; approval re-runs current authorization (cannot override revoked/expired/suspended authority) | ✅ Phase 4 |
+| **Authenticated officer console** (Security Operations): dev-only backend login, roles + entity scope enforced server-side, every decision audited | ✅ Phase 4 (dev auth) |
+| **Safe recovery**: selective suspension, officer reassignment to a standby agent, service completes through the gateway | ✅ Phase 4 |
+| **Oversight comparison** vs a clearly *hypothetical* manual-review baseline, from real isolated runs | ✅ Phase 4 |
+| LLM tool-use adapters, agent-driven attacks, citizen receipts | ⏳ Phase 5 |
+| Benchmarks | ⏳ Phase 5 (not started) |
 
 The console shows only real backend state:
 - registry counts, with key and mandate verification computed live
@@ -64,11 +70,35 @@ The console shows only real backend state:
 
 The delegation and receipt views remain labelled as illustrative.
 
+### Phase 4: continuous assurance, intervention and recovery
+
+- **Rules, not ML.** `backend/app/core/assurance/rules.py` holds six explicit rules: repeated denials, request rate,
+  cross-citizen access, unauthorized delegation, action after revocation, and credential failures (invalid signature or
+  replay). Each has a threshold, a window, a severity and an escalated severity. A finding distinguishes a *policy
+  violation* from *possible credential misuse*; neither is treated as proof of a malicious agent.
+- **Observer, not decider.** The assurance service runs after the gateway has decided and audited. It can never turn
+  a denial into an allow. Agents get only the gateway's reason code; incident details are officer-only.
+- **Per-case incident policy.** `monitor` (the default; Phase 2/3 cases) records and escalates only. `contain` (the
+  Phase 4 cases) also suspends the *affected* mandate (reversible), pauses the case and holds sensitive operations
+  (`payment.collect_renewal_fee`, `residency.complete_renewal`, `delegation.commission_task`) for officer approval.
+- **Officer console.** **Security Operations** shows the overview, the live incident timeline, the investigation
+  (citizen request, chain verified now, violated rule, gateway evidence, completed and incomplete requirements,
+  responses applied), approvals, recovery, the oversight comparison and the officer audit trail. Statuses shown:
+  AUTHORIZED, DENIED, UNDER REVIEW, SUSPENDED, RECOVERED — all derived from backend state.
+
+### What Phase 4 does not do
+
+- **Officer authentication is development-only.** Passwords are generated locally, scrypt-hashed in SQLite and
+  printed by the CLI; production would use the government identity provider (SSO/MFA) instead.
+- **Rules are static thresholds.** There is no learning, no baselining per agent, and no cross-process correlation.
+- **Single process.** Detection, gateway, officer API and services share one process and one SQLite file.
+- No benchmarking phase has been started.
+
 ### What Phase 3 does not do
 
 - **Delegation is limited to catalogued tasks.** Today that means the insurance check, with a single delegation
   authority.
-- **Officer actions are CLI-only.** Revoke and resume are run from the dev CLI; there is no authenticated officer UI.
+- *(Phase 4 adds the authenticated officer console; the CLI remains.)*
 - **Agents are simulated.** They are deterministic Python scripts, not model-driven autonomous AI.
 - **The service boundary is in-process.** Services are only reachable via the trusted tool registry and have no HTTP
   routes, but production needs network-isolated services that verify gateway authorization themselves. See
@@ -192,8 +222,16 @@ npm run dev
 ```
 
 Then open **Government Workflow** and run scenarios A–D, or open **Simulation Lab → Developer demonstration** for the
-Phase 1 gateway scenarios. Results appear in **Security Events** and on the **Command Center**. See
-[docs/DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md).
+Phase 1 gateway scenarios. Results appear in **Security Events** and on the **Command Center**.
+
+For Phase 4 open **Security Operations** and sign in as an officer. Print the development credentials with:
+
+```bash
+cd backend
+.venv\Scripts\python -m app.devtools.cli officers credentials
+```
+
+Then follow scenario H in [docs/DEMO_SCENARIOS.md](docs/DEMO_SCENARIOS.md).
 
 ## Tests and build
 
@@ -225,6 +263,10 @@ npm run build
 | POST | `/api/workflow/scenarios/{key}/run` | Runs workflow scenario A–D (body `{"citizen_ref"}` for A). **Dev mode, loopback client, same-site origin** |
 | GET | `/api/workflow/scenarios`, `/cases`, `/cases/{id}`, `/ledger`, `/tools` | Case state, history, linked audit events, synthetic ledger, exported tool definitions. **Loopback clients only** |
 | GET | `/api/workflow/cases/{id}/authority-graph`, `/api/workflow/delegations` | Live authority chain (verified now) and trusted delegation records. **Loopback clients only** |
+| POST | `/api/workflow/recovery/{case_id}/continue`, `/api/workflow/oversight-comparison` | Advance a case with its simulated agents (signed requests only); run the isolated oversight comparison. **Dev mode, loopback** |
+| POST / DELETE / GET | `/api/officer/session`, `/api/officer/me` | Officer sign-in (returns a bearer token), sign-out, current officer |
+| GET | `/api/officer/overview`, `/incidents`, `/incidents/{id}`, `/cases`, `/approvals`, `/audit` | Officer-only views (`Authorization: Bearer …`) |
+| POST | `/api/officer/incidents/{id}/status`, `/mandates/{id}/suspend\|reinstate\|revoke`, `/cases/{id}/resume\|reassign`, `/approvals/{id}/approve\|reject` | Officer interventions; role + entity checked server-side; identity comes only from the session |
 
 The `/api/gateway/*` body is a `SignedActionRequest`:
 - `request` is the action, including `agent_id`, `mandate_id`, `tool_name`, `parameters`, `target_resource`,
@@ -235,7 +277,8 @@ The `/api/gateway/*` body is a `SignedActionRequest`:
 See `backend/app/devtools/agent_client.py` for a reference signer. Errors use a consistent envelope:
 `{"error": {"code", "message", "details"}}`.
 
-There are intentionally **no** HTTP endpoints for key generation, signing, issuing or revoking. Those are CLI-only,
+There are intentionally **no** HTTP endpoints for key generation, signing or issuing. Revocation over HTTP exists only
+under `/api/officer/` for an authenticated security supervisor. Everything else is CLI-only,
 run from `backend/`:
 
 ```bash
@@ -249,6 +292,7 @@ The other commands are:
 - `cases list|resume|revoke-authority`
 - `delegations list`
 - `audit verify|tail|reconcile`
+- `officers credentials` (dev only)
 - `bench delegation`
 
 ## Configuration
@@ -274,11 +318,11 @@ exists only to demonstrate WAKALA.
 
 1. ~~Phase 2 — protected services and case-bound authority~~ ✅
 2. ~~Phase 3 — signed, non-expanding mandate chains; selective revocation; transactional audit~~ ✅
-3. **Phase 4 — humans and adversarial runs:**
-   - an authenticated officer console
+3. ~~Phase 4 — continuous assurance, officer console, safe recovery~~ ✅
+4. **Phase 5 — adversarial runs and measurement:**
    - LLM tool-use adapters through the same signing interface
    - agent-driven prompt-injection runs
    - citizen receipts generated from audit data
-3. **Phase 4 — Measurement:** decision latency and scenario outcomes measured from real runs only.
+   - decision latency and scenario outcomes measured from real runs only (benchmarking not started)
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md).

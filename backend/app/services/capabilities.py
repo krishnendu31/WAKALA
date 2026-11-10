@@ -9,7 +9,7 @@ from __future__ import annotations
 from app import __version__
 from app.schemas import CapabilityStatus, SystemCapabilities
 
-CURRENT_PHASE = 3
+CURRENT_PHASE = 4
 ENFORCEMENT_ENGINE_CONNECTED = True
 
 _CAPABILITIES: tuple[CapabilityStatus, ...] = (
@@ -55,15 +55,25 @@ _CAPABILITIES: tuple[CapabilityStatus, ...] = (
                      description="Service changes and their outcome event commit together; idempotent reconciliation on startup."),
     CapabilityStatus(key="authority_graph", name="Live authority-chain graph", status="implemented", phase=3,
                      description="Graph of issuers, root/child mandates, agents and denied delegation attempts from stored records."),
-    CapabilityStatus(key="human_intervention", name="Officer console: approve, resume, revoke", status="planned", phase=4,
-                     description="Authenticated accountable officers act from the console (today: dev CLI only)."),
-    CapabilityStatus(key="llm_agent_adapters", name="LLM tool-use agent adapters", status="planned", phase=4,
+    CapabilityStatus(key="behavioral_assurance", name="Deterministic behavioural detection", status="implemented", phase=4,
+                     description="Six configurable threshold rules over audited gateway events (not machine learning)."),
+    CapabilityStatus(key="graduated_response", name="Graduated response engine", status="implemented", phase=4,
+                     description="Severity-based DENY / escalate / suspend / revoke for the affected mandate only; never agent-wide automatically."),
+    CapabilityStatus(key="human_approval", name="Human approval with re-authorization", status="implemented", phase=4,
+                     description="Held requests never execute while pending; approval re-runs current authorization checks."),
+    CapabilityStatus(key="human_intervention", name="Authenticated officer console", status="implemented", phase=4,
+                     description="Dev-only officer sign-in; server-side roles and entity scope; every action audited."),
+    CapabilityStatus(key="safe_recovery", name="Safe service recovery", status="implemented", phase=4,
+                     description="Suspend affected authority, reassign to a standby agent, resume — completing only via the gateway."),
+    CapabilityStatus(key="oversight_comparison", name="Oversight workload comparison", status="implemented", phase=4,
+                     description="Hypothetical manual-review baseline vs WAKALA exception handling on the same synthetic workload."),
+    CapabilityStatus(key="llm_agent_adapters", name="LLM tool-use agent adapters", status="planned", phase=5,
                      description="Model-driven agents submitting through the same signing adapter; interface defined, not implemented."),
-    CapabilityStatus(key="attack_simulation", name="Agent-driven attack simulation", status="planned", phase=4,
+    CapabilityStatus(key="attack_simulation", name="Agent-driven attack simulation", status="planned", phase=5,
                      description="Prompt injection, forged identity, tampering and escalation scenarios run against the gateway."),
-    CapabilityStatus(key="citizen_receipts", name="Citizen transparency receipts", status="planned", phase=4,
+    CapabilityStatus(key="citizen_receipts", name="Citizen transparency receipts", status="planned", phase=5,
                      description="Plain-language record of which agents acted for a citizen, and under what mandate."),
-    CapabilityStatus(key="measured_benchmarks", name="Measured security benchmarks", status="planned", phase=4,
+    CapabilityStatus(key="measured_benchmarks", name="Measured security benchmarks", status="planned", phase=5,
                      description="Decision latency and scenario outcomes measured from real runs."),
 )
 

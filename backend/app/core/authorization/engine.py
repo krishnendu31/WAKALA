@@ -80,6 +80,11 @@ class PolicyContext:
     mandate_ancestors: tuple[DigitalMandate, ...] = ()
     chain_resolution_error: ReasonCode | None = None
     task_catalog: Mapping[str, DelegableTask] = TASK_CATALOG
+    # Phase 4
+    suspended_mandate_ids: frozenset[str] = frozenset()
+    # True only when re-authorizing a stored request an officer approved: freshness and
+    # nonce were checked when it was first submitted; EVERY other check runs again now.
+    approved_reauthorization: bool = False
 
 
 @dataclass(frozen=True)
@@ -139,12 +144,12 @@ def check_mandate_integrity(req: ActionRequest, mandate: DigitalMandate | None, 
     if mandate.parent_mandate_id is not None or ctx.mandate_ancestors or ctx.chain_resolution_error:
         # Delegated authority: every ancestor and every link must verify.
         return verify_chain(mandate, ctx.mandate_ancestors, ctx.issuers, ctx.issuer_public_keys, ctx.now,
-                            ctx.revoked_mandate_ids, ctx.chain_resolution_error, ctx.task_catalog)
+                            ctx.revoked_mandate_ids, ctx.chain_resolution_error, ctx.task_catalog, ctx.suspended_mandate_ids)
     return []
 
 
 def check_mandate_validity(mandate: DigitalMandate, ctx: PolicyContext) -> list[ReasonCode]:
-    return check_mandate_lifecycle(mandate, ctx.now, ctx.revoked_mandate_ids)
+    return check_mandate_lifecycle(mandate, ctx.now, ctx.revoked_mandate_ids, ctx.suspended_mandate_ids)
 
 
 def check_tool_permission(req: ActionRequest, mandate: DigitalMandate, ctx: PolicyContext) -> list[ReasonCode]:
@@ -220,6 +225,8 @@ def check_case_binding(req: ActionRequest, mandate: DigitalMandate, spec: ToolSp
     )
     if mandate.parent_mandate_id is not None and mandate.case_id != case.case_id:
         codes.append(R.DENY_DELEGATION_CASE_MISMATCH)
+    if mandate.delegated_task and case.task_assignments.get(mandate.delegated_task, mandate.agent_id) != mandate.agent_id:
+        delegated = False  # the task was reassigned away from this agent for this case
     if not (direct or delegated):
         codes.append(R.DENY_CASE_AGENT_NOT_ASSIGNED)
     if req.tool_name not in case.authorized_operations:
@@ -267,7 +274,8 @@ def check_commission_request(req: ActionRequest, mandate: DigitalMandate, params
     task = ctx.task_catalog.get(params.task)
     if task is None:
         return [R.DENY_DELEGATION_NOT_PERMITTED]
-    if params.receiving_agent_id not in task.receivers or params.receiving_agent_id == req.agent_id:
+    assignments = ctx.case.task_assignments if ctx.case is not None and ctx.case.case_id == req.case_id else {}
+    if params.receiving_agent_id not in task.receivers_for(assignments) or params.receiving_agent_id == req.agent_id:
         codes.append(R.DENY_DELEGATION_NOT_PERMITTED)
     requested = {op for op in params.requested_operations.split(",") if op}
     if not requested or not requested <= task.operations:
@@ -287,10 +295,11 @@ def check_commission_request(req: ActionRequest, mandate: DigitalMandate, params
 
 def check_request_context(req: ActionRequest, ctx: PolicyContext) -> list[ReasonCode]:
     codes: list[ReasonCode] = []
-    if abs(ctx.now - req.timestamp) > ctx.max_request_skew:
-        codes.append(R.DENY_REQUEST_STALE)
-    if ctx.replay_detected:
-        codes.append(R.DENY_REPLAYED_REQUEST)
+    if not ctx.approved_reauthorization:
+        if abs(ctx.now - req.timestamp) > ctx.max_request_skew:
+            codes.append(R.DENY_REQUEST_STALE)
+        if ctx.replay_detected:
+            codes.append(R.DENY_REPLAYED_REQUEST)
     if req.delegation_chain:
         # Delegated execution is verified from Phase 2; until then it is refused.
         codes.append(R.DENY_DELEGATION_CHAIN_INVALID)
@@ -411,8 +420,10 @@ EXPLANATIONS: dict[ReasonCode, str] = {
     R.DENY_PARENT_MANDATE_EXPIRED: "A mandate higher in the delegation chain has expired.",
     R.DENY_PARENT_MANDATE_REVOKED: "A mandate higher in the delegation chain has been revoked.",
     R.DENY_CASE_AUTHORITY_REVOKED: "Authority for this case has been revoked.",
+    R.DENY_MANDATE_SUSPENDED: "The mandate is suspended pending review.",
+    R.DENY_PARENT_MANDATE_SUSPENDED: "A mandate higher in the delegation chain is suspended pending review.",
     R.DENY_ENGINE_NOT_CONNECTED: "The enforcement engine is not connected.",
-    R.ESCALATE_HUMAN_REVIEW: "The action requires human review.",
+    R.ESCALATE_HUMAN_REVIEW: "The action is held for human approval and has not been executed.",
 }
 
 

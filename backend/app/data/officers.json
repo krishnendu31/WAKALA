@@ -1,0 +1,37 @@
+{
+  "_notice": "SYNTHETIC DATA — fictional accountable officers. Development-only credentials are generated locally at first start into backend/.dev_keys/officer_credentials.json (git-ignored); no credential is stored in this file or in the frontend.",
+  "officers": [
+    {
+      "officer_id": "OFF-0101",
+      "name": "Khalid Al Noor",
+      "title": "Digital Services Officer",
+      "entity": "Fictional Residency Services Authority (demo)",
+      "role": "case_officer",
+      "status": "active"
+    },
+    {
+      "officer_id": "OFF-0202",
+      "name": "Noura Al Falasi",
+      "title": "Insurance Verification Lead",
+      "entity": "Fictional Health Insurance Registry (demo)",
+      "role": "case_officer",
+      "status": "active"
+    },
+    {
+      "officer_id": "OFF-0900",
+      "name": "Aisha Al Mazrouei",
+      "title": "Security Operations Supervisor",
+      "entity": "WAKALA Security Operations (demo)",
+      "role": "security_supervisor",
+      "status": "active"
+    },
+    {
+      "officer_id": "OFF-0950",
+      "name": "Yousef Al Zaabi",
+      "title": "Read-only Auditor",
+      "entity": "WAKALA Security Operations (demo)",
+      "role": "auditor",
+      "status": "active"
+    }
+  ]
+}

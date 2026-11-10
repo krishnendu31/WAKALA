@@ -64,6 +64,9 @@ def build_authority_graph(env: WakalaEnvironment, case_id: str) -> dict[str, Any
                                    snap["revoked_mandate_ids"], chain_err) if m.parent_mandate_id else []
         status = v.effective_status if not chain_codes else (
             "revoked" if any("REVOKED" in c.value for c in chain_codes) else "invalid")
+        suspended = snap["suspended_mandate_ids"]
+        if status == "active" and (mid in suspended or any(a.mandate_id in suspended for a in ancestors)):
+            status = "suspended"  # reversible officer/assurance hold; the gateway denies while it lasts
         counts = _counts(env, mid)
         nodes.append({
             "id": f"mandate:{mid}", "kind": "child_mandate" if m.parent_mandate_id else "mandate", "label": mid,

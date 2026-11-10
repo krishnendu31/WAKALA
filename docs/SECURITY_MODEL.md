@@ -1,4 +1,4 @@
-# WAKALA Security Model (Phase 3)
+# WAKALA Security Model (Phase 4)
 
 > **Status.** Phase 1 enforces identity, mandate and authorization checks. Phase 2 adds case-bound authority in front of
 > protected synthetic government services. Both run in a local development prototype on synthetic data. It is **not production-ready and not government-certified**. Each control below is marked ✅ when it
@@ -82,6 +82,57 @@ on this machine with in-memory SQLite in a single process. They are a measuremen
 | Direct-mandate authorization | 2.77 ms | 4.19 ms |
 | Delegated-mandate authorization (2-link chain) | 3.50 ms | 5.46 ms |
 | Chain verification alone (2 Ed25519 verifies + narrowing) | 0.47 ms | 0.65 ms |
+
+## 2c. Phase 4: assurance, human intervention and recovery
+
+**Detection.** Six deterministic rules over audited decisions (not machine learning):
+
+| Rule | Threshold / window | Severity (escalated) | Classification |
+|---|---|---|---|
+| `REPEATED_DENIALS` | 5 in 10 min | medium (high at 10) | policy violation |
+| `REQUEST_RATE` | 30 in 60 s | medium (high at 60) | policy violation |
+| `CROSS_CITIZEN_ACCESS` | 1 in 30 min | high (critical at 3) | policy violation |
+| `UNAUTHORIZED_DELEGATION` | 1 in 30 min | medium (high at 3) | policy violation |
+| `ACTION_AFTER_REVOCATION` | 1 in 30 min | medium (high at 3) | policy violation |
+| `CREDENTIAL_FAILURES` | 3 in 10 min | high (critical at 6) | possible credential misuse |
+
+Each incident carries an interpretation that a violation is not by itself evidence of a malicious agent. Only rules
+the latest event contributes to can fire, so allowed traffic does not re-raise old findings; repeats update the same
+incident (deduplicated per rule, subject and case) and can raise its severity.
+
+**Information to agents.** An agent receives the gateway reason code only. Incident IDs, rule thresholds and
+responses are served only to authenticated officers.
+
+**Graduated response.** `ALLOW`, `DENY`, `REQUIRE_HUMAN_APPROVAL`, `SUSPEND_MANDATE`, `REVOKE_MANDATE`,
+`ESCALATE_INCIDENT`, each recorded with a `RESP_*` reason code. Automatic responses are limited to the affected
+mandate and case. A single ordinary denial is recorded only. No automatic response is agent-wide; `REVOKE_MANDATE`
+and agent-wide action are officer decisions.
+
+**Approval semantics.**
+1. A held request returns `ESCALATE_HUMAN_REVIEW` (HTTP 202) and nothing executes.
+2. Approval claims the record by compare-and-swap (`pending → executing`), so it executes at most once.
+3. The stored signed request is re-authorized against the *current* state: signature, mandate signature and lifecycle
+   (revoked, expired, suspended), chain, case binding, scope, parameters. Only the freshness window and the nonce are
+   waived, because the request was already checked for those when first received.
+4. If anything fails, the approval becomes `approved_denied` and the tool is never called. Expired approvals and rejected
+   approvals never execute. Approval cannot override revoked, expired or suspended authority.
+
+**Officer authentication (development only).**
+- Passwords are generated per installation, scrypt-hashed in SQLite, and stored in clear only in the git-ignored
+  `backend/.dev_keys/officer_credentials.json` so the CLI can print them.
+- Session tokens are random, returned once and stored as SHA-256. Sessions expire after 15 min idle or 60 min absolute.
+  Five failures lock the account temporarily.
+- Identity comes **only** from the session token. Request bodies are strict, so an `officer_id` field is rejected (422).
+- Permissions per role (auditor read-only; case officer; security supervisor with revoke and all entities) and the
+  officer's entity are checked server-side on every action.
+- The frontend holds no credentials beyond the user's own session token (sessionStorage).
+- Production would replace this with the government identity provider (SSO with MFA), short-lived signed tokens,
+  and officer actions signed by officer keys.
+
+**Fail closed.** A gateway or audit failure during approval leaves the approval unexecuted. An HTTP transport that
+cannot reach the gateway reports failure and does not queue. Revocation during execution is refused by the service
+inside the transaction (`AUTHORITY_WITHDRAWN`). An expired session is rejected. On restart, approvals past their TTL
+are expired, and nothing re-runs automatically.
 
 ## 3. Identity authentication
 
@@ -231,8 +282,12 @@ For each protected service call there are two hash-chained events: a **decision*
   code inside the backend process could import them directly. Production needs network-isolated services that verify
   a gateway-issued, action-bound token themselves.
 - **Simulated agents.** The agents are deterministic scripts, not autonomous AI. No LLM adapter exists yet.
-- **No officer authentication.** Officer actions (resume, revoke) are CLI-only. Console read endpoints for
-  `/api/workflow/*` are restricted to loopback clients but have no user login.
+- **Development-only officer authentication** (§2c). Its credentials file in `.dev_keys/` is as sensitive as the
+  keys there. The `/api/workflow/*` read endpoints are still loopback-restricted without user login.
+- **Deterministic rules only.** Static thresholds, a single process, no per-agent baselining. An attacker who stays
+  under thresholds is still constrained by the gateway, but is not flagged.
+- **Observer coupling.** Rules query the audit log after each decision; this adds latency (roughly 90 s for the full
+  test suite versus earlier phases) and would need a stream processor at scale.
 - **Case intake is unauthenticated** apart from dev-mode, loopback and origin checks. It stands in for a front office
   and signs case mandates with development issuer keys.
 - **Execution events are best-effort** after commit (see §9a).

@@ -1,0 +1,23 @@
+{
+  "_notice": "SYNTHETIC DATA — standby (reserve) agents. Not on the primary roster and never assigned to a case by default. An authenticated officer may reassign a delegable task to a standby agent during recovery; the agent still needs a gateway-issued child mandate and its own valid identity key.",
+  "agents": [
+    {
+      "agent_id": "AGT-INS-002",
+      "name": "Insurance Agent (standby)",
+      "name_ar": "وكيل التأمين الاحتياطي",
+      "description": "Standby insurance verification agent used only when an officer reassigns insurance verification during incident recovery.",
+      "owner_entity": "Fictional Health Insurance Registry (demo)",
+      "accountable_officer": { "name": "Noura Al Falasi", "title": "Insurance Verification Lead", "officer_id": "OFF-0202" },
+      "platform": "WAKALA demo agent runtime (local)",
+      "risk_level": "low",
+      "status": "active",
+      "identity_key_reference": { "key_id": "KEY-AGT-INS-002", "algorithm": "Ed25519", "provisioning_status": "not_provisioned", "public_key_fingerprint": null },
+      "declared_tools": ["insurance.verify_case_eligibility"],
+      "restrictions": [
+        "Acts only after an officer reassignment for a specific case.",
+        "Cannot access citizen records unrelated to the delegated request.",
+        "Cannot initiate or request payments."
+      ]
+    }
+  ]
+}

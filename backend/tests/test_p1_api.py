@@ -111,11 +111,16 @@ def test_public_endpoints_expose_no_private_keys(harness_client):
 def test_no_key_generation_or_signing_endpoints(client):
     import re
     paths = {r.path for r in client.app.routes}
-    pattern = re.compile(r"/(sign|keygen|keys/generate|revoke|issue|tamper)(/|$)")
-    assert not [p for p in paths if pattern.search(p)], paths
+    # Key generation, signing, issuing and tampering are never exposed over HTTP.
+    assert not [p for p in paths if re.search(r"/(sign|keygen|keys/generate|issue|tamper)(/|$)", p)], paths
+    # Phase 4: revocation exists ONLY as an authenticated officer action.
+    revoke_routes = [p for p in paths if re.search(r"/revoke(/|$)", p)]
+    assert revoke_routes and all(p.startswith("/api/officer/") for p in revoke_routes), revoke_routes
     writable = {(r.path, m) for r in client.app.routes for m in getattr(r, "methods", set()) if m in {"POST", "PUT", "PATCH", "DELETE"}}
-    assert writable == {("/api/gateway/authorize", "POST"), ("/api/gateway/execute", "POST"), ("/api/dev/scenarios/{key}/run", "POST"),
-                        ("/api/workflow/scenarios/{key}/run", "POST")}
+    non_officer = {w for w in writable if not w[0].startswith("/api/officer/")}
+    assert non_officer == {("/api/gateway/authorize", "POST"), ("/api/gateway/execute", "POST"), ("/api/dev/scenarios/{key}/run", "POST"),
+                           ("/api/workflow/scenarios/{key}/run", "POST"), ("/api/workflow/recovery/{case_id}/continue", "POST"),
+                           ("/api/workflow/oversight-comparison", "POST")}
 
 
 # --- developer endpoints ---------------------------------------------------------

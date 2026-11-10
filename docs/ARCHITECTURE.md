@@ -1,4 +1,4 @@
-# WAKALA Architecture (Phase 3)
+# WAKALA Architecture (Phase 4)
 
 > Development prototype on synthetic data. Not production-ready and not government-certified.
 
@@ -197,6 +197,52 @@ A handler that cannot share the transaction (none exist today) would get 503 `OU
 Reconciliation would then record `committed_outcome_reconstructed` from the service-side evidence. A committed
 operation is never reported as rolled back.
 
+## Phase 4: continuous assurance, intervention and recovery
+
+```
+signed request ─▶ Gateway._decide ─▶ decision audited ─▶ observers (AssuranceService.observe)
+                       │                                      │
+                       │ approval_gate (contain case,         ├─ EventFacts from the audited event
+                       │ active incident, sensitive op)       ├─ evaluate_rules (deterministic, windowed)
+                       ▼                                      ├─ IncidentStore (dedupe rule|subject|case, CAS)
+              ESCALATE_HUMAN_REVIEW + PendingApproval         └─ plan_response → _apply (policy: monitor|contain)
+                       │                                              ├─ SuspensionStore (reversible)
+           officer approve ─▶ Gateway.execute_approved                ├─ pause case (PAUSED_FOR_REVIEW)
+                       │   CAS pending→executing                      └─ assurance.* audit events
+                       ▼
+              full re-authorization (all checks except freshness/replay) ─▶ dispatch or approved_denied
+```
+
+| Module | Role |
+|---|---|
+| `core/assurance/rules.py` | `DEFAULT_RULES` (explicit thresholds/windows/severities), `EventFacts`, `evaluate_rules` — pure |
+| `core/assurance/response.py` | `plan_response(finding)` → ordered `ResponseRecord`s with `RESP_*` reason codes — pure, never agent-wide |
+| `services/assurance.py` | Observer; incidents, suspensions, case pause, approval gate |
+| `services/approvals.py` | `PendingApproval` store (signed request stored verbatim, 30 min TTL, CAS transitions, expiry at startup) |
+| `services/officers.py` | Dev officer credentials (scrypt), sessions (SHA-256 token hashes, 15 min idle / 60 min absolute), lockout, roles |
+| `services/interventions.py` | Every officer action: permission + entity scope check, state change, `officer.*` audit event |
+| `api/officer.py` | `/api/officer/*`, bearer session, strict bodies (no identity fields accepted) |
+| `workflow/recovery.py` | Scenario H setup and `continue_case` (advances only by signed agent requests) |
+| `workflow/oversight.py` | Isolated A/B oversight comparison |
+
+**Observers never decide.** They run after the decision is audited; their failures are logged and cannot alter
+or block the decision already made. Containment applies only to later requests.
+
+**Suspension vs revocation.** Suspension (`mandate_suspensions`) is reversible and is enforced in
+`check_mandate_lifecycle` and `verify_chain` (`DENY_MANDATE_SUSPENDED`, `DENY_PARENT_MANDATE_SUSPENDED`). Revocation
+remains permanent and cascades; a revoked mandate cannot be reinstated.
+
+**Recovery is authority change, not state change.** Officers can reassign a catalogued task to another eligible
+receiver (`case.task_assignments`), resume a paused case and decide approvals. The case only advances when an agent
+sends a signed request the gateway allows. The engine denies a delegated mandate whose task was reassigned away from
+its holder, and the commission receiver must match the current assignment.
+
+**Standby agents** (`standby_agents` table, `AGT-INS-002`) are registered and provisioned with keys, but sit outside
+the primary roster and are not default receivers; they act only after officer reassignment.
+
+**Restart.** Incidents, suspensions, approvals, officer sessions and assignments are in SQLite. On startup pending
+approvals past their TTL are expired; an approval never executes because the process came back.
+
 ## Why protected services must not trust agent instructions
 
 An agent's output is shaped by everything it reads, including attacker-controlled documents (fixture
@@ -239,6 +285,11 @@ verify a gateway-issued, action-bound authorization itself.
 | `delegations` | Trusted parent → child records (case, agents, task, depth, decision event) |
 | `agent_status_overrides` | Persistent agent-wide revocations, re-applied after reseed |
 | `audit_events` | Append-only, hash-chained decision, execution, revocation and reconciliation log |
+| `standby_agents` | Registered standby agents (officer reassignment only) |
+| `mandate_suspensions` | Reversible suspensions (who, why, incident, lifted) |
+| `incidents` | Rule findings with dedupe key, severity, status, responses, officer notes, `version` for CAS |
+| `pending_approvals` | Held signed requests, status, TTL, decision and re-authorization result |
+| `officers`, `officer_credentials`, `officer_sessions`, `officer_login_failures` | Dev officer identity, scrypt hashes, hashed session tokens, lockout |
 
 The default database is `backend/var/wakala.db`, which is git-ignored and shared by the server and the CLI. Tests use
 `:memory:`.

@@ -155,6 +155,9 @@ class ReasonCode(str, Enum):
     DENY_PARENT_MANDATE_EXPIRED = "DENY_PARENT_MANDATE_EXPIRED"
     DENY_PARENT_MANDATE_REVOKED = "DENY_PARENT_MANDATE_REVOKED"
     DENY_CASE_AUTHORITY_REVOKED = "DENY_CASE_AUTHORITY_REVOKED"
+    # Phase 4 — interventions
+    DENY_MANDATE_SUSPENDED = "DENY_MANDATE_SUSPENDED"
+    DENY_PARENT_MANDATE_SUSPENDED = "DENY_PARENT_MANDATE_SUSPENDED"
     ESCALATE_HUMAN_REVIEW = "ESCALATE_HUMAN_REVIEW"
 
 
@@ -169,6 +172,8 @@ class AuthorizationDecision(StrictModel):
     mandate_id: MandateId | None = None
     # SHA-256 of the exact signed request bytes this decision applies to.
     request_digest: Sha256Hex | None = None
+    # Phase 4: set when the request was held for human approval (nothing executed).
+    pending_approval_id: str | None = Field(default=None, pattern=r"^APR-[A-Z0-9]{6,16}$")
 
     @model_validator(mode="after")
     def _codes_match_outcome(self) -> "AuthorizationDecision":
@@ -214,7 +219,8 @@ class AuditEvent(StrictModel):
         return actor
 
 
-ExecutionStatus = Literal["executed", "denied", "no_handler_registered", "execution_failed", "refused_by_service"]
+ExecutionStatus = Literal["executed", "denied", "no_handler_registered", "execution_failed", "refused_by_service",
+                          "pending_approval"]
 
 
 class ExecutionResponse(StrictModel):

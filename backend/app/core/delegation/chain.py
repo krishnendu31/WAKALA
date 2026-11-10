@@ -107,6 +107,7 @@ def verify_chain(
     revoked_ids: frozenset[str],
     resolution_error: ReasonCode | None = None,
     catalog: Mapping[str, DelegableTask] = TASK_CATALOG,
+    suspended_ids: frozenset[str] = frozenset(),
 ) -> list[ReasonCode]:
     """Verify every ancestor and every link of leaf → … → root. Empty list = verified."""
     if resolution_error is not None:
@@ -129,9 +130,11 @@ def verify_chain(
         if verify_mandate_integrity(ancestor, issuers, issuer_public_keys):
             codes.append(R.DENY_PARENT_MANDATE_INVALID)
             continue
-        life = check_mandate_lifecycle(ancestor, now, revoked_ids)
+        life = check_mandate_lifecycle(ancestor, now, revoked_ids, suspended_ids)
         if R.DENY_MANDATE_REVOKED in life:
             codes.append(R.DENY_PARENT_MANDATE_REVOKED)
+        elif R.DENY_MANDATE_SUSPENDED in life:
+            codes.append(R.DENY_PARENT_MANDATE_SUSPENDED)
         elif life:
             codes.append(R.DENY_PARENT_MANDATE_EXPIRED)
     if codes:
