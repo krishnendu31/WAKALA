@@ -1,0 +1,79 @@
+{
+  "generated": "2026-11-11 09:16:15",
+  "backend": "isolated test backend (scratch database)",
+  "log": [
+    {
+      "file": "judge_01_start_1920.png",
+      "url": "/?stage=1",
+      "viewport": "1920x1080"
+    },
+    {
+      "file": "judge_01_start_1366.png",
+      "url": "/?stage=1",
+      "viewport": "1366x768"
+    },
+    {
+      "step": "normal service",
+      "case": "CASE-86AAD424",
+      "state": "COMPLETED",
+      "allowed": 6
+    },
+    {
+      "file": "judge_02_normal_completed.png",
+      "url": "/?stage=1",
+      "viewport": "1920x1080"
+    },
+    {
+      "step": "unauthorized request",
+      "case": "CASE-FA29AC8F",
+      "denied": [
+        "DENY_SCOPE_VIOLATION",
+        "DENY_CASE_SCOPE_VIOLATION"
+      ],
+      "state": "PAUSED_FOR_REVIEW"
+    },
+    {
+      "file": "judge_03_unauthorized_denied.png",
+      "url": "/?stage=2",
+      "viewport": "1920x1080"
+    },
+    {
+      "file": "judge_04_officer_signin.png",
+      "url": "/?stage=3",
+      "viewport": "1920x1080"
+    },
+    {
+      "step": "officer",
+      "incident": "INC-C0745D47",
+      "reassigned_to": "AGT-INS-002",
+      "state": "VERIFYING"
+    },
+    {
+      "file": "judge_05_held_for_officer.png",
+      "url": "/?stage=4",
+      "viewport": "1920x1080"
+    },
+    {
+      "step": "recovery",
+      "state": "COMPLETED",
+      "recovery": "recovered",
+      "unrelated_state": "AWAITING_PAYMENT",
+      "unrelated_incidents": 0
+    },
+    {
+      "file": "judge_06_recovered_1920.png",
+      "url": "/?stage=4",
+      "viewport": "1920x1080"
+    },
+    {
+      "file": "judge_06_recovered_1366.png",
+      "url": "/?stage=4",
+      "viewport": "1366x768"
+    },
+    {
+      "file": "judge_07_phone.png",
+      "url": "/?stage=2",
+      "viewport": "390x1400"
+    }
+  ]
+}

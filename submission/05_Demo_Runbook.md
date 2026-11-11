@@ -18,7 +18,7 @@ cd backend
 .venv\Scripts\python -m app.devtools.cli officers set-password OFF-0900
 ```
 
-Rehearse the whole flow below once. Then click **Restart demo** in the guided demo header so it starts clean. This deletes nothing, and the audit history is kept.
+Rehearse the whole flow below once. Then click **Restart** in the page header so it starts clean. This deletes nothing, and the audit history is kept.
 
 ## 2. On the day (start about 15 minutes before)
 
@@ -31,9 +31,23 @@ Rehearse the whole flow below once. Then click **Restart demo** in the guided de
 | 5 | Turn on Do Not Disturb; set the browser zoom to 100–110 % | |
 | 6 | Have `submission/WAKALA_Pitch_Deck.pdf` open as a fallback | |
 
-## 3. Live flow — Guided Demo (recommended, about 4 minutes)
+## 3. Live flow — Judge Experience (recommended, about 3 minutes)
 
-Route: **http://localhost:5173/** → **Start Guided Demo** (or go straight to **/demo**). The demo has no console menu, only five steps.
+Route: **http://localhost:5173/** (also **/demo**). One screen: the Live Authority Map in the centre, the current stage on the
+right with one main button, and **Advanced Tools** top right. Every state comes from the backend.
+
+| Stage | Click | What appears |
+|---|---|---|
+| 1 · Normal service | **Run Normal Service** → **Next: Unauthorized Request** | The map turns green: case mandates, the Residency → Insurance delegation, every agent's gateway decisions and the services reached. "Authorized actions completed." |
+| 2 · Unauthorized access | **Test Unauthorized Request** → **Next: Officer Review** | A new case for Mariam (the Stage 1 case stays completed). Red **DENIED** path ending at the gateway; insurance records "Not reached"; "Unauthorized access blocked. No protected data returned." |
+| 3 · Officer intervention | **Sign In as Officer** (OFF-0101 + password) → **Mark Incident Under Review** → **Assign Standby Insurance Agent** → **Resume Mariam's Case** → **Next: Safe Recovery** | Standby Agent "Assigned by officer"; the original agent's authority shown as suspended or revoked. |
+| 4 · Safe recovery | **Continue Mariam's Service** → **Approve Held Step** → **Resolve Incident** → **Finish Mariam's Renewal** | Amber hold until approval; then the standby delegation turns green and the case shows "Recovered". Results: denial, recovery, replacement agent, Omar's unrelated case unaffected. **View Technical Evidence** · **Explore Advanced Features** · **Restart Guided Demo**. |
+
+Details: `docs/JUDGE_EXPERIENCE.md`.
+
+### 3a. Earlier five-step walkthrough (still available)
+
+Route: **/demo/classic**. The demo has no console menu, only five steps.
 Each step has one main button. Every status shown is read from the backend, and nothing is marked done until WAKALA confirms it.
 **Technical details (optional)** in each step shows case IDs, gateway events, reason codes and the mandate chain.
 

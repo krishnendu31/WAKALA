@@ -62,9 +62,11 @@ cd backend
 .venv\Scripts\python -m app.devtools.cli officers set-password OFF-0101
 ```
 
-Open http://localhost:5173/ and click **Start Guided Demo**. The guided demo (`/demo`) walks first-time visitors through five steps:
-normal service, unauthorized access, officer intervention, safe recovery, and results and evidence, using the same APIs as the console.
-The full console is under **Advanced tools** (Command Center is at `/command-center`).
+Open http://localhost:5173/. The judge experience (also at `/demo`) tells one story on one screen: a Live Authority Map of
+the citizen's case, the AI agents, the WAKALA gateway and the protected services, with one main button per stage —
+normal service, unauthorized access, officer intervention and safe recovery — using the same APIs as the console.
+Every other feature is under **Advanced Tools** (Command Center is at `/command-center`; the earlier five-step walkthrough
+is at `/demo/classic`). See [docs/JUDGE_EXPERIENCE.md](docs/JUDGE_EXPERIENCE.md).
 
 The original presenter flow is still available: open http://localhost:5173/portal and use **Open Security Operations side by side**. Then run the presenter scenes:
 1. **Normal service** — the request completes through six gateway-allowed signed steps, with delegated insurance and an

@@ -17,6 +17,7 @@ import { CitizenTransparency } from "@/pages/CitizenTransparency";
 import { SimulationLab } from "@/pages/SimulationLab";
 import { Welcome } from "@/pages/Welcome";
 import { GuidedDemo } from "@/pages/GuidedDemo";
+import { JudgeExperience } from "@/pages/JudgeExperience";
 
 // React Flow is only needed on one page; load it on demand.
 const DelegationNetwork = lazy(() => import("@/pages/DelegationNetwork"));
@@ -25,9 +26,12 @@ export function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* First-time visitors: welcome page and a focused guided demo, without console navigation. */}
-        <Route index element={<Welcome />} />
-        <Route path="demo" element={<GuidedDemo />} />
+        {/* First-time visitors and judges: one connected judge experience, without console navigation.
+            /demo keeps working (same experience); the earlier welcome page and five-scene demo stay available. */}
+        <Route index element={<JudgeExperience />} />
+        <Route path="demo" element={<JudgeExperience />} />
+        <Route path="demo/classic" element={<GuidedDemo />} />
+        <Route path="welcome" element={<Welcome />} />
         <Route element={<AppLayout />}>
           <Route path="command-center" element={<CommandCenter />} />
           <Route path="portal" element={<GovernmentPortal />} />

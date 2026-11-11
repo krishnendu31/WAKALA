@@ -87,3 +87,7 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
 }
+
+/* Judge experience: pending-review edges march slowly (disabled by prefers-reduced-motion above). */
+@keyframes wk-march { to { stroke-dashoffset: -24; } }
+.wk-march { animation: wk-march 1.4s linear infinite; }
