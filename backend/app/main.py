@@ -19,6 +19,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app import __version__
 from app.api import attack_lab, dev, documents, evidence, gateway, officer, policy, portal, shadow, workflow
 from app.api.routes import api, router
+from app.core import public_demo
 from app.core.config import Settings
 from app.services.bootstrap import WakalaEnvironment, bootstrap
 
@@ -29,6 +30,7 @@ def create_app(settings: Settings | None = None, *, env_factory: Callable[[Setti
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         env = (env_factory or bootstrap)(settings)  # fails fast on invalid data or keys
+        public_demo.provision_officer(env)  # no-op unless WAKALA_PUBLIC_DEMO=1 and the hosting secret is set
         app.state.env = env
         try:
             yield
@@ -46,6 +48,7 @@ def create_app(settings: Settings | None = None, *, env_factory: Callable[[Setti
         ),
         version=__version__,
         lifespan=lifespan,
+        **({"docs_url": None, "redoc_url": None, "openapi_url": None} if public_demo.enabled() else {}),
     )
 
     app.add_middleware(
@@ -93,7 +96,30 @@ def create_app(settings: Settings | None = None, *, env_factory: Callable[[Setti
     app.include_router(attack_lab.router)
     app.include_router(shadow.router)
     app.include_router(policy.router)
+    _serve_frontend(app)
     return app
+
+
+def _serve_frontend(app: FastAPI) -> None:
+    """Hosted deployment only: serve the built React app (WAKALA_FRONTEND_DIST) from the same origin, with SPA fallback."""
+    import os
+    from pathlib import Path
+
+    from fastapi.responses import FileResponse
+
+    dist = os.getenv("WAKALA_FRONTEND_DIST")
+    if not dist or not (Path(dist) / "index.html").is_file():
+        return
+    root = Path(dist).resolve()
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str) -> FileResponse:
+        if path.startswith("api/"):
+            raise StarletteHTTPException(status_code=404, detail="Not Found")
+        f = (root / path).resolve()
+        if path and f.is_file() and root in f.parents:
+            return FileResponse(f)
+        return FileResponse(root / "index.html")
 
 
 app = create_app()

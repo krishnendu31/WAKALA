@@ -1,0 +1,16 @@
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/.pytest_tmp
+backend/var
+backend/.dev_keys
+**/.dev_keys
+**/*.db
+.git
+.claude
+submission
+docs
+scripts
+**/.env
+**/.env.*

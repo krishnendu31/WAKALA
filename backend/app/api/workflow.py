@@ -27,6 +27,9 @@ from app.workflow.scenarios import SCENARIO_KEYS, WORKFLOW_SCENARIOS, case_audit
 
 
 def require_local_client(request: Request) -> None:
+    from app.core import public_demo
+    if public_demo.enabled():  # hosted judge demo: mutations stay behind officer auth or require_dev_access
+        return
     env = request.app.state.env
     client = request.client.host if request.client else ""
     if client not in env.settings.console_allowed_hosts:

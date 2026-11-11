@@ -20,6 +20,10 @@ from app.schemas.views import CheckTraceView, DevRequestSummary, DevScenarioInfo
 
 
 def require_dev_access(request: Request) -> None:
+    from app.core import public_demo
+    if public_demo.enabled():  # hosted judge demo: read-only + allow-listed guided-demo actions only
+        public_demo.check_dev_access(request)
+        return
     env = request.app.state.env
     if not env.settings.dev_mode:
         raise HTTPException(status_code=404, detail={"code": "DEV_MODE_DISABLED", "message": "Developer endpoints are disabled."})

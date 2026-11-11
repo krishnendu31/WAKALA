@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: wakala-judge-demo
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      # Officer sign-in password for the demo (OFF-0101). Render generates a fresh random value;
+      # read it in the Render dashboard (Environment tab). It is stored only as a hash inside the app.
+      - key: WAKALA_DEMO_OFFICER_PASSWORD
+        generateValue: true
