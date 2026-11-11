@@ -246,7 +246,7 @@ function OfficerSignIn({ onSignedIn, expired }: { onSignedIn: (o: Any) => void; 
       const r = await officerRequest<{ token: string; officer: Any }>("/api/officer/session", "POST", { officer_id: id, password: pw });
       setOfficerToken(r.token); setPw(""); onSignedIn(r.officer);
     } catch (x) {
-      setErr(x instanceof ApiError && x.status === 401 ? "Officer ID or password is not correct." : errText(x));
+      setErr(x instanceof ApiError && x.status === 401 ? "Officer ID or password is not correct." : x instanceof ApiError && x.code === "LOGIN_LOCKED" ? "Too many failed sign-in attempts for this officer. Sign-in is locked for 10 minutes, or until the presenter issues a new password." : errText(x));
     } finally { setBusy(false); }
   };
   return (
